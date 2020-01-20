@@ -1,0 +1,24 @@
+image: node:10
+
+cache:
+  paths:
+    - node_modules/
+    - .yarn
+
+stages:
+  - test
+  - audit
+
+test:
+  stage: test
+  script:
+    - yarn install --pure-lockfile --cache-folder .yarn
+    - yarn test:ci
+  coverage: '/^Statements\s*:\s*([^%]+)/'
+
+audit:
+  stage: audit
+  only:
+  - schedules
+  script:
+    - yarn audit

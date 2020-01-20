@@ -1,0 +1,28 @@
+{
+  "name": "@uscreen.de/dev-service",
+  "version": "0.1.0",
+  "description": "cli to manage services in dev repos",
+  "main": "index.js",
+  "repository": "git@gitlab.uscreen.net:uscreen/npm/dev-service.git",
+  "author": "Martin Herting <herting@uscreen.de>",
+  "license": "MIT",
+  "devDependencies": {
+    "eslint": "^6.5.1",
+    "eslint-config-prettier": "^6.3.0",
+    "eslint-config-standard": "^14.1.0",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-node": "^11.0.0",
+    "eslint-plugin-prettier": "^3.1.1",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1",
+    "lint-staged": "^10.0.0",
+    "prettier": "^1.18.2",
+    "tap": "^14.10.5",
+    "yorkie": "^2.0.0"
+  },
+  "dependencies": {
+    "commander": "^4.1.0",
+    "fs-extra": "^8.1.0",
+    "read-pkg-up": "^7.0.1"
+  }
+}
