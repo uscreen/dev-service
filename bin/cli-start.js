@@ -1,32 +1,11 @@
 #!/usr/bin/env node
 
-const chalk = require('chalk')
 const cli = require('commander')
-const path = require('path')
 const fs = require('fs-extra')
 
-const { run } = require('../src/helpers')
+const { version, SERVICES_DIR } = require('../src/constants')
 
-/**
- * Initialize
- */
-
-// Dev-Service
-const { version } = require('../package.json')
-
-// Project
-const SERVICES_DIR = path.resolve(process.cwd(), '.services')
-
-/**
- * Helper methods
- */
-const ensureServicesDir = () => {
-  fs.ensureDirSync(SERVICES_DIR)
-}
-
-const error = e => {
-  console.error(chalk.red(`ERROR: ${e.message} Aborting.`))
-}
+const { ensureServicesDir, error, run } = require('../src/helpers')
 
 const start = async () => {
   ensureServicesDir(SERVICES_DIR)

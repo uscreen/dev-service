@@ -1,44 +1,26 @@
 #!/usr/bin/env node
 
-const chalk = require('chalk')
 const cli = require('commander')
 const path = require('path')
 const fs = require('fs-extra')
-const readPkgUp = require('read-pkg-up')
 
-/**
- * Initialize
- */
+const {
+  version,
+  TEMPLATES_DIR,
+  services,
+  SERVICES_DIR,
+  projectname
+} = require('../src/constants')
 
-// Dev-Service
-const { version } = require('../package.json')
-const TEMPLATES_DIR = path.resolve(__dirname, '../templates')
-
-// Project
-const root = path.resolve(process.cwd())
-const { packageJson } = readPkgUp.sync({ cwd: root })
-const services = packageJson.services
-
-const SERVICES_DIR = path.resolve(process.cwd(), '.services')
-
-const project = packageJson.name || path.basename(root)
+const { error, resetServiceDir } = require('../src/helpers')
 
 /**
  * Helper methods
  */
-const ensureServicesDir = () => {
-  fs.removeSync(SERVICES_DIR)
-  fs.ensureDirSync(SERVICES_DIR)
-}
-
 const getName = service => {
   const [name] = service.split(':')
 
   return name
-}
-
-const error = e => {
-  console.error(chalk.red(`ERROR: ${e.message} Aborting.`))
 }
 
 const readTemplate = name => {
@@ -68,17 +50,23 @@ const serviceInstall = async service => {
 
   const data = fillTemplate(template, {
     image: service,
-    container_name: `${project}_${name}`,
-    project: project
+    container_name: `${projectname}_${name}`,
+    project: projectname
   })
 
   writeFile(name, data)
 }
 
+const install = async () => {
+  resetServiceDir(SERVICES_DIR)
+  await Promise.all(services.map(serviceInstall))
+
+  console.log(`Done (${services.length} service installed).`)
+}
+
 cli.version(version).action(async () => {
   try {
-    ensureServicesDir(SERVICES_DIR)
-    await Promise.all(services.map(serviceInstall))
+    await install()
   } catch (e) {
     error(e)
   }
