@@ -14,6 +14,8 @@ const { version } = require('../package.json')
 cli
   .version(version)
   .command('install', 'install all services specified in package.json')
+  .command('start', 'start installed services')
+  .command('stop', 'stop installed services')
 
 /**
  * read args

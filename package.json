@@ -3,6 +3,12 @@
   "version": "0.1.0",
   "description": "cli to manage services in dev repos",
   "main": "index.js",
+  "bin": {
+    "service": "./bin/cli.js",
+    "service-install": "./bin/cli-install.js",
+    "service-start": "./bin/cli-start.js",
+    "service-stop": "./bin/cli-stop.js"
+  },
   "repository": "git@gitlab.uscreen.net:uscreen/npm/dev-service.git",
   "author": "Martin Herting <herting@uscreen.de>",
   "license": "MIT",
