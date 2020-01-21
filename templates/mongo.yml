@@ -1,0 +1,15 @@
+version: '2.4'
+
+services:
+  mongo:
+    image: {{image}}
+    container_name: {{container_name}}
+    ports:
+      - 27017:27017
+    # volumes:
+    #   - {{project}}-mongo-data:/data/db:delegated
+
+# volumes:
+#   mongodb-data:
+#     external:
+#       name: {{project}}-mongo-data
