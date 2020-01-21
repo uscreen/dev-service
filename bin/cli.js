@@ -16,6 +16,7 @@ cli
   .command('install', 'install all services specified in package.json')
   .command('start', 'start installed services')
   .command('stop', 'stop installed services')
+  .command('list', 'lists running services')
 
 /**
  * read args
