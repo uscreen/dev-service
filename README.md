@@ -29,9 +29,7 @@ Next run `service install` and you will end up with a directory structure like:
 ```bash
 .
 ├── package.json
-├── services
-│   ├── nginx
-│   │   └── default.conf
+├── .services
 │   ├── mongo.yml
 │   ├── nginx.yml
 │   ├── redis.yml
@@ -54,3 +52,7 @@ Start installed services.
 ### $ service stop
 
 Stop running services.
+
+### $ service list
+
+List running services.
