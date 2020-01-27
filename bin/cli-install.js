@@ -3,6 +3,7 @@
 const cli = require('commander')
 const path = require('path')
 const fs = require('fs-extra')
+const YAML = require('yaml')
 
 const {
   version,
@@ -12,7 +13,7 @@ const {
   projectname
 } = require('../src/constants')
 
-const { error, resetServiceDir } = require('../src/helpers')
+const { run, error, resetServiceDir } = require('../src/helpers')
 
 /**
  * Helper methods
@@ -37,6 +38,29 @@ const fillTemplate = (template, data) => {
   return template
 }
 
+const ensureVolumes = async content => {
+  const data = YAML.parse(content)
+  if (!data || !data.volumes) return
+
+  const volumes = []
+  for (const key in data.volumes) {
+    if (!data.volumes[key].external) continue
+
+    const name = data.volumes[key].external.name
+    if (!name) continue
+
+    volumes.push(name)
+  }
+
+  for (const volume of volumes) {
+    await run(
+      'docker',
+      ['volume', 'create', `--name=${volume}`, '--label=keep'],
+      SERVICES_DIR
+    )
+  }
+}
+
 const writeFile = (name, data) => {
   const dest = path.resolve(SERVICES_DIR, `${name}.yml`)
 
@@ -48,13 +72,15 @@ const serviceInstall = async service => {
 
   const template = readTemplate(name)
 
-  const data = fillTemplate(template, {
+  const content = fillTemplate(template, {
     image: service,
     container_name: `${projectname}_${name}`,
-    project: projectname
+    projectname: projectname
   })
 
-  writeFile(name, data)
+  await ensureVolumes(content)
+
+  writeFile(name, content)
 }
 
 const install = async () => {

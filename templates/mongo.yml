@@ -6,10 +6,10 @@ services:
     container_name: {{container_name}}
     ports:
       - 27017:27017
-    # volumes:
-    #   - {{projectname}}-mongo-data:/data/db:delegated
+    volumes:
+      - mongo-data:/data/db:delegated
 
-# volumes:
-#   mongodb-data:
-#     external:
-#       name: {{projectname}}-mongo-data
+volumes:
+  mongo-data:
+    external:
+      name: {{projectname}}-mongo-data
