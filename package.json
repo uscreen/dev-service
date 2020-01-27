@@ -13,6 +13,11 @@
   "repository": "git@gitlab.uscreen.net:uscreen/npm/dev-service.git",
   "author": "Martin Herting <herting@uscreen.de>",
   "license": "MIT",
+  "scripts": {
+    "test": "tap test/**/*.test.js",
+    "test:cov": "tap --coverage-report=html test/**/*.test.js",
+    "test:ci": "tap --coverage-report=text-summary test/**/*.test.js"
+  },
   "devDependencies": {
     "eslint": "^6.5.1",
     "eslint-config-prettier": "^6.3.0",
@@ -24,7 +29,7 @@
     "eslint-plugin-standard": "^4.0.1",
     "lint-staged": "^10.0.0",
     "prettier": "^1.18.2",
-    "tap": "^14.10.5",
+    "tap": "^14.10.6",
     "yorkie": "^2.0.0"
   },
   "dependencies": {

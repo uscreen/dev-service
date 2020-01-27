@@ -3214,7 +3214,7 @@ tap-yaml@^1.0.0:
   dependencies:
     yaml "^1.5.0"
 
-tap@^14.10.5:
+tap@^14.10.6:
   version "14.10.6"
   resolved "https://registry.yarnpkg.com/tap/-/tap-14.10.6.tgz#554b399ee14f1794ea995363b07012c2edc9def6"
   integrity sha512-0Ikt8ui8TIYcoKkJRWDfoO0fgsknP3d6ouBak8HkDW8dl3NWF4Nj3X3bYFGozFeclXJrzY2qBERk3iPlypwOyg==
