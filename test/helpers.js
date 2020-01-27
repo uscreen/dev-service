@@ -3,6 +3,7 @@
 const path = require('path')
 const { exec } = require('child_process')
 const fs = require('fs-extra')
+const YAML = require('yaml')
 
 const arenaPath = path.resolve(__dirname, './_arena')
 module.exports.arenaPath = arenaPath
@@ -42,4 +43,13 @@ module.exports.prepareArena = packageJson => {
 module.exports.clearArena = () => {
   fs.removeSync(arenaPath)
   fs.mkdirSync(arenaPath)
+}
+
+module.exports.loadYaml = filepath => {
+  const content = fs.readFileSync(filepath, {
+    encoding: 'utf-8'
+  })
+  const data = YAML.parse(content)
+
+  return data
 }

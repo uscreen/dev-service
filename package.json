@@ -30,6 +30,7 @@
     "lint-staged": "^10.0.0",
     "prettier": "^1.18.2",
     "tap": "^14.10.6",
+    "yaml": "^1.7.2",
     "yorkie": "^2.0.0"
   },
   "dependencies": {
