@@ -9,9 +9,10 @@ const { SERVICES_DIR } = require('../src/constants')
 /**
  * Ensures existence of a service directory
  */
-module.exports.ensureServicesDir = () => {
+const ensureServicesDir = () => {
   fs.ensureDirSync(SERVICES_DIR)
 }
+module.exports.ensureServicesDir = ensureServicesDir
 
 /**
  * Removes all content from service directory
@@ -31,7 +32,7 @@ module.exports.error = e => {
 /**
  * spawns a child process and returns a promise
  */
-module.exports.run = (command, parameters = [], cwd = null) =>
+const run = (command, parameters = [], cwd = null) =>
   new Promise((resolve, reject) => {
     const c = spawn(command, parameters, {
       cwd,
@@ -42,3 +43,22 @@ module.exports.run = (command, parameters = [], cwd = null) =>
       reject(code)
     })
   })
+module.exports.run = run
+
+/**
+ * executes docker-compose command
+ */
+module.exports.compose = async (...params) => {
+  ensureServicesDir(SERVICES_DIR)
+
+  const files = fs.readdirSync(SERVICES_DIR)
+
+  const ps = []
+  for (const f of files) {
+    ps.push('-f', f)
+  }
+
+  ps.push(...params)
+
+  return run('docker-compose', ps, SERVICES_DIR)
+}
