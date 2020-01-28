@@ -32,11 +32,11 @@ module.exports.error = e => {
 /**
  * spawns a child process and returns a promise
  */
-const run = (command, parameters = [], cwd = null) =>
+const run = (command, parameters = [], cwd = null, stdio = [0, 1, 2]) =>
   new Promise((resolve, reject) => {
     const c = spawn(command, parameters, {
       cwd,
-      stdio: [0, 1, 2]
+      stdio
     })
     c.on('close', code => {
       if (code === 0) return resolve(code)
@@ -44,6 +44,13 @@ const run = (command, parameters = [], cwd = null) =>
     })
   })
 module.exports.run = run
+
+/**
+ * executes docker command
+ */
+module.exports.docker = async (...params) => {
+  return run('docker', params, __dirname, [null, null, null])
+}
 
 /**
  * executes docker-compose command

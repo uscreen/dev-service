@@ -13,7 +13,7 @@ const {
   projectname
 } = require('../src/constants')
 
-const { run, error, resetServiceDir } = require('../src/helpers')
+const { docker, error, resetServiceDir } = require('../src/helpers')
 
 /**
  * Helper methods
@@ -52,13 +52,9 @@ const ensureVolumes = async content => {
     volumes.push(name)
   }
 
-  for (const volume of volumes) {
-    await run(
-      'docker',
-      ['volume', 'create', `--name=${volume}`, '--label=keep'],
-      SERVICES_DIR
-    )
-  }
+  await Promise.all(
+    volumes.map(v => docker('volume', 'create', `--name=${v}`, '--label=keep'))
+  )
 }
 
 const writeFile = (name, data) => {
