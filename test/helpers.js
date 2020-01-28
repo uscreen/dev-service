@@ -5,10 +5,10 @@ const { exec } = require('child_process')
 const fs = require('fs-extra')
 const YAML = require('yaml')
 
+const { docker } = require('../src/helpers')
+
 const arenaPath = path.resolve(__dirname, './_arena')
 module.exports.arenaPath = arenaPath
-
-const arenaPkgPath = path.resolve(arenaPath, 'package.json')
 
 // for easy string testing: disable color output of chalk
 process.env.FORCE_COLOR = 0
@@ -35,14 +35,20 @@ module.exports.prepareArena = packageJson => {
     return
   }
 
-  fs.writeFileSync(arenaPkgPath, JSON.stringify(packageJson), {
-    encoding: 'utf-8'
-  })
+  fs.writeFileSync(
+    path.resolve(arenaPath, 'package.json'),
+    JSON.stringify(packageJson),
+    {
+      encoding: 'utf-8'
+    }
+  )
 }
 
-module.exports.clearArena = () => {
+module.exports.clearArena = async () => {
   fs.removeSync(arenaPath)
   fs.mkdirSync(arenaPath)
+
+  await docker('volume', 'rm', 'dev-service-test-mongo-data')
 }
 
 module.exports.loadYaml = filepath => {

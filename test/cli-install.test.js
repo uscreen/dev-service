@@ -10,6 +10,8 @@ const {
   loadYaml
 } = require('./helpers')
 
+const { docker } = require('../src/helpers')
+
 const servicesPath = path.resolve(arenaPath, '.services')
 
 tap.test('$ cli install', async t => {
@@ -78,7 +80,10 @@ tap.test('$ cli install', async t => {
   t.test(
     'Within a folder with a package.json containing some services',
     async t => {
-      prepareArena({ name: 'test', services: ['mongo:latest', 'nginx'] })
+      prepareArena({
+        name: 'dev-service-test',
+        services: ['mongo:latest', 'nginx']
+      })
 
       await cli(['install'], arenaPath)
 
@@ -100,10 +105,15 @@ tap.test('$ cli install', async t => {
         'Should use the correct image in mongo.yml.'
       )
       t.strictEqual(
-        'test_mongo',
+        'dev-service-test_mongo',
         mongoData.services.mongo.container_name,
         'Should set the correct container name in mongo.yml.'
       )
+      let code = null
+      await docker('volume', 'inspect', 'dev-service-test-mongo-data')
+        .then(c => (code = c))
+        .catch(c => (code = c))
+      t.strictEqual(0, code, 'Should create docker volume defined in mongo.yml')
 
       t.strictEqual(
         true,
@@ -117,7 +127,7 @@ tap.test('$ cli install', async t => {
         'Should use the correct image in mongo.yml.'
       )
       t.strictEqual(
-        'test_nginx',
+        'dev-service-test_nginx',
         nginxData.services.nginx.container_name,
         'Should set the correct container name in nginx.yml.'
       )
