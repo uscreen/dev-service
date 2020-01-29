@@ -29,11 +29,14 @@ Next run `service install` and you will end up with a directory structure like:
 ```bash
 .
 ├── package.json
-├── .services
-│   ├── mongo.yml
-│   ├── nginx.yml
-│   ├── redis.yml
-│   └── site
+├── services
+│   ├── .compose
+│   │   ├── mongo.yml
+│   │   ├── nginx.yml
+│   │   └── redis.yml
+│   │
+│   └── nginx/default.conf
+│
 └── yarn.lock
 ```
 

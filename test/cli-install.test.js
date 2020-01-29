@@ -12,7 +12,7 @@ const {
 
 const { docker } = require('../src/helpers')
 
-const servicesPath = path.resolve(arenaPath, '.services')
+const servicesPath = path.resolve(arenaPath, 'services/.compose')
 
 tap.test('$ cli install', async t => {
   t.tearDown(clearArena)
@@ -25,13 +25,13 @@ tap.test('$ cli install', async t => {
     t.strictEqual(
       true,
       fs.existsSync(servicesPath),
-      'Should create .services folder'
+      'Should create services folder'
     )
 
     t.strictEqual(
       0,
       fs.readdirSync(servicesPath).length,
-      '.services folder should be empty'
+      'services folder should be empty'
     )
   })
 
@@ -45,13 +45,13 @@ tap.test('$ cli install', async t => {
       t.strictEqual(
         true,
         fs.existsSync(servicesPath),
-        'Should create .services folder'
+        'Should create services folder'
       )
 
       t.strictEqual(
         0,
         fs.readdirSync(servicesPath).length,
-        '.services folder should be empty'
+        'services folder should be empty'
       )
     }
   )
@@ -66,13 +66,13 @@ tap.test('$ cli install', async t => {
       t.strictEqual(
         true,
         fs.existsSync(servicesPath),
-        'Should create .services folder'
+        'Should create services folder'
       )
 
       t.strictEqual(
         0,
         fs.readdirSync(servicesPath).length,
-        '.services folder should be empty'
+        'services folder should be empty'
       )
     }
   )
@@ -90,13 +90,13 @@ tap.test('$ cli install', async t => {
       t.strictEqual(
         true,
         fs.existsSync(servicesPath),
-        'Should create .services folder'
+        'Should create services folder'
       )
 
       t.strictEqual(
         true,
         fs.existsSync(path.resolve(servicesPath, 'mongo.yml')),
-        'Should create mongo.yml within .services folder'
+        'Should create mongo.yml within services folder'
       )
       const mongoData = loadYaml(path.resolve(servicesPath, 'mongo.yml'))
       t.strictEqual(
@@ -118,7 +118,7 @@ tap.test('$ cli install', async t => {
       t.strictEqual(
         true,
         fs.existsSync(path.resolve(servicesPath, 'nginx.yml')),
-        'Should create nginx.yml within .services folder'
+        'Should create nginx.yml within services folder'
       )
       const nginxData = loadYaml(path.resolve(servicesPath, 'nginx.yml'))
       t.strictEqual(
