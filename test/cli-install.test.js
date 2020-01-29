@@ -12,6 +12,7 @@ const {
 
 const { docker } = require('../src/helpers')
 
+const servicesPath = path.resolve(arenaPath, 'services')
 const composePath = path.resolve(arenaPath, 'services/.compose')
 
 tap.test('$ cli install', async t => {
@@ -130,6 +131,11 @@ tap.test('$ cli install', async t => {
         'dev-service-test_nginx',
         nginxData.services.nginx.container_name,
         'Should set the correct container name in nginx.yml.'
+      )
+      t.strictEqual(
+        true,
+        fs.existsSync(path.resolve(servicesPath, 'nginx')),
+        'Should create local config files if not existing'
       )
 
       t.strictEqual(
