@@ -4,6 +4,9 @@ services:
   nginx:
     image: {{image}}
     container_name: {{container_name}}
+    volumes:
+      - ../nginx/etc_nginx/conf.d:/etc/nginx/conf.d
+      - ../nginx/etc_nginx/ssl:/etc/nginx/ssl
     ports:
       - 80:80
       - 443:443
