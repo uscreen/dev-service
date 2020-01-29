@@ -4,13 +4,13 @@ const fs = require('fs-extra')
 const chalk = require('chalk')
 const { spawn } = require('child_process')
 
-const { SERVICES_DIR } = require('../src/constants')
+const { COMPOSE_DIR } = require('../src/constants')
 
 /**
  * Ensures existence of a service directory
  */
 const ensureServicesDir = () => {
-  fs.ensureDirSync(SERVICES_DIR)
+  fs.ensureDirSync(COMPOSE_DIR)
 }
 module.exports.ensureServicesDir = ensureServicesDir
 
@@ -18,8 +18,8 @@ module.exports.ensureServicesDir = ensureServicesDir
  * Removes all content from service directory
  */
 module.exports.resetServiceDir = () => {
-  fs.removeSync(SERVICES_DIR)
-  fs.ensureDirSync(SERVICES_DIR)
+  fs.removeSync(COMPOSE_DIR)
+  fs.ensureDirSync(COMPOSE_DIR)
 }
 
 /**
@@ -56,9 +56,9 @@ module.exports.docker = async (...params) => {
  * executes docker-compose command
  */
 module.exports.compose = async (...params) => {
-  ensureServicesDir(SERVICES_DIR)
+  ensureServicesDir(COMPOSE_DIR)
 
-  const files = fs.readdirSync(SERVICES_DIR)
+  const files = fs.readdirSync(COMPOSE_DIR)
 
   const ps = []
   for (const f of files) {
@@ -67,5 +67,5 @@ module.exports.compose = async (...params) => {
 
   ps.push(...params)
 
-  return run('docker-compose', ps, SERVICES_DIR)
+  return run('docker-compose', ps, COMPOSE_DIR)
 }

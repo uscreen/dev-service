@@ -10,6 +10,7 @@ const {
   TEMPLATES_DIR,
   services,
   SERVICES_DIR,
+  COMPOSE_DIR,
   projectname
 } = require('../src/constants')
 
@@ -58,14 +59,14 @@ const ensureVolumes = async content => {
 }
 
 const writeFile = (name, data) => {
-  const dest = path.resolve(SERVICES_DIR, `${name}.yml`)
+  const dest = path.resolve(COMPOSE_DIR, `${name}.yml`)
 
   fs.writeFileSync(dest, data, { encoding: 'utf8' })
 }
 
 const copyAdditionalFiles = name => {
   const src = path.resolve(TEMPLATES_DIR, name)
-  const dest = path.resolve(SERVICES_DIR, '..', name)
+  const dest = path.resolve(SERVICES_DIR, name)
 
   if (fs.existsSync(src) && !fs.existsSync(dest)) {
     fs.copySync(src, dest)
@@ -91,7 +92,7 @@ const serviceInstall = async service => {
 }
 
 const install = async () => {
-  resetServiceDir(SERVICES_DIR)
+  resetServiceDir(COMPOSE_DIR)
   await Promise.all(services.map(serviceInstall))
 
   console.log(`Done (${services.length} service installed).`)

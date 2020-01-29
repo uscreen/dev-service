@@ -16,7 +16,8 @@ const root = path.resolve(process.cwd())
 const { packageJson } = readPkgUp.sync({ cwd: root })
 const services = packageJson.services
 
-const SERVICES_DIR = path.resolve(process.cwd(), 'services/.compose')
+const SERVICES_DIR = path.resolve(process.cwd(), 'services')
+const COMPOSE_DIR = path.resolve(process.cwd(), 'services/.compose')
 
 const projectname = packageJson.name || path.basename(root)
 
@@ -27,5 +28,6 @@ module.exports = {
   packageJson,
   services,
   SERVICES_DIR,
+  COMPOSE_DIR,
   projectname
 }
