@@ -63,6 +63,15 @@ const writeFile = (name, data) => {
   fs.writeFileSync(dest, data, { encoding: 'utf8' })
 }
 
+const copyAdditionalFiles = name => {
+  const src = path.resolve(TEMPLATES_DIR, name)
+  const dest = path.resolve(SERVICES_DIR, '..', name)
+
+  if (fs.existsSync(src) && !fs.existsSync(dest)) {
+    fs.copySync(src, dest)
+  }
+}
+
 const serviceInstall = async service => {
   const name = getName(service)
 
@@ -77,6 +86,8 @@ const serviceInstall = async service => {
   await ensureVolumes(content)
 
   writeFile(name, content)
+
+  copyAdditionalFiles(name)
 }
 
 const install = async () => {
