@@ -12,7 +12,7 @@ const {
 
 const { docker } = require('../src/helpers')
 
-const servicesPath = path.resolve(arenaPath, 'services/.compose')
+const composePath = path.resolve(arenaPath, 'services/.compose')
 
 tap.test('$ cli install', async t => {
   t.tearDown(clearArena)
@@ -24,13 +24,13 @@ tap.test('$ cli install', async t => {
 
     t.strictEqual(
       true,
-      fs.existsSync(servicesPath),
+      fs.existsSync(composePath),
       'Should create services folder'
     )
 
     t.strictEqual(
       0,
-      fs.readdirSync(servicesPath).length,
+      fs.readdirSync(composePath).length,
       'services folder should be empty'
     )
   })
@@ -44,13 +44,13 @@ tap.test('$ cli install', async t => {
 
       t.strictEqual(
         true,
-        fs.existsSync(servicesPath),
+        fs.existsSync(composePath),
         'Should create services folder'
       )
 
       t.strictEqual(
         0,
-        fs.readdirSync(servicesPath).length,
+        fs.readdirSync(composePath).length,
         'services folder should be empty'
       )
     }
@@ -65,13 +65,13 @@ tap.test('$ cli install', async t => {
 
       t.strictEqual(
         true,
-        fs.existsSync(servicesPath),
+        fs.existsSync(composePath),
         'Should create services folder'
       )
 
       t.strictEqual(
         0,
-        fs.readdirSync(servicesPath).length,
+        fs.readdirSync(composePath).length,
         'services folder should be empty'
       )
     }
@@ -89,16 +89,16 @@ tap.test('$ cli install', async t => {
 
       t.strictEqual(
         true,
-        fs.existsSync(servicesPath),
+        fs.existsSync(composePath),
         'Should create services folder'
       )
 
       t.strictEqual(
         true,
-        fs.existsSync(path.resolve(servicesPath, 'mongo.yml')),
+        fs.existsSync(path.resolve(composePath, 'mongo.yml')),
         'Should create mongo.yml within services folder'
       )
-      const mongoData = loadYaml(path.resolve(servicesPath, 'mongo.yml'))
+      const mongoData = loadYaml(path.resolve(composePath, 'mongo.yml'))
       t.strictEqual(
         'mongo:latest',
         mongoData.services.mongo.image,
@@ -117,14 +117,14 @@ tap.test('$ cli install', async t => {
 
       t.strictEqual(
         true,
-        fs.existsSync(path.resolve(servicesPath, 'nginx.yml')),
+        fs.existsSync(path.resolve(composePath, 'nginx.yml')),
         'Should create nginx.yml within services folder'
       )
-      const nginxData = loadYaml(path.resolve(servicesPath, 'nginx.yml'))
+      const nginxData = loadYaml(path.resolve(composePath, 'nginx.yml'))
       t.strictEqual(
         'nginx',
         nginxData.services.nginx.image,
-        'Should use the correct image in mongo.yml.'
+        'Should use the correct image in nginx.yml.'
       )
       t.strictEqual(
         'dev-service-test_nginx',
@@ -134,7 +134,7 @@ tap.test('$ cli install', async t => {
 
       t.strictEqual(
         2,
-        fs.readdirSync(servicesPath).length,
+        fs.readdirSync(composePath).length,
         'Should not create any other yml files'
       )
     }
