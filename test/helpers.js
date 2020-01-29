@@ -48,7 +48,8 @@ module.exports.clearArena = async () => {
   fs.removeSync(arenaPath)
   fs.mkdirSync(arenaPath)
 
-  await docker('volume', 'rm', 'dev-service-test-mongo-data')
+  // Catch error if volume not exists:
+  await docker('volume', 'rm', 'dev-service-test-mongo-data').catch(e => {})
 }
 
 module.exports.loadYaml = filepath => {

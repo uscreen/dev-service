@@ -16,7 +16,7 @@ const servicesPath = path.resolve(arenaPath, 'services')
 const composePath = path.resolve(arenaPath, 'services/.compose')
 
 tap.test('$ cli install', async t => {
-  t.tearDown(clearArena)
+  t.afterEach(clearArena)
 
   t.test('Within a folder with no package.json', async t => {
     prepareArena()
