@@ -17,7 +17,7 @@ module.exports.ensureServicesDir = ensureServicesDir
 /**
  * Removes all content from service directory
  */
-module.exports.resetServiceDir = () => {
+module.exports.resetComposeDir = () => {
   fs.removeSync(COMPOSE_DIR)
   fs.ensureDirSync(COMPOSE_DIR)
 }

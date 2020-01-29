@@ -14,7 +14,7 @@ const {
   projectname
 } = require('../src/constants')
 
-const { docker, error, resetServiceDir } = require('../src/helpers')
+const { docker, error, resetComposeDir } = require('../src/helpers')
 
 /**
  * Helper methods
@@ -92,7 +92,7 @@ const serviceInstall = async service => {
 }
 
 const install = async () => {
-  resetServiceDir(COMPOSE_DIR)
+  resetComposeDir(COMPOSE_DIR)
   await Promise.all(services.map(serviceInstall))
 
   console.log(`Done (${services.length} service installed).`)
