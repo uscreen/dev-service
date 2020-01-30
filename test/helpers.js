@@ -8,7 +8,12 @@ const YAML = require('yaml')
 const { docker } = require('../src/utils')
 
 const arenaPath = path.resolve(__dirname, './_arena')
+const servicesPath = path.resolve(arenaPath, 'services')
+const composePath = path.resolve(arenaPath, 'services/.compose')
+
 module.exports.arenaPath = arenaPath
+module.exports.servicesPath = servicesPath
+module.exports.composePath = composePath
 
 // for easy string testing: disable color output of chalk
 process.env.FORCE_COLOR = 0

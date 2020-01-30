@@ -7,13 +7,12 @@ const {
   cli,
   prepareArena,
   clearArena,
-  loadYaml
+  loadYaml,
+  servicesPath,
+  composePath
 } = require('./helpers')
 
 const { docker } = require('../src/utils')
-
-const servicesPath = path.resolve(arenaPath, 'services')
-const composePath = path.resolve(arenaPath, 'services/.compose')
 
 tap.test('$ cli install', async t => {
   t.afterEach(clearArena)
