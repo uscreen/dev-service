@@ -1,4 +1,5 @@
 {
   "timeout": 30,
-  "reporter": "spec"
+  "reporter": "spec",
+  "jobs": 1
 }
