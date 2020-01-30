@@ -35,7 +35,7 @@ module.exports.cli = (args, cwd) => {
   })
 }
 
-module.exports.compose = async (...params) => {
+module.exports.compose = (...params) => {
   const files = fs.readdirSync(composePath)
 
   const ps = []
@@ -62,6 +62,9 @@ module.exports.compose = async (...params) => {
 }
 
 module.exports.prepareArena = packageJson => {
+  fs.removeSync(arenaPath)
+  fs.mkdirSync(arenaPath)
+
   if (!packageJson) {
     return
   }
@@ -77,7 +80,6 @@ module.exports.prepareArena = packageJson => {
 
 module.exports.clearArena = async () => {
   fs.removeSync(arenaPath)
-  fs.mkdirSync(arenaPath)
 
   // Catch error if volume not exists:
   await docker('volume', 'rm', 'dev-service-test-mongo-data').catch(e => {})

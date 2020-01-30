@@ -97,10 +97,6 @@ const serviceInstall = async (service, projectname) => {
 const install = async () => {
   const { services, projectname } = await readPackageJson()
 
-  if (services.length === 0) {
-    error(Error('No services defined'))
-  }
-
   resetComposeDir(COMPOSE_DIR)
   await Promise.all(services.map(s => serviceInstall(s, projectname)))
 
