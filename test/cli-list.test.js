@@ -16,7 +16,8 @@ const packageJson = {
 
 tap.test('$ cli list', async t => {
   t.afterEach(clearArena)
-  t.test('Within folder with no .compose folder', async t => {
+
+  t.test('Within a folder with no .compose subfolder', async t => {
     prepareArena(packageJson)
 
     const result = await cli(['list'], arenaPath)
@@ -29,25 +30,22 @@ tap.test('$ cli list', async t => {
     )
   })
 
-  t.test(
-    'Within folder with .compose folder not containing any service definitions',
-    async t => {
-      prepareArena(packageJson)
-      fs.ensureDirSync(composePath)
+  t.test('Within a folder with empty .compose subfolder', async t => {
+    prepareArena(packageJson)
+    fs.ensureDirSync(composePath)
 
-      const result = await cli(['list'], arenaPath)
+    const result = await cli(['list'], arenaPath)
 
-      t.strictEqual(1, result.code, 'Should return code 1')
-      t.strictEqual(
-        true,
-        result.stderr.includes('ERROR'),
-        'Should output error message'
-      )
-    }
-  )
+    t.strictEqual(1, result.code, 'Should return code 1')
+    t.strictEqual(
+      true,
+      result.stderr.includes('ERROR'),
+      'Should output error message'
+    )
+  })
 
   t.test(
-    'Within folder with two defined services in .compose folder',
+    'Within a folder with two defined services in .compose subfolder',
     async t => {
       t.test('With no running services', async t => {
         prepareArena(packageJson)
