@@ -14,12 +14,12 @@ const packageJson = {
   services: ['mongo:latest', 'nginx']
 }
 
-tap.test('$ cli stop', async t => {
+tap.test('$ cli list', async t => {
   t.afterEach(clearArena)
   t.test('Within folder with no .compose folder', async t => {
     prepareArena(packageJson)
 
-    const result = await cli(['stop'], arenaPath)
+    const result = await cli(['list'], arenaPath)
 
     t.strictEqual(1, result.code, 'Should return code 1')
     t.strictEqual(
@@ -35,7 +35,7 @@ tap.test('$ cli stop', async t => {
       prepareArena(packageJson)
       fs.ensureDirSync(composePath)
 
-      const result = await cli(['stop'], arenaPath)
+      const result = await cli(['list'], arenaPath)
 
       t.strictEqual(1, result.code, 'Should return code 1')
       t.strictEqual(
