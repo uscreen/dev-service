@@ -2,7 +2,7 @@
 
 const fs = require('fs-extra')
 const path = require('path')
-const readPkgUp = require('read-pkg-up')
+const readPkg = require('read-pkg')
 const chalk = require('chalk')
 const { spawn } = require('child_process')
 
@@ -12,8 +12,8 @@ const { root, COMPOSE_DIR } = require('../src/constants')
  * Read package json
  */
 const readPackageJson = () => {
-  const { packageJson } = readPkgUp.sync({ cwd: root })
-  const services = packageJson.services
+  const packageJson = readPkg.sync({ cwd: root })
+  const services = packageJson.services || []
 
   const projectname = packageJson.name || path.basename(root)
 

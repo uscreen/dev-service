@@ -21,18 +21,19 @@ tap.test('$ cli install', async t => {
   t.test('Within a folder with no package.json', async t => {
     prepareArena()
 
-    await cli(['install'], arenaPath)
+    const result = await cli(['install'], arenaPath)
 
+    t.strictEqual(1, result.code, 'Should return code 1')
     t.strictEqual(
       true,
-      fs.existsSync(composePath),
-      'Should create services folder'
+      result.stderr.includes('ERROR'),
+      'Should output error message'
     )
 
     t.strictEqual(
-      0,
-      fs.readdirSync(composePath).length,
-      'services folder should be empty'
+      false,
+      fs.existsSync(servicesPath),
+      'Should not create services folder'
     )
   })
 
@@ -41,7 +42,9 @@ tap.test('$ cli install', async t => {
     async t => {
       prepareArena({})
 
-      await cli(['install'], arenaPath)
+      const result = await cli(['install'], arenaPath)
+
+      t.strictEqual(0, result.code, 'Should return code 0')
 
       t.strictEqual(
         true,
