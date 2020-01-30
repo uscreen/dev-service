@@ -35,6 +35,32 @@ module.exports.cli = (args, cwd) => {
   })
 }
 
+module.exports.compose = async (...params) => {
+  const files = fs.readdirSync(composePath)
+
+  const ps = []
+  for (const f of files) {
+    ps.push('-f', f)
+  }
+
+  ps.push(...params)
+
+  return new Promise(resolve => {
+    exec(
+      `docker-compose ${ps.join(' ')}`,
+      { cwd: composePath },
+      (error, stdout, stderr) => {
+        resolve({
+          code: error && error.code ? error.code : 0,
+          error,
+          stdout,
+          stderr
+        })
+      }
+    )
+  })
+}
+
 module.exports.prepareArena = packageJson => {
   if (!packageJson) {
     return
