@@ -79,6 +79,9 @@ module.exports.prepareArena = packageJson => {
 }
 
 module.exports.clearArena = async () => {
+  if (fs.existsSync(composePath))
+    await module.exports.compose('down').catch(e => {})
+
   fs.removeSync(arenaPath)
 
   // Catch error if volume not exists:

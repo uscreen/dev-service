@@ -57,7 +57,7 @@ tap.test('$ cli list', async t => {
 
         const lines = result.stdout.split('\n').filter(s => s)
         t.strictEqual(
-          2,
+          0,
           lines.filter(l => l.match(/^dev-service-test_.*Up/)).length,
           'Should output no services with Status "Up"'
         )
