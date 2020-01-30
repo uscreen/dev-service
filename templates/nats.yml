@@ -1,0 +1,9 @@
+version: '2.4'
+
+services:
+  nats:
+    image: {{image}}
+    container_name: {{container_name}}
+    ports:
+      - 4222:4222
+      - 8222:8222
