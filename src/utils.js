@@ -25,7 +25,13 @@ module.exports.readPackageJson = async () => {
 
   return { packageJson, services, projectname }
 }
-module.exports.readPackageJson = readPackageJson
+
+/**
+ * Checks if compose directory exists and contains files
+ */
+const checkComposeDir = () => {
+  return fs.existsSync(COMPOSE_DIR) && fs.readdirSync(COMPOSE_DIR).length > 0
+}
 
 /**
  * Removes all content from compose directory
@@ -70,7 +76,9 @@ module.exports.docker = async (...params) => {
  * executes docker-compose command
  */
 module.exports.compose = async (...params) => {
-  fs.ensureDirSync(COMPOSE_DIR)
+  if (!checkComposeDir()) {
+    throw Error('No services found. Try running `service install`')
+  }
 
   const files = fs.readdirSync(COMPOSE_DIR)
 
