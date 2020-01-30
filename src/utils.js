@@ -11,11 +11,17 @@ const { root, COMPOSE_DIR } = require('../src/constants')
 /**
  * Read package json
  */
-const readPackageJson = () => {
-  const packageJson = readPkg.sync({ cwd: root })
-  const services = packageJson.services || []
+module.exports.readPackageJson = async () => {
+  const packageJson = await readPkg({ cwd: root }).catch(e => {
+    throw Error('No package.json')
+  })
 
+  const services = packageJson.services || []
   const projectname = packageJson.name || path.basename(root)
+
+  if (services.length === 0) {
+    throw Error('No services defined')
+  }
 
   return { packageJson, services, projectname }
 }
@@ -33,7 +39,7 @@ module.exports.resetComposeDir = () => {
  * Show error message & exit
  */
 module.exports.error = e => {
-  console.error(chalk.red(`ERROR: ${e.message} Aborting.`))
+  console.error(chalk.red(`ERROR: ${e.message}`))
   process.exit(1)
 }
 
