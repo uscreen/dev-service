@@ -8,13 +8,16 @@ const YAML = require('yaml')
 const {
   version,
   TEMPLATES_DIR,
-  services,
   SERVICES_DIR,
-  COMPOSE_DIR,
-  projectname
+  COMPOSE_DIR
 } = require('../src/constants')
 
-const { docker, error, resetComposeDir } = require('../src/helpers')
+const {
+  readPackageJson,
+  docker,
+  error,
+  resetComposeDir
+} = require('../src/utils')
 
 /**
  * Helper methods
@@ -73,7 +76,7 @@ const copyAdditionalFiles = name => {
   }
 }
 
-const serviceInstall = async service => {
+const serviceInstall = async (service, projectname) => {
   const name = getName(service)
 
   const template = readTemplate(name)
@@ -92,8 +95,10 @@ const serviceInstall = async service => {
 }
 
 const install = async () => {
+  const { services, projectname } = readPackageJson()
+
   resetComposeDir(COMPOSE_DIR)
-  await Promise.all(services.map(serviceInstall))
+  await Promise.all(services.map(s => serviceInstall(s, projectname)))
 
   console.log(`Done (${services.length} service installed).`)
 }

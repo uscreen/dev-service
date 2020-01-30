@@ -5,7 +5,7 @@ const { exec } = require('child_process')
 const fs = require('fs-extra')
 const YAML = require('yaml')
 
-const { docker } = require('../src/helpers')
+const { docker } = require('../src/utils')
 
 const arenaPath = path.resolve(__dirname, './_arena')
 module.exports.arenaPath = arenaPath

@@ -10,7 +10,7 @@ const {
   loadYaml
 } = require('./helpers')
 
-const { docker } = require('../src/helpers')
+const { docker } = require('../src/utils')
 
 const servicesPath = path.resolve(arenaPath, 'services')
 const composePath = path.resolve(arenaPath, 'services/.compose')

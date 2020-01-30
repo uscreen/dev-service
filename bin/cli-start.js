@@ -4,7 +4,7 @@ const cli = require('commander')
 
 const { version } = require('../src/constants')
 
-const { compose, error } = require('../src/helpers')
+const { compose, error } = require('../src/utils')
 
 cli.version(version).action(async () => {
   try {

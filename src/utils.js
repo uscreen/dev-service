@@ -1,21 +1,28 @@
 'use strict'
 
 const fs = require('fs-extra')
+const path = require('path')
+const readPkgUp = require('read-pkg-up')
 const chalk = require('chalk')
 const { spawn } = require('child_process')
 
-const { COMPOSE_DIR } = require('../src/constants')
+const { root, COMPOSE_DIR } = require('../src/constants')
 
 /**
- * Ensures existence of a service directory
+ * Read package json
  */
-const ensureServicesDir = () => {
-  fs.ensureDirSync(COMPOSE_DIR)
+const readPackageJson = () => {
+  const { packageJson } = readPkgUp.sync({ cwd: root })
+  const services = packageJson.services
+
+  const projectname = packageJson.name || path.basename(root)
+
+  return { packageJson, services, projectname }
 }
-module.exports.ensureServicesDir = ensureServicesDir
+module.exports.readPackageJson = readPackageJson
 
 /**
- * Removes all content from service directory
+ * Removes all content from compose directory
  */
 module.exports.resetComposeDir = () => {
   fs.removeSync(COMPOSE_DIR)
@@ -23,10 +30,11 @@ module.exports.resetComposeDir = () => {
 }
 
 /**
- * Show error message
+ * Show error message & exit
  */
 module.exports.error = e => {
   console.error(chalk.red(`ERROR: ${e.message} Aborting.`))
+  process.exit(1)
 }
 
 /**
@@ -56,7 +64,7 @@ module.exports.docker = async (...params) => {
  * executes docker-compose command
  */
 module.exports.compose = async (...params) => {
-  ensureServicesDir(COMPOSE_DIR)
+  fs.ensureDirSync(COMPOSE_DIR)
 
   const files = fs.readdirSync(COMPOSE_DIR)
 
