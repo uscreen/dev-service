@@ -46,7 +46,7 @@ module.exports.resetComposeDir = () => {
  */
 module.exports.error = e => {
   console.error(chalk.red(`ERROR: ${e.message}`))
-  process.exit(1)
+  process.exit(e.code || 1)
 }
 
 /**
@@ -60,7 +60,9 @@ const run = (command, parameters = [], cwd = null, stdio = [0, 1, 2]) =>
     })
     c.on('close', code => {
       if (code === 0) return resolve(code)
-      reject(code)
+      const e = Error(`Running "${command}" returns exit code ${code}`)
+      e.code = code
+      reject(e)
     })
   })
 module.exports.run = run
