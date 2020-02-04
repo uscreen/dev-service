@@ -81,6 +81,28 @@ tap.test('$ cli install', async t => {
   )
 
   t.test(
+    'Within a folder with a package.json containing an invalid services',
+    async t => {
+      prepareArena({ services: ['invalid-service-name'] })
+
+      const result = await cli(['install'], arenaPath)
+
+      t.strictEqual(1, result.code, 'Should return code 1')
+      t.strictEqual(
+        true,
+        result.stderr.includes('ERROR'),
+        'Should output error message'
+      )
+
+      t.strictEqual(
+        false,
+        fs.existsSync(servicesPath),
+        'Should not create services folder'
+      )
+    }
+  )
+
+  t.test(
     'Within a folder with a package.json containing some services',
     async t => {
       prepareArena({

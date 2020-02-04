@@ -28,12 +28,6 @@ const getName = service => {
   return name
 }
 
-const readTemplate = name => {
-  const src = path.resolve(TEMPLATES_DIR, `${name}.yml`)
-
-  return fs.readFileSync(src, { encoding: 'utf8' })
-}
-
 const fillTemplate = (template, data) => {
   for (const key in data) {
     template = template.replace(new RegExp(`{{${key}}}`, 'g'), data[key])
@@ -76,29 +70,44 @@ const copyAdditionalFiles = name => {
   }
 }
 
-const serviceInstall = async (service, projectname) => {
+const readServiceData = service => {
   const name = getName(service)
+  const src = path.resolve(TEMPLATES_DIR, `${name}.yml`) // refactor with same line above
 
-  const template = readTemplate(name)
+  const result = { service, name }
 
-  const content = fillTemplate(template, {
-    image: service,
-    container_name: `${projectname}_${name}`,
+  const exists = fs.existsSync(src)
+  if (exists) result.template = fs.readFileSync(src, { encoding: 'utf8' })
+
+  return result
+}
+
+const serviceInstall = async (data, projectname) => {
+  const content = fillTemplate(data.template, {
+    image: data.service,
+    container_name: `${projectname}_${data.name}`,
     projectname: projectname
   })
 
   await ensureVolumes(content)
 
-  writeFile(name, content)
+  writeFile(data.name, content)
 
-  copyAdditionalFiles(name)
+  copyAdditionalFiles(data.name)
 }
 
 const install = async () => {
   const { services, projectname } = await readPackageJson()
 
+  const data = services.map(readServiceData)
+
+  const invalid = data.filter(d => !d.template).map(d => d.name)
+  if (invalid.length > 0) {
+    throw Error(`Invalid services: ${invalid.join(', ')}`)
+  }
+
   resetComposeDir(COMPOSE_DIR)
-  await Promise.all(services.map(s => serviceInstall(s, projectname)))
+  await Promise.all(data.map(d => serviceInstall(d, projectname)))
 
   console.log(`Done (${services.length} services installed).`)
 }
