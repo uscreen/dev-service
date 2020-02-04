@@ -45,6 +45,23 @@ tap.test('$ cli stop', async t => {
     )
   })
 
+  t.test('If no docker host is available', async t => {
+    prepareArena(packageJson)
+    await cli(['install'], arenaPath)
+    await cli(['start'], arenaPath)
+
+    const result = await cli(['stop'], arenaPath, {
+      DOCKER_HOST: 'tcp://notexisting:2376'
+    })
+
+    t.strictEqual(1, result.code, 'Should return code 1')
+    t.strictEqual(
+      true,
+      result.stderr.includes('ERROR'),
+      'Should output error message'
+    )
+  })
+
   t.test(
     'Within a folder with two defined services in .compose subfolder',
     async t => {
