@@ -6,15 +6,7 @@ cache:
     - .yarn
 
 stages:
-  - test
   - audit
-
-test:
-  stage: test
-  script:
-    - yarn install --pure-lockfile --cache-folder .yarn
-    - yarn test:ci
-  coverage: '/^Statements\s*:\s*([^%]+)/'
 
 audit:
   stage: audit
