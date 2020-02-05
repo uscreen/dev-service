@@ -2,6 +2,13 @@
 
 > Manage services for local development
 
+## Prerequisites
+
+- a local or remote docker host
+- a docker client connected to that host
+- `docker` and `docker-compose` located in your `$PATH`
+- `node` v8.12, v10.13, v12.0 or higher
+
 ## Install
 
 Add the module within your dev repo:
@@ -117,3 +124,23 @@ ssl_certificate /etc/nginx/ssl/your.domain.pem;
 ssl_certificate_key /etc/nginx/ssl/your.domain.key;
 ...
 ```
+---
+
+## Roadmap
+
+- making tests work in gitlab-ci
+- making tests work in parallel
+
+## Changelog
+
+### v0.1.0
+
+- initial version
+
+---
+
+## License
+
+Licensed under [MIT](./LICENSE).
+
+Published, Supported and Sponsored by [u|screen](https://uscreen.de)
