@@ -133,6 +133,10 @@ ssl_certificate_key /etc/nginx/ssl/your.domain.key;
 
 ## Changelog
 
+### v0.1.1
+
+- making git ignore services/.compose folder
+
 ### v0.1.0
 
 - initial version
