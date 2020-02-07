@@ -24,6 +24,11 @@
   "gitHooks": {
     "pre-commit": "lint-staged"
   },
+  "files": [
+    "bin/",
+    "src/",
+    "templates"
+  ],
   "lint-staged": {
     "*.{js}": [
       "eslint --fix",
