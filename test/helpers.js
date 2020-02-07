@@ -38,7 +38,7 @@ module.exports.cli = (args, cwd, env) => {
 }
 
 module.exports.compose = (...params) => {
-  const files = fs.readdirSync(composePath)
+  const files = fs.readdirSync(composePath).filter(f => f !== '.gitignore')
 
   const ps = []
   for (const f of files) {

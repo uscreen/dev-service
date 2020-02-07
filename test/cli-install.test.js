@@ -164,7 +164,7 @@ tap.test('$ cli install', async t => {
 
       t.strictEqual(
         2,
-        fs.readdirSync(composePath).length,
+        fs.readdirSync(composePath).filter(f => f !== '.gitignore').length,
         'Should not create any other yml files'
       )
     }

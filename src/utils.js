@@ -34,11 +34,19 @@ const checkComposeDir = () => {
 }
 
 /**
+ * Get all compose files from compose directory
+ */
+const getComposeFiles = () =>
+  fs.readdirSync(COMPOSE_DIR).filter(f => f !== '.gitignore')
+
+/**
  * Removes all content from compose directory
  */
 module.exports.resetComposeDir = () => {
   fs.removeSync(COMPOSE_DIR)
   fs.ensureDirSync(COMPOSE_DIR)
+
+  fs.writeFileSync(path.resolve(COMPOSE_DIR, '.gitignore'), '*', 'utf8')
 }
 
 /**
@@ -82,7 +90,7 @@ module.exports.compose = async (...params) => {
     throw Error('No services found. Try running `service install`')
   }
 
-  const files = fs.readdirSync(COMPOSE_DIR)
+  const files = getComposeFiles()
 
   const ps = []
   for (const f of files) {
