@@ -21,6 +21,15 @@
     "test:cov": "tap --coverage-report=html test/**/*.test.js",
     "test:ci": "tap --coverage-report=text-summary test/**/*.test.js"
   },
+  "gitHooks": {
+    "pre-commit": "lint-staged"
+  },
+  "lint-staged": {
+    "*.{js}": [
+      "eslint --fix",
+      "git add"
+    ]
+  },
   "devDependencies": {
     "eslint": "^6.5.1",
     "eslint-config-prettier": "^6.3.0",
