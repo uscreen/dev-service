@@ -127,12 +127,12 @@ tap.test('$ cli install', async t => {
       t.strictEqual(
         'mongo:latest',
         mongoData.services.mongo.image,
-        'Should use the correct image in mongo.yml.'
+        'Should use the correct image in mongo.yml'
       )
       t.strictEqual(
         'dev-service-test_mongo',
         mongoData.services.mongo.container_name,
-        'Should set the correct container name in mongo.yml.'
+        'Should set the correct container name in mongo.yml'
       )
       let code = null
       await docker('volume', 'inspect', 'dev-service-test-mongo-data')
@@ -149,12 +149,12 @@ tap.test('$ cli install', async t => {
       t.strictEqual(
         'nginx',
         nginxData.services.nginx.image,
-        'Should use the correct image in nginx.yml.'
+        'Should use the correct image in nginx.yml'
       )
       t.strictEqual(
         'dev-service-test_nginx',
         nginxData.services.nginx.container_name,
-        'Should set the correct container name in nginx.yml.'
+        'Should set the correct container name in nginx.yml'
       )
       t.strictEqual(
         true,
