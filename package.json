@@ -7,6 +7,7 @@
     "service": "./bin/cli.js",
     "service-install": "./bin/cli-install.js",
     "service-list": "./bin/cli-list.js",
+    "service-logs": "./bin/cli-logs.js",
     "service-start": "./bin/cli-start.js",
     "service-stop": "./bin/cli-stop.js"
   },

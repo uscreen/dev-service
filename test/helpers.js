@@ -18,13 +18,13 @@ module.exports.composePath = composePath
 // for easy string testing: disable color output of chalk
 process.env.FORCE_COLOR = 0
 
-module.exports.cli = (args, cwd, env) => {
+module.exports.cli = (args, cwd, env, timeout) => {
   env = { ...process.env, ...env }
 
   return new Promise(resolve => {
     exec(
       `node ${path.resolve(__dirname, '../bin/cli.js')} ${args.join(' ')}`,
-      { cwd, env },
+      { cwd, env, timeout },
       (error, stdout, stderr) => {
         resolve({
           code: error && error.code ? error.code : 0,

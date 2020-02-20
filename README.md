@@ -60,7 +60,7 @@ Next run `service install` and you will end up with a directory structure like:
 
 Before running the services you should ensure that the used ports (see below) are not occupied by other applications or services running locally on your computer.
 
-Start all services with `service start`. You can run `service list` to see the stats of the started services.
+Start all services with `service start`. You can run `service list` to see the stats of the started services, use `service logs` for showing the services' logs (abort with ⌘-C).
 
 By default, the started nginx service returns `Hello World` when called via `curl localhost`.
 
@@ -83,6 +83,10 @@ Stop running services.
 ### $ service list
 
 List running services.
+
+### $ service list
+
+Show logs of running services (abort with ⌘-C).
 
 ## Services
 
@@ -128,10 +132,21 @@ ssl_certificate_key /etc/nginx/ssl/your.domain.key;
 
 ## Roadmap
 
+- `service start [servicename]`
+- `service stop [servicename]`
+- `service restart [servicename]`
+- `service logs [servicename]`
+
+- enabling customizing services with a subset of docker-compose directives
+
 - making tests work in gitlab-ci
 - making tests work in parallel
 
 ## Changelog
+
+### v0.2.0
+
+- adding `service logs`
 
 ### v0.1.1
 

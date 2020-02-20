@@ -17,6 +17,7 @@ cli
   .command('start', 'start installed services')
   .command('stop', 'stop running services')
   .command('list', 'lists running services')
+  .command('logs', 'prints logs of running services')
 
 /**
  * read args
