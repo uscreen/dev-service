@@ -84,7 +84,7 @@ Stop running services.
 
 List running services.
 
-### $ service list
+### $ service logs
 
 Show logs of running services (abort with ⌘-C).
 
@@ -143,6 +143,10 @@ ssl_certificate_key /etc/nginx/ssl/your.domain.key;
 - making tests work in parallel
 
 ## Changelog
+
+### v0.2.1
+
+- fixing typo in readme
 
 ### v0.2.0
 
