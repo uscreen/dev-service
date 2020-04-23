@@ -14,7 +14,7 @@ const { version } = require('../package.json')
 cli
   .version(version)
   .command('install', 'install all services specified in package.json')
-  .command('start', 'start installed services')
+  .command('start [service]', 'start given or all installed services')
   .command('stop', 'stop running services')
   .command('list', 'lists running services')
   .command('logs', 'prints logs of running services')
