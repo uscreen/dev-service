@@ -144,6 +144,10 @@ ssl_certificate_key /etc/nginx/ssl/your.domain.key;
 
 ## Changelog
 
+### v0.2.2
+
+- upgrading packages
+
 ### v0.2.1
 
 - fixing typo in readme
