@@ -6,12 +6,19 @@ const { version } = require('../src/constants')
 
 const { compose, error } = require('../src/utils')
 
-cli.version(version).action(async () => {
-  try {
-    await compose('logs', '-f')
-  } catch (e) {
-    error(e)
-  }
-})
+cli
+  .version(version)
+  .arguments('[service]')
+  .action(async service => {
+    try {
+      if (service) {
+        await compose('logs', '-f', service)
+      } else {
+        await compose('logs', '-f')
+      }
+    } catch (e) {
+      error(e)
+    }
+  })
 
 cli.parse(process.argv)
