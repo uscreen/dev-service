@@ -9,7 +9,8 @@
     "service-list": "./bin/cli-list.js",
     "service-logs": "./bin/cli-logs.js",
     "service-start": "./bin/cli-start.js",
-    "service-stop": "./bin/cli-stop.js"
+    "service-stop": "./bin/cli-stop.js",
+    "service-restart": "./bin/cli-restart.js"
   },
   "repository": "git@gitlab.uscreen.net:uscreen/npm/dev-service.git",
   "author": "Martin Herting <herting@uscreen.de>",
