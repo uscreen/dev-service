@@ -72,21 +72,25 @@ Stop the services with `service stop`.
 
 Install all services specified in package.json.
 
-### $ service start
+### $ service start [service]
 
-Start installed services.
+Start given or installed service(s).
 
-### $ service stop
+### $ service stop [service]
 
-Stop running services.
+Stop given or running service(s).
+
+### $ service restart [service]
+
+Restart given or installed service(s).
 
 ### $ service list
 
 List running services.
 
-### $ service logs
+### $ service logs [service]
 
-Show logs of running services (abort with ⌘-C).
+Show logs of given or running services (abort with ⌘-C).
 
 ## Services
 
@@ -132,10 +136,7 @@ ssl_certificate_key /etc/nginx/ssl/your.domain.key;
 
 ## Roadmap
 
-- `service start [servicename]`
-- `service stop [servicename]`
-- `service restart [servicename]`
-- `service logs [servicename]`
+- Adding tests for `service logs [servicename]`
 
 - enabling customizing services with a subset of docker-compose directives
 
@@ -143,6 +144,11 @@ ssl_certificate_key /etc/nginx/ssl/your.domain.key;
 - making tests work in parallel
 
 ## Changelog
+
+### v0.3.0
+
+- expanding `service start`, `service stop` and `service logs` by optional `[service]` parameter
+- adding `service restart`
 
 ### v0.2.2
 
