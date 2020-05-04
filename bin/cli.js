@@ -15,7 +15,7 @@ cli
   .version(version)
   .command('install', 'install all services specified in package.json')
   .command('start [service]', 'start given or all installed services')
-  .command('stop', 'stop running services')
+  .command('stop [service]', 'stop given or all running services')
   .command('list', 'lists running services')
   .command('logs', 'prints logs of running services')
 
