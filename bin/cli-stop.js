@@ -11,12 +11,15 @@ cli
   .arguments('[service]')
   .action(async service => {
     try {
+      // stop service(s):
       if (service) {
         await compose('stop', service)
-        await compose('rm', '-f')
       } else {
-        await compose('down')
+        await compose('stop')
       }
+
+      // clean up:
+      await compose('rm', '-fv')
     } catch (e) {
       error(e)
     }

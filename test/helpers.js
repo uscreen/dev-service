@@ -81,8 +81,10 @@ module.exports.prepareArena = packageJson => {
 }
 
 module.exports.clearArena = async () => {
-  if (fs.existsSync(composePath))
-    await module.exports.compose('down').catch(e => {})
+  if (fs.existsSync(composePath)) {
+    await module.exports.compose('stop').catch(e => {})
+    await module.exports.compose('rm', '-fv').catch(e => {})
+  }
 
   fs.removeSync(arenaPath)
 
