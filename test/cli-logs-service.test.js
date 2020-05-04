@@ -15,13 +15,15 @@ const packageJson = {
   services: ['mongo:latest', 'nginx']
 }
 
-tap.test('$ cli logs', async t => {
+const service = 'nginx'
+
+tap.test('$ cli logs [service]', async t => {
   t.afterEach(clearArena)
 
   t.test('Within a folder with no .compose subfolder', async t => {
     prepareArena(packageJson)
 
-    const result = await cli(['logs'], arenaPath)
+    const result = await cli(['logs', service], arenaPath)
 
     t.strictEqual(1, result.code, 'Should return code 1')
     t.strictEqual(
@@ -35,7 +37,7 @@ tap.test('$ cli logs', async t => {
     prepareArena(packageJson)
     fs.ensureDirSync(composePath)
 
-    const result = await cli(['logs'], arenaPath)
+    const result = await cli(['logs', service], arenaPath)
 
     t.strictEqual(1, result.code, 'Should return code 1')
     t.strictEqual(
@@ -49,7 +51,7 @@ tap.test('$ cli logs', async t => {
     prepareArena(packageJson)
     await cli(['install'], arenaPath)
 
-    const result = await cli(['logs'], arenaPath, {
+    const result = await cli(['logs', service], arenaPath, {
       DOCKER_HOST: 'tcp://notexisting:2376'
     })
 
@@ -61,11 +63,27 @@ tap.test('$ cli logs', async t => {
     )
   })
 
-  t.test('With no running services', async t => {
+  t.test('If [service] is not defined in .compose subfolder', async t => {
+    prepareArena(packageJson)
+    await cli(['install'], arenaPath)
+    await cli(['start'], arenaPath)
+
+    const otherService = 'nats'
+    const result = await cli(['logs', otherService], arenaPath, {}, 2000)
+
+    t.strictEqual(1, result.code, 'Should return code 1')
+    t.strictEqual(
+      true,
+      result.stderr.includes('ERROR'),
+      'Should output error message'
+    )
+  })
+
+  t.test('With no running [service]', async t => {
     prepareArena(packageJson)
     await cli(['install'], arenaPath)
 
-    const result = await cli(['logs'], arenaPath, {}, 2000)
+    const result = await cli(['logs', service], arenaPath, {}, 2000)
 
     t.strictEqual(0, result.code, 'Should return code 0')
 
@@ -77,7 +95,7 @@ tap.test('$ cli logs', async t => {
     t.strictEqual(0, lines.length, 'Should show no logs')
   })
 
-  t.test('With running services', async t => {
+  t.test('With running [service]', async t => {
     prepareArena(packageJson)
     await cli(['install'], arenaPath)
     await cli(['start'], arenaPath)
@@ -88,7 +106,7 @@ tap.test('$ cli logs', async t => {
     }, 1000)
 
     // record logs for the next 2s:
-    const result = await cli(['logs'], arenaPath, {}, 2000)
+    const result = await cli(['logs', service], arenaPath, {}, 2000)
 
     t.strictEqual(0, result.code, 'Should return code 0')
 
