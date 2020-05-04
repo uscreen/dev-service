@@ -12,7 +12,8 @@ cli
   .action(async service => {
     try {
       if (service) {
-        await compose('-f', `${service}.yml`, 'down')
+        await compose('stop', service)
+        await compose('rm', '-f')
       } else {
         await compose('down')
       }

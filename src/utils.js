@@ -34,16 +34,6 @@ const checkComposeDir = () => {
 }
 
 /**
- * Extract files from compose parameters
- */
-// const extractFilesFromParams = params =>
-//   params.reduce(
-//     (acc, e, i, arr) =>
-//       e === '-f' && arr[i + 1] ? acc.concat(arr[i + 1]) : acc,
-//     []
-//   )
-
-/**
  * Get all compose files from compose directory
  */
 const getComposeFiles = () =>
@@ -57,25 +47,6 @@ module.exports.resetComposeDir = () => {
   fs.ensureDirSync(COMPOSE_DIR)
 
   fs.writeFileSync(path.resolve(COMPOSE_DIR, '.gitignore'), '*', 'utf8')
-}
-
-const parseParams = params => {
-  const fs = []
-  const ps = []
-
-  const work = params.concat()
-  while (work.length > 0) {
-    const e = work.shift()
-    if (e === '-f') {
-      const f = work.shift()
-      fs.push(f)
-      continue
-    }
-
-    ps.push(e)
-  }
-
-  return [fs, ps]
 }
 
 /**
@@ -119,19 +90,14 @@ module.exports.compose = async (...params) => {
     throw Error('No services found. Try running `service install`')
   }
 
-  const [paramsFiles, paramsRest] = parseParams(params)
-
-  let files = getComposeFiles()
-  if (paramsFiles.length > 0) {
-    files = files.filter(f => paramsFiles.includes(f))
-  }
+  const files = getComposeFiles()
 
   const ps = []
   for (const f of files) {
     ps.push('-f', f)
   }
 
-  ps.push(...paramsRest)
+  ps.push(...params)
 
   return run('docker-compose', ps, COMPOSE_DIR)
 }

@@ -12,7 +12,7 @@ cli
   .action(async service => {
     try {
       if (service) {
-        await compose('-f', `${service}.yml`, 'up', '-d')
+        await compose('up', '-d', service)
       } else {
         await compose('up', '-d')
       }
