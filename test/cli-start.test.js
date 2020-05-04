@@ -61,30 +61,27 @@ tap.test('$ cli start', async t => {
     )
   })
 
-  t.test(
-    'Within a folder with two defined services in .compose subfolder',
-    async t => {
-      prepareArena(packageJson)
-      await cli(['install'], arenaPath)
+  t.test('If services are defined in .compose subfolder', async t => {
+    prepareArena(packageJson)
+    await cli(['install'], arenaPath)
 
-      const result = await cli(['start'], arenaPath)
+    const result = await cli(['start'], arenaPath)
 
-      t.strictEqual(0, result.code, 'Should return code 0')
+    t.strictEqual(0, result.code, 'Should return code 0')
 
-      t.test('Checking running containers', async t => {
-        const cresult = await compose('ps', '-q')
-        t.strictEqual(0, cresult.code, 'Should return code 0')
+    t.test('Checking running containers', async t => {
+      const cresult = await compose('ps', '-q')
+      t.strictEqual(0, cresult.code, 'Should return code 0')
 
-        // Checking number of running containers (identified by 64-digit ids):
-        const lines = cresult.stdout.split('\n').filter(s => s)
+      // Checking number of running containers (identified by 64-digit ids):
+      const lines = cresult.stdout.split('\n').filter(s => s)
 
-        t.strictEqual(2, lines.length, 'Should return two lines')
-        t.strictEqual(
-          true,
-          lines.every(s => s.length === 64),
-          'Both lines contain container ids'
-        )
-      })
-    }
-  )
+      t.strictEqual(2, lines.length, 'Should return two lines')
+      t.strictEqual(
+        true,
+        lines.every(s => s.length === 64),
+        'Both lines contain container ids'
+      )
+    })
+  })
 })

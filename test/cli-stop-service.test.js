@@ -15,13 +15,15 @@ const packageJson = {
   services: ['mongo:latest', 'nginx']
 }
 
-tap.test('$ cli stop', async t => {
+const service = 'mongo'
+
+tap.test('$ cli stop [service]', async t => {
   t.afterEach(clearArena)
 
   t.test('Within a folder with no .compose subfolder', async t => {
     prepareArena(packageJson)
 
-    const result = await cli(['stop'], arenaPath)
+    const result = await cli(['stop', service], arenaPath)
 
     t.strictEqual(1, result.code, 'Should return code 1')
     t.strictEqual(
@@ -35,7 +37,7 @@ tap.test('$ cli stop', async t => {
     prepareArena(packageJson)
     fs.ensureDirSync(composePath)
 
-    const result = await cli(['stop'], arenaPath)
+    const result = await cli(['stop', service], arenaPath)
 
     t.strictEqual(1, result.code, 'Should return code 1')
     t.strictEqual(
@@ -50,7 +52,7 @@ tap.test('$ cli stop', async t => {
     await cli(['install'], arenaPath)
     await cli(['start'], arenaPath)
 
-    const result = await cli(['stop'], arenaPath, {
+    const result = await cli(['stop', service], arenaPath, {
       DOCKER_HOST: 'tcp://notexisting:2376'
     })
 
@@ -62,11 +64,27 @@ tap.test('$ cli stop', async t => {
     )
   })
 
-  t.test('If services are not running', async t => {
+  t.test('If [service] is not defined in .compose subfolder', async t => {
+    prepareArena(packageJson)
+    await cli(['install'], arenaPath)
+    await cli(['start'], arenaPath)
+
+    const otherService = 'nats'
+    const result = await cli(['start', otherService], arenaPath)
+
+    t.strictEqual(1, result.code, 'Should return code 1')
+    t.strictEqual(
+      true,
+      result.stderr.includes('ERROR'),
+      'Should output error message'
+    )
+  })
+
+  t.test('If [service] is not running', async t => {
     prepareArena(packageJson)
     await cli(['install'], arenaPath)
 
-    const result = await cli(['stop'], arenaPath)
+    const result = await cli(['stop', service], arenaPath)
 
     t.strictEqual(0, result.code, 'Should return code 0')
 
@@ -81,12 +99,12 @@ tap.test('$ cli stop', async t => {
     })
   })
 
-  t.test('If services are running', async t => {
+  t.test('If [service] is running', async t => {
     prepareArena(packageJson)
     await cli(['install'], arenaPath)
     await cli(['start'], arenaPath)
 
-    const result = await cli(['stop'], arenaPath)
+    const result = await cli(['stop', service], arenaPath)
 
     t.strictEqual(0, result.code, 'Should return code 0')
 
@@ -97,7 +115,7 @@ tap.test('$ cli stop', async t => {
       // Checking number of running containers (identified by 64-digit ids):
       const lines = cresult.stdout.split('\n').filter(s => s)
 
-      t.strictEqual(0, lines.length, 'Should return zero lines')
+      t.strictEqual(1, lines.length, 'Should return one line')
     })
   })
 })
