@@ -88,8 +88,20 @@ const readCustomServiceData = service => {
   const volumes = {}
   if (service.volumes) {
     for (const volume of service.volumes) {
-      const [volumeName] = volume.split(':')
+      // Format: [SOURCE:]TARGET[:MODE]
+      const volumeArray = volume.split(':')
 
+      // volume is unnamed:
+      if (volumeArray.length === 1) continue
+
+      // => volume is named or mapped to a host path:
+      const [volumeName] = volumeArray
+
+      // volume has invalid volume name / volume is mapped to a host path
+      // (@see https://github.com/moby/moby/issues/21786):
+      if (!volumeName.match(/^[a-zA-Z0-9][a-zA-Z0-9_.-]+$/)) continue
+
+      // volume is named => we add it to top level "volumes" directive:
       volumes[volumeName] = {
         external: {
           name: `{{projectname}}-${volumeName}`
