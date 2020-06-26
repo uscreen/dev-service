@@ -23,7 +23,8 @@ const {
  * Helper methods
  */
 const getName = service => {
-  const [name] = service.split(':')
+  const [fullname] = service.split(':')
+  const [name] = fullname.split('/').slice(-1)
 
   return name
 }
@@ -71,10 +72,26 @@ const copyAdditionalFiles = name => {
 }
 
 const readServiceData = service => {
+  if (typeof service === 'string') {
+    return readStandardServiceData(service)
+  } else if (typeof service === 'object') {
+    return readCustomServiceData(service)
+  }
+}
+
+const readCustomServiceData = service => {
+  const name = getName(service.image)
+  const image = service.image
+  const template = YAML.stringify({ version: '2.4', ...service.template })
+
+  return { name, image, template }
+}
+
+const readStandardServiceData = service => {
   const name = getName(service)
   const src = path.resolve(TEMPLATES_DIR, `${name}.yml`) // refactor with same line above
 
-  const result = { service, name }
+  const result = { image: service, name }
 
   const exists = fs.existsSync(src)
   if (exists) result.template = fs.readFileSync(src, { encoding: 'utf8' })
@@ -84,7 +101,7 @@ const readServiceData = service => {
 
 const serviceInstall = async (data, projectname) => {
   const content = fillTemplate(data.template, {
-    image: data.service,
+    image: data.image,
     container_name: `${projectname}_${data.name}`,
     projectname: projectname
   })
