@@ -80,9 +80,33 @@ const readServiceData = service => {
 }
 
 const readCustomServiceData = service => {
-  const name = getName(service.image)
   const image = service.image
-  const template = YAML.stringify({ version: '2.4', ...service.template })
+  const name = getName(image)
+
+  service.container_name = '{{container_name}}'
+
+  const volumes = {}
+  if (service.volumes) {
+    for (const volume of service.volumes) {
+      const [volumeName] = volume.split(':')
+
+      volumes[volumeName] = {
+        external: {
+          name: `{{projectname}}-${volumeName}`
+        }
+      }
+    }
+  }
+
+  const templateObject = {
+    version: '2.4',
+    services: {
+      [name]: service
+    },
+    volumes
+  }
+
+  const template = YAML.stringify(templateObject)
 
   return { name, image, template }
 }
