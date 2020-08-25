@@ -1,6 +1,6 @@
 {
   "name": "@uscreen.de/dev-service",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "cli to manage services in dev repos",
   "main": "index.js",
   "bin": {
@@ -12,7 +12,11 @@
     "service-stop": "./bin/cli-stop.js",
     "service-restart": "./bin/cli-restart.js"
   },
-  "repository": "git@github.com:uscreen/dev-service.git",
+  "homepage": "https://github.com/uscreen/dev-service",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com:uscreen/dev-service.git"
+  },
   "author": "Martin Herting <herting@uscreen.de>",
   "license": "MIT",
   "engines": {
