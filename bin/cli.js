@@ -14,11 +14,12 @@ const { version } = require('../package.json')
 cli
   .version(version)
   .command('install', 'install all services specified in package.json')
-  .command('start [service]', 'start given or all installed services')
-  .command('stop [service]', 'stop given or all running services')
-  .command('restart [service]', 'restart given or all installed services')
-  .command('list', 'lists running services')
-  .command('logs [service]', 'prints logs of given or running services')
+  .command('check [service]', 'check availabilty of all or given service ports')
+  .command('start [service]', 'start all or given installed services')
+  .command('stop [service]', 'stop all or given running services')
+  .command('restart [service]', 'restart all or given installed services')
+  .command('list', 'lists all running services')
+  .command('logs [service]', 'prints logs of all or given running services')
 
 /**
  * read args

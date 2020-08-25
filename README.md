@@ -69,6 +69,29 @@ By default, the started nginx service returns `Hello World` when called via `cur
 
 Stop the services with `service stop`.
 
+### Preflight check
+
+Any `service check` command will check for other processes already blocking required port(s). As you might be using a brew installed mongodb, system-wide webserver and such.
+
+Example output:
+
+```bash
+service start
+Found 1 process blocking required port(s)
+
+[mongod]
+pid: 30862
+cmd: /usr/local/opt/mongodb-community/bin/mongod --config /usr/local/etc/mongod.conf
+```
+
+Startup issues should be easy resolvable by killing that process, ie.:
+
+```bash
+$ kill 30862
+```
+
+Please also check for supervised processes (pm2, launchd, etc.) in case a process restarts after killing.
+
 ## API
 
 ### $ service install
@@ -77,15 +100,19 @@ Install all services specified in package.json.
 
 ### $ service start [service]
 
-Start given or installed service(s).
+Start all or given installed service(s).
 
 ### $ service stop [service]
 
-Stop given or running service(s).
+Stop all or given running service(s).
 
 ### $ service restart [service]
 
-Restart given or installed service(s).
+Restart all or given installed service(s).
+
+### $ service check [service]
+
+Check port availabilty for all or given installed service(s).
 
 ### $ service list
 
@@ -93,7 +120,7 @@ List running services.
 
 ### $ service logs [service]
 
-Show logs of given or running services (abort with Ctrl-C).
+Show logs of all or given running services (abort with Ctrl-C).
 
 ## Provided services
 
@@ -230,41 +257,50 @@ And the folder structure would look like this:
 
 ## Roadmap
 
-- adding tests for `service logs [servicename]`
-- adding tests for service customization
-- making tests work in gitlab-ci
-- making tests work in parallel
+- add tests for `service logs [servicename]`
+- add tests for service customization
+- fix tests to work in gitlab-ci
+- fix tests to work in parallel
+- add some examples
 
 ## Changelog
 
-### v0.4.0
+> Format according to https://keepachangelog.com
 
-- adding service customization
+### v0.5.0
+#### Added
+- new `service check` to find processes blocking required ports
+
+### v0.4.0
+#### Added
+- optional service customization
 
 ### v0.3.0
+#### Added
+- new `service restart` command
 
+#### Changed
 - expanding `service start`, `service stop` and `service logs` by optional `[service]` parameter
-- adding `service restart`
 
 ### v0.2.2
-
-- upgrading packages
+#### Fixed
+- package upgrades
 
 ### v0.2.1
-
-- fixing typo in readme
+#### Fixed
+- typo in readme
 
 ### v0.2.0
-
-- adding `service logs`
+#### Added
+- new `service logs` command
 
 ### v0.1.1
-
-- making git ignore services/.compose folder
+#### changed
+- configure git ignore services/.compose folder
 
 ### v0.1.0
-
-- initial version
+#### Added
+- initial version with basic commands
 
 ---
 

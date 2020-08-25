@@ -4,6 +4,8 @@ const fs = require('fs-extra')
 const path = require('path')
 const readPkg = require('read-pkg')
 const chalk = require('chalk')
+const YAML = require('yaml')
+const findProcess = require('find-process')
 const { spawn } = require('child_process')
 
 const { root, COMPOSE_DIR } = require('../src/constants')
@@ -45,7 +47,6 @@ const getComposeFiles = () =>
 module.exports.resetComposeDir = () => {
   fs.removeSync(COMPOSE_DIR)
   fs.ensureDirSync(COMPOSE_DIR)
-
   fs.writeFileSync(path.resolve(COMPOSE_DIR, '.gitignore'), '*', 'utf8')
 }
 
@@ -100,4 +101,73 @@ module.exports.compose = async (...params) => {
   ps.push(...params)
 
   return run('docker-compose', ps, COMPOSE_DIR)
+}
+
+/**
+ * executes docker-compose command
+ */
+module.exports.portsUsed = async service => {
+  if (!checkComposeDir()) {
+    throw Error('No services found. Try running `service install`')
+  }
+
+  const files = getComposeFiles()
+  const ports = []
+  const s = service
+  for (const f of files) {
+    if (s && `${s}.yml` !== f) continue
+
+    const service = YAML.parse(
+      fs.readFileSync(path.resolve(COMPOSE_DIR, f), 'utf8')
+    )
+    ports.push(
+      Object.values(service.services)
+        .map(v => v.ports)
+        .flat()
+    )
+  }
+
+  const uniquePorts = [
+    ...new Set(
+      ports
+        .flat(2)
+        .map(p => p.split(':'))
+        .flat()
+    )
+  ]
+
+  const usedPorts = []
+  for (const port of uniquePorts) {
+    const portUsed = await findProcess('port', port)
+    if (portUsed.length > 0) {
+      usedPorts.push(port)
+      console.log(
+        'Found %s process' +
+          (portUsed.length === 1 ? '' : 'es') +
+          ' blocking required port ' +
+          port +
+          '\n',
+        portUsed.length
+      )
+
+      for (const item of portUsed) {
+        console.log(chalk.cyan('[%s]'), item.name || 'unknown')
+        console.log('pid: %s', chalk.white(item.pid))
+        console.log('cmd: %s', chalk.white(item.cmd))
+        console.log()
+      }
+    }
+  }
+
+  if (usedPorts.length > 0) {
+    throw Error(`required port(s) ${usedPorts.join(
+      ', '
+    )} found already alocated.
+      Please stop those processes prior to start services.
+      TIP1: check for running docker containers by "docker ps -a".
+      TIP2: stopping all brew services by "brew services stop --all".
+    `)
+  }
+
+  return false
 }
