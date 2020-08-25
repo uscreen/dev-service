@@ -1,6 +1,6 @@
 # dev-service
 
-> Manage services for local development
+> Manage docker services for local development
 
 ## Prerequisites
 
