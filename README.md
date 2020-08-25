@@ -10,7 +10,7 @@
 - a local or remote docker host
 - a docker client connected to that host
 - `docker` and `docker-compose` located in your `$PATH`
-- `node` v8.x, v10.x, v12.x or higher
+- `node` v10.x, v12.x or higher
 
 ## Install
 

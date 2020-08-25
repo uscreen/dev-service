@@ -16,7 +16,7 @@
   "author": "Martin Herting <herting@uscreen.de>",
   "license": "MIT",
   "engines": {
-    "node": "^8.12.0 || ^10.13.0 || >=12.0.0"
+    "node": "^10.13.0 || >=12.0.0"
   },
   "scripts": {
     "test": "tap test/**/*.test.js",
