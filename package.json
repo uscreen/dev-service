@@ -12,7 +12,7 @@
     "service-stop": "./bin/cli-stop.js",
     "service-restart": "./bin/cli-restart.js"
   },
-  "repository": "git@gitlab.uscreen.net:uscreen/npm/dev-service.git",
+  "repository": "git@github.com:uscreen/dev-service.git",
   "author": "Martin Herting <herting@uscreen.de>",
   "license": "MIT",
   "engines": {
