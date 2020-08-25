@@ -1,0 +1,11 @@
+language: node_js
+os:
+  - linux
+services:
+  - docker
+node_js:
+  - 10
+  # - node
+  # - lts/*
+# script:
+#   - "yarn test"
