@@ -23,7 +23,8 @@ const {
  * Helper methods
  */
 const getName = service => {
-  const [name] = service.split(':')
+  const [fullname] = service.split(':')
+  const [name] = fullname.split('/').slice(-1)
 
   return name
 }
@@ -71,10 +72,62 @@ const copyAdditionalFiles = name => {
 }
 
 const readServiceData = service => {
+  if (typeof service === 'string') {
+    return readStandardServiceData(service)
+  } else if (typeof service === 'object') {
+    return readCustomServiceData(service)
+  }
+}
+
+const readCustomServiceData = service => {
+  const image = service.image
+  const name = getName(image)
+
+  service.container_name = '{{container_name}}'
+
+  const volumes = {}
+  if (service.volumes) {
+    for (const volume of service.volumes) {
+      // Format: [SOURCE:]TARGET[:MODE]
+      const volumeArray = volume.split(':')
+
+      // volume is unnamed:
+      if (volumeArray.length === 1) continue
+
+      // => volume is named or mapped to a host path:
+      const [volumeName] = volumeArray
+
+      // volume has invalid volume name / volume is mapped to a host path
+      // (@see https://github.com/moby/moby/issues/21786):
+      if (!volumeName.match(/^[a-zA-Z0-9][a-zA-Z0-9_.-]+$/)) continue
+
+      // volume is named => we add it to top level "volumes" directive:
+      volumes[volumeName] = {
+        external: {
+          name: `{{projectname}}-${volumeName}`
+        }
+      }
+    }
+  }
+
+  const templateObject = {
+    version: '2.4',
+    services: {
+      [name]: service
+    },
+    volumes
+  }
+
+  const template = YAML.stringify(templateObject)
+
+  return { name, image, template }
+}
+
+const readStandardServiceData = service => {
   const name = getName(service)
   const src = path.resolve(TEMPLATES_DIR, `${name}.yml`) // refactor with same line above
 
-  const result = { service, name }
+  const result = { image: service, name }
 
   const exists = fs.existsSync(src)
   if (exists) result.template = fs.readFileSync(src, { encoding: 'utf8' })
@@ -84,7 +137,7 @@ const readServiceData = service => {
 
 const serviceInstall = async (data, projectname) => {
   const content = fillTemplate(data.template, {
-    image: data.service,
+    image: data.image,
     container_name: `${projectname}_${data.name}`,
     projectname: projectname
   })

@@ -93,9 +93,9 @@ List running services.
 
 ### $ service logs [service]
 
-Show logs of given or running services (abort with ⌘-C).
+Show logs of given or running services (abort with Ctrl-C).
 
-## Services
+## Provided services
 
 All provided services use their respective default ports:
 
@@ -135,18 +135,111 @@ ssl_certificate /etc/nginx/ssl/your.domain.pem;
 ssl_certificate_key /etc/nginx/ssl/your.domain.key;
 ...
 ```
+
+## Customizing services
+
+Besides the mentioned provided services, it's also possible to add customized services.
+
+You can do this by adding an object with the appropriate docker-compose directives (compatible with compose file format 2.4) to the `services` array in your package.json.
+
+Say you want to add a specific version of elasticsearch with some customizing environment variables. Your package.json may look like this:
+
+```json
+"services": [
+  {
+    "image": "docker.elastic.co/elasticsearch/elasticsearch:6.4.2",
+    "ports": ["9200:9200"],
+    "volumes": ["elasticsearch-data:/usr/share/elasticsearch/data:delegated"],
+    "environment": [
+      "cluster.name=dev-cluster",
+      "cluster.routing.allocation.disk.threshold_enabled=false",
+      "discovery.type=single-node",
+      "thread_pool.bulk.queue_size=200"
+    ]
+  }
+]
+```
+
+Running `service install` will automatically create a partial docker-compose file from this directives in your `services/.compose` folder:
+
+```yaml
+version: "2.4"
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.4.2
+    container_name: "your-dev-repo_elasticsearch"
+    ports:
+      - 9200:9200
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data:delegated
+    environment:
+      - cluster.name=dev-cluster
+      - cluster.routing.allocation.disk.threshold_enabled=false
+      - discovery.type=single-node
+      - thread_pool.bulk.queue_size=200
+volumes:
+  elasticsearch-data:
+    external:
+      name: "foobar-dev-repo-elasticsearch-data"
+```
+
+This action has following features & caveats:
+
+- The service's name is automatically derived from the service's image name
+- An adequate `container_name` is automatically added and will overwrite any existing container name
+- Volumes can only be given in "short syntax"
+- All specified named volumes are automatically created if not already existing
+
+### Mapping host paths
+
+If you want to map data from your host into a volume, it is best practice to put this data into a subfolder of the `services` folder, named after the service it's mapped to. Also, you should use a relative path inside your service definition. A good example for this is the provided nginx service. If we would define it inside of our package.json, it would look like this:
+
+```json
+"services": [
+  {
+    "container_name": "your-dev-repo_nginx",
+    "image": "nginx:latest",
+    "ports": [
+      "80:80",
+      "443:443"
+    ],
+    "volumes": [
+      "../nginx/conf.d:/etc/nginx/conf.d",
+      "../nginx/ssl:/etc/nginx/ssl"
+    ]
+  }
+]
+```
+
+And the folder structure would look like this:
+
+```bash
+.
+└── services
+    ├── .compose
+    │   ├── nginx.yml
+    │
+    └── nginx/default.conf
+        ├── conf.d
+        │   └── default.conf
+        └── ssl
+            └── README
+```
+
 ---
 
 ## Roadmap
 
-- Adding tests for `service logs [servicename]`
-
-- enabling customizing services with a subset of docker-compose directives
-
+- adding tests for `service logs [servicename]`
+- adding tests for service customization
 - making tests work in gitlab-ci
 - making tests work in parallel
 
 ## Changelog
+
+### v0.4.0
+
+- adding service customization
 
 ### v0.3.0
 
