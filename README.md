@@ -36,7 +36,7 @@ To use one or multiple services for development, just add a list to your existin
 
 Since this tool uses docker-compose for managing the services, we use the docker-specific image notation.
 
-Next run `service install` and you will end up with a directory structure like:
+Next, run `service install` and you will end up with a directory structure like:
 
 ```bash
 .
@@ -65,13 +65,13 @@ Before running the services you should ensure that the used ports (see below) ar
 
 Start all services with `service start`. You can run `service list` to see the stats of the started services, use `service logs` for showing the services' logs (abort with ⌘-C).
 
-By default, the started nginx service returns `Hello World` when called via `curl localhost`.
+By default, the started Nginx service returns `Hello World` when called via `curl localhost`.
 
 Stop the services with `service stop`.
 
 ### Preflight check
 
-Any `service check` command will check for other processes already blocking required port(s). As you might be using a brew installed mongodb, system-wide webserver and such.
+Any `service check` command will check for other processes already blocking the required port(s). As you might be using a brew installed MongoDB, system-wide webserver, and such.
 
 Example output:
 
@@ -84,13 +84,13 @@ pid: 30862
 cmd: /usr/local/opt/mongodb-community/bin/mongod --config /usr/local/etc/mongod.conf
 ```
 
-Startup issues should be easy resolvable by killing that process, ie.:
+Startup issues should be easily resolvable by killing that process, ie.:
 
 ```bash
 $ kill 30862
 ```
 
-Please also check for supervised processes (pm2, launchd, etc.) in case a process restarts after killing.
+Please also check for supervised processes (pm2, launchd, etc.) in case of a process restarts after killing.
 
 ## API
 
@@ -112,7 +112,7 @@ Restart all or given installed service(s).
 
 ### $ service check [service]
 
-Check port availabilty for all or given installed service(s).
+Check port availability for all or given installed service(s).
 
 ### $ service list
 
@@ -210,7 +210,7 @@ volumes:
       name: "foobar-dev-repo-elasticsearch-data"
 ```
 
-This action has following features & caveats:
+This action has the following features & caveats:
 
 - The service's name is automatically derived from the service's image name
 - An adequate `container_name` is automatically added and will overwrite any existing container name
@@ -219,7 +219,7 @@ This action has following features & caveats:
 
 ### Mapping host paths
 
-If you want to map data from your host into a volume, it is best practice to put this data into a subfolder of the `services` folder, named after the service it's mapped to. Also, you should use a relative path inside your service definition. A good example for this is the provided nginx service. If we would define it inside of our package.json, it would look like this:
+If you want to map data from your host into a volume, it is best practice to put this data into a subfolder of the `services` folder, named after the service it's mapped to. Also, you should use a relative path inside your service definition. A good example of this is the provided Nginx service. If we would define it inside of our package.json, it would look like this:
 
 ```json
 "services": [
