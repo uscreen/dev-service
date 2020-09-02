@@ -1,6 +1,6 @@
 # dev-service
 
-![Travis (.com)](https://img.shields.io/travis/com/uscreen/dev-service)
+[![Build Status](https://travis-ci.com/uscreen/dev-service.svg?branch=master)](https://travis-ci.com/uscreen/dev-service)
 [![Known Vulnerabilities](https://snyk.io/test/github/uscreen/dev-service/badge.svg?targetFile=package.json)](https://snyk.io/test/github/uscreen/dev-service?targetFile=package.json)
 
 > Manage docker services for local development
