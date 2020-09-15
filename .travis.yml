@@ -5,6 +5,5 @@ os:
 services:
   - docker
 node_js:
-  - 10
   - node
   - lts/*
