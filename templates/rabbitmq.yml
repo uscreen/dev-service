@@ -1,0 +1,17 @@
+version: '2.4'
+
+services:
+  rabbitmq:
+    image: {{image}}
+    container_name: {{container_name}}
+    hostname: {{container_name}}-host
+    ports:
+      - 5672:5672
+      - 15672:15672
+    volumes:
+      - rabbit-data:/var/lib/rabbitmq/mnesia/rabbit@{{container_name}}-host
+
+volumes:
+  rabbit-data:
+    external:
+      name: {{projectname}}-rabbit-data
