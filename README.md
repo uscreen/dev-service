@@ -267,6 +267,11 @@ And the folder structure would look like this:
 
 > Format according to https://keepachangelog.com
 
+### v0.6.0
+#### Added
+- new service: `elasticsearch`
+- new service: `rabbitmq`
+
 ### v0.5.0
 #### Added
 - new `service check` to find processes blocking required ports
