@@ -1,0 +1,19 @@
+version: '2.4'
+
+services:
+  elasticsearch:
+    image: {{image}}
+    container_name: {{container_name}}
+    ports:
+      - 9200:9200
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data:delegated
+    environment:
+      - cluster.name={{projectname}}-elasticsearch-cluster
+      - cluster.routing.allocation.disk.threshold_enabled=false
+      - discovery.type=single-node
+
+volumes:
+  elasticsearch-data:
+    external:
+      name: {{projectname}}-elasticsearch-data
