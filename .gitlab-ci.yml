@@ -1,4 +1,4 @@
-image: node:8.12
+image: node:lts-alpine
 
 cache:
   paths:
@@ -11,6 +11,6 @@ stages:
 audit:
   stage: audit
   only:
-  - schedules
+    - schedules
   script:
     - yarn audit
