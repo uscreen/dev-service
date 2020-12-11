@@ -21,7 +21,7 @@ process.env.FORCE_COLOR = 0
 module.exports.cli = (args, cwd, env, timeout) => {
   env = { ...process.env, ...env }
 
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     exec(
       `node ${path.resolve(__dirname, '../bin/cli.js')} ${args.join(' ')}`,
       { cwd, env, timeout },
@@ -38,7 +38,7 @@ module.exports.cli = (args, cwd, env, timeout) => {
 }
 
 module.exports.compose = (...params) => {
-  const files = fs.readdirSync(composePath).filter(f => f !== '.gitignore')
+  const files = fs.readdirSync(composePath).filter((f) => f !== '.gitignore')
 
   const ps = []
   for (const f of files) {
@@ -47,7 +47,7 @@ module.exports.compose = (...params) => {
 
   ps.push(...params)
 
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     exec(
       `docker-compose ${ps.join(' ')}`,
       { cwd: composePath },
@@ -63,7 +63,7 @@ module.exports.compose = (...params) => {
   })
 }
 
-module.exports.prepareArena = packageJson => {
+module.exports.prepareArena = (packageJson) => {
   fs.removeSync(arenaPath)
   fs.mkdirSync(arenaPath)
 
@@ -82,17 +82,17 @@ module.exports.prepareArena = packageJson => {
 
 module.exports.clearArena = async () => {
   if (fs.existsSync(composePath)) {
-    await module.exports.compose('stop').catch(e => {})
-    await module.exports.compose('rm', '-fv').catch(e => {})
+    await module.exports.compose('stop').catch((e) => {})
+    await module.exports.compose('rm', '-fv').catch((e) => {})
   }
 
   fs.removeSync(arenaPath)
 
   // Catch error if volume not exists:
-  await docker('volume', 'rm', 'dev-service-test-mongo-data').catch(e => {})
+  await docker('volume', 'rm', 'dev-service-test-mongo-data').catch((e) => {})
 }
 
-module.exports.loadYaml = filepath => {
+module.exports.loadYaml = (filepath) => {
   const content = fs.readFileSync(filepath, {
     encoding: 'utf-8'
   })

@@ -14,10 +14,10 @@ const {
 
 const { docker } = require('../src/utils')
 
-tap.test('$ cli install', async t => {
+tap.test('$ cli install', async (t) => {
   t.afterEach(clearArena)
 
-  t.test('Within a folder with no package.json', async t => {
+  t.test('Within a folder with no package.json', async (t) => {
     prepareArena()
 
     const result = await cli(['install'], arenaPath)
@@ -38,7 +38,7 @@ tap.test('$ cli install', async t => {
 
   t.test(
     'Within a folder with a package.json containing no services property',
-    async t => {
+    async (t) => {
       prepareArena({})
 
       const result = await cli(['install'], arenaPath)
@@ -60,7 +60,7 @@ tap.test('$ cli install', async t => {
 
   t.test(
     'Within a folder with a package.json containing an empty services array',
-    async t => {
+    async (t) => {
       prepareArena({ services: [] })
 
       const result = await cli(['install'], arenaPath)
@@ -82,7 +82,7 @@ tap.test('$ cli install', async t => {
 
   t.test(
     'Within a folder with a package.json containing an invalid services',
-    async t => {
+    async (t) => {
       prepareArena({ services: ['invalid-service-name'] })
 
       const result = await cli(['install'], arenaPath)
@@ -104,7 +104,7 @@ tap.test('$ cli install', async t => {
 
   t.test(
     'Within a folder with a package.json containing some services',
-    async t => {
+    async (t) => {
       prepareArena({
         name: 'dev-service-test',
         services: ['mongo:latest', 'nginx']
@@ -136,8 +136,8 @@ tap.test('$ cli install', async t => {
       )
       let code = null
       await docker('volume', 'inspect', 'dev-service-test-mongo-data')
-        .then(c => (code = c))
-        .catch(c => (code = c))
+        .then((c) => (code = c))
+        .catch((c) => (code = c))
       t.strictEqual(0, code, 'Should create docker volume defined in mongo.yml')
 
       t.strictEqual(
@@ -164,7 +164,7 @@ tap.test('$ cli install', async t => {
 
       t.strictEqual(
         2,
-        fs.readdirSync(composePath).filter(f => f !== '.gitignore').length,
+        fs.readdirSync(composePath).filter((f) => f !== '.gitignore').length,
         'Should not create any other yml files'
       )
     }

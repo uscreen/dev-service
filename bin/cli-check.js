@@ -9,7 +9,7 @@ const { portsUsed, error } = require('../src/utils')
 cli
   .version(version)
   .arguments('[service]')
-  .action(async service => {
+  .action(async (service) => {
     try {
       if (service) {
         await portsUsed(service)

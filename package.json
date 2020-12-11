@@ -45,7 +45,6 @@
   },
   "devDependencies": {
     "@uscreen.de/eslint-config-prettystandard-node": "^0.1.2",
-    "eslint-plugin-prettier": "^3.2.0",
     "lint-staged": "^10.0.0",
     "prettier": "^2.2.1",
     "tap": "^14.10.6",

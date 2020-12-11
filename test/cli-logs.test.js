@@ -15,10 +15,10 @@ const packageJson = {
   services: ['mongo:latest', 'nginx']
 }
 
-tap.test('$ cli logs', async t => {
+tap.test('$ cli logs', async (t) => {
   t.afterEach(clearArena)
 
-  t.test('Within a folder with no .compose subfolder', async t => {
+  t.test('Within a folder with no .compose subfolder', async (t) => {
     prepareArena(packageJson)
 
     const result = await cli(['logs'], arenaPath)
@@ -31,7 +31,7 @@ tap.test('$ cli logs', async t => {
     )
   })
 
-  t.test('Within a folder with empty .compose subfolder', async t => {
+  t.test('Within a folder with empty .compose subfolder', async (t) => {
     prepareArena(packageJson)
     fs.ensureDirSync(composePath)
 
@@ -45,7 +45,7 @@ tap.test('$ cli logs', async t => {
     )
   })
 
-  t.test('If no docker host is available', async t => {
+  t.test('If no docker host is available', async (t) => {
     prepareArena(packageJson)
     await cli(['install'], arenaPath)
 
@@ -61,7 +61,7 @@ tap.test('$ cli logs', async t => {
     )
   })
 
-  t.test('With no running services', async t => {
+  t.test('With no running services', async (t) => {
     prepareArena(packageJson)
     await cli(['install'], arenaPath)
 
@@ -71,13 +71,13 @@ tap.test('$ cli logs', async t => {
 
     const lines = result.stdout
       .split('\n')
-      .filter(s => s)
-      .filter(l => !l.match(/^Attaching to */))
+      .filter((s) => s)
+      .filter((l) => !l.match(/^Attaching to */))
 
     t.strictEqual(0, lines.length, 'Should show no logs')
   })
 
-  t.test('With running services', async t => {
+  t.test('With running services', async (t) => {
     prepareArena(packageJson)
     await cli(['install'], arenaPath)
     await cli(['start'], arenaPath)
@@ -94,15 +94,15 @@ tap.test('$ cli logs', async t => {
 
     const lines = result.stdout
       .split('\n')
-      .filter(s => s)
-      .filter(l => !l.match(/^Attaching to */))
+      .filter((s) => s)
+      .filter((l) => !l.match(/^Attaching to */))
 
     t.strictEqual(true, lines.length > 0, 'Should show logs')
 
     t.strictEqual(
       true,
-      lines.filter(l => l.match(/dev-service-test_nginx.*GET \/.*200/)).length >
-        0,
+      lines.filter((l) => l.match(/dev-service-test_nginx.*GET \/.*200/))
+        .length > 0,
       'Should show request sent to nginx service in logs'
     )
   })

@@ -22,7 +22,7 @@ const {
 /**
  * Helper methods
  */
-const getName = service => {
+const getName = (service) => {
   const [fullname] = service.split(':')
   const [name] = fullname.split('/').slice(-1)
 
@@ -37,7 +37,7 @@ const fillTemplate = (template, data) => {
   return template
 }
 
-const ensureVolumes = async content => {
+const ensureVolumes = async (content) => {
   const data = YAML.parse(content)
   if (!data || !data.volumes) return
 
@@ -52,7 +52,9 @@ const ensureVolumes = async content => {
   }
 
   await Promise.all(
-    volumes.map(v => docker('volume', 'create', `--name=${v}`, '--label=keep'))
+    volumes.map((v) =>
+      docker('volume', 'create', `--name=${v}`, '--label=keep')
+    )
   )
 }
 
@@ -62,7 +64,7 @@ const writeFile = (name, data) => {
   fs.writeFileSync(dest, data, { encoding: 'utf8' })
 }
 
-const copyAdditionalFiles = name => {
+const copyAdditionalFiles = (name) => {
   const src = path.resolve(TEMPLATES_DIR, name)
   const dest = path.resolve(SERVICES_DIR, name)
 
@@ -71,7 +73,7 @@ const copyAdditionalFiles = name => {
   }
 }
 
-const readServiceData = service => {
+const readServiceData = (service) => {
   if (typeof service === 'string') {
     return readStandardServiceData(service)
   } else if (typeof service === 'object') {
@@ -79,7 +81,7 @@ const readServiceData = service => {
   }
 }
 
-const readCustomServiceData = service => {
+const readCustomServiceData = (service) => {
   const image = service.image
   const name = getName(image)
 
@@ -123,7 +125,7 @@ const readCustomServiceData = service => {
   return { name, image, template }
 }
 
-const readStandardServiceData = service => {
+const readStandardServiceData = (service) => {
   const name = getName(service)
   const src = path.resolve(TEMPLATES_DIR, `${name}.yml`) // refactor with same line above
 
@@ -154,13 +156,13 @@ const install = async () => {
 
   const data = services.map(readServiceData)
 
-  const invalid = data.filter(d => !d.template).map(d => d.name)
+  const invalid = data.filter((d) => !d.template).map((d) => d.name)
   if (invalid.length > 0) {
     throw Error(`Invalid services: ${invalid.join(', ')}`)
   }
 
   resetComposeDir(COMPOSE_DIR)
-  await Promise.all(data.map(d => serviceInstall(d, projectname)))
+  await Promise.all(data.map((d) => serviceInstall(d, projectname)))
 
   console.log(`Done (${services.length} services installed).`)
 }

@@ -9,7 +9,7 @@ const { compose, error } = require('../src/utils')
 cli
   .version(version)
   .arguments('[service]')
-  .action(async service => {
+  .action(async (service) => {
     try {
       // stop service(s):
       if (service) {

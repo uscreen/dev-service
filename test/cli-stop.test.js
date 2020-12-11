@@ -15,10 +15,10 @@ const packageJson = {
   services: ['mongo:latest', 'nginx']
 }
 
-tap.test('$ cli stop', async t => {
+tap.test('$ cli stop', async (t) => {
   t.afterEach(clearArena)
 
-  t.test('Within a folder with no .compose subfolder', async t => {
+  t.test('Within a folder with no .compose subfolder', async (t) => {
     prepareArena(packageJson)
 
     const result = await cli(['stop'], arenaPath)
@@ -31,7 +31,7 @@ tap.test('$ cli stop', async t => {
     )
   })
 
-  t.test('Within a folder with empty .compose subfolder', async t => {
+  t.test('Within a folder with empty .compose subfolder', async (t) => {
     prepareArena(packageJson)
     fs.ensureDirSync(composePath)
 
@@ -45,7 +45,7 @@ tap.test('$ cli stop', async t => {
     )
   })
 
-  t.test('If no docker host is available', async t => {
+  t.test('If no docker host is available', async (t) => {
     prepareArena(packageJson)
     await cli(['install'], arenaPath)
     await cli(['start'], arenaPath)
@@ -62,7 +62,7 @@ tap.test('$ cli stop', async t => {
     )
   })
 
-  t.test('If services are not running', async t => {
+  t.test('If services are not running', async (t) => {
     prepareArena(packageJson)
     await cli(['install'], arenaPath)
 
@@ -70,18 +70,18 @@ tap.test('$ cli stop', async t => {
 
     t.strictEqual(0, result.code, 'Should return code 0')
 
-    t.test('Checking running containers', async t => {
+    t.test('Checking running containers', async (t) => {
       const cresult = await compose('ps', '-q')
       t.strictEqual(0, cresult.code, 'Should return code 0')
 
       // Checking number of running containers (identified by 64-digit ids):
-      const lines = cresult.stdout.split('\n').filter(s => s)
+      const lines = cresult.stdout.split('\n').filter((s) => s)
 
       t.strictEqual(0, lines.length, 'Should return zero lines')
     })
   })
 
-  t.test('If services are running', async t => {
+  t.test('If services are running', async (t) => {
     prepareArena(packageJson)
     await cli(['install'], arenaPath)
     await cli(['start'], arenaPath)
@@ -90,12 +90,12 @@ tap.test('$ cli stop', async t => {
 
     t.strictEqual(0, result.code, 'Should return code 0')
 
-    t.test('Checking running containers', async t => {
+    t.test('Checking running containers', async (t) => {
       const cresult = await compose('ps', '-q')
       t.strictEqual(0, cresult.code, 'Should return code 0')
 
       // Checking number of running containers (identified by 64-digit ids):
-      const lines = cresult.stdout.split('\n').filter(s => s)
+      const lines = cresult.stdout.split('\n').filter((s) => s)
 
       t.strictEqual(0, lines.length, 'Should return zero lines')
     })

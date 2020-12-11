@@ -14,7 +14,7 @@ const { root, COMPOSE_DIR } = require('../src/constants')
  * Read package json
  */
 module.exports.readPackageJson = async () => {
-  const packageJson = await readPkg({ cwd: root }).catch(e => {
+  const packageJson = await readPkg({ cwd: root }).catch((e) => {
     throw Error('No package.json')
   })
 
@@ -39,7 +39,7 @@ const checkComposeDir = () => {
  * Get all compose files from compose directory
  */
 const getComposeFiles = () =>
-  fs.readdirSync(COMPOSE_DIR).filter(f => f !== '.gitignore')
+  fs.readdirSync(COMPOSE_DIR).filter((f) => f !== '.gitignore')
 
 /**
  * Removes all content from compose directory
@@ -53,7 +53,7 @@ module.exports.resetComposeDir = () => {
 /**
  * Show error message & exit
  */
-module.exports.error = e => {
+module.exports.error = (e) => {
   console.error(chalk.red(`ERROR: ${e.message}`))
   process.exit(e.code || 1)
 }
@@ -67,7 +67,7 @@ const run = (command, parameters = [], cwd = null, stdio = [0, 1, 2]) =>
       cwd,
       stdio
     })
-    c.on('close', code => {
+    c.on('close', (code) => {
       if (code === 0) return resolve(code)
       const e = Error(`Running "${command}" returns exit code ${code}`)
       e.code = code
@@ -106,7 +106,7 @@ module.exports.compose = async (...params) => {
 /**
  * executes docker-compose command
  */
-module.exports.portsUsed = async service => {
+module.exports.portsUsed = async (service) => {
   if (!checkComposeDir()) {
     throw Error('No services found. Try running `service install`')
   }
@@ -122,7 +122,7 @@ module.exports.portsUsed = async service => {
     )
     ports.push(
       Object.values(service.services)
-        .map(v => v.ports)
+        .map((v) => v.ports)
         .flat()
     )
   }
@@ -131,7 +131,7 @@ module.exports.portsUsed = async service => {
     ...new Set(
       ports
         .flat(2)
-        .map(p => p.split(':'))
+        .map((p) => p.split(':'))
         .flat()
     )
   ]

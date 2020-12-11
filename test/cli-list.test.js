@@ -14,10 +14,10 @@ const packageJson = {
   services: ['mongo:latest', 'nginx']
 }
 
-tap.test('$ cli list', async t => {
+tap.test('$ cli list', async (t) => {
   t.afterEach(clearArena)
 
-  t.test('Within a folder with no .compose subfolder', async t => {
+  t.test('Within a folder with no .compose subfolder', async (t) => {
     prepareArena(packageJson)
 
     const result = await cli(['list'], arenaPath)
@@ -30,7 +30,7 @@ tap.test('$ cli list', async t => {
     )
   })
 
-  t.test('Within a folder with empty .compose subfolder', async t => {
+  t.test('Within a folder with empty .compose subfolder', async (t) => {
     prepareArena(packageJson)
     fs.ensureDirSync(composePath)
 
@@ -46,8 +46,8 @@ tap.test('$ cli list', async t => {
 
   t.test(
     'Within a folder with two defined services in .compose subfolder',
-    async t => {
-      t.test('If no docker host is available', async t => {
+    async (t) => {
+      t.test('If no docker host is available', async (t) => {
         prepareArena(packageJson)
         await cli(['install'], arenaPath)
 
@@ -63,7 +63,7 @@ tap.test('$ cli list', async t => {
         )
       })
 
-      t.test('With no running services', async t => {
+      t.test('With no running services', async (t) => {
         prepareArena(packageJson)
         await cli(['install'], arenaPath)
 
@@ -71,15 +71,15 @@ tap.test('$ cli list', async t => {
 
         t.strictEqual(0, result.code, 'Should return code 0')
 
-        const lines = result.stdout.split('\n').filter(s => s)
+        const lines = result.stdout.split('\n').filter((s) => s)
         t.strictEqual(
           0,
-          lines.filter(l => l.match(/^dev-service-test_.*Up/)).length,
+          lines.filter((l) => l.match(/^dev-service-test_.*Up/)).length,
           'Should output no services with Status "Up"'
         )
       })
 
-      t.test('With running services', async t => {
+      t.test('With running services', async (t) => {
         prepareArena(packageJson)
         await cli(['install'], arenaPath)
         await cli(['start'], arenaPath)
@@ -88,10 +88,10 @@ tap.test('$ cli list', async t => {
 
         t.strictEqual(0, result.code, 'Should return code 0')
 
-        const lines = result.stdout.split('\n').filter(s => s)
+        const lines = result.stdout.split('\n').filter((s) => s)
         t.strictEqual(
           2,
-          lines.filter(l => l.match(/^dev-service-test_(mongo|nginx).*Up/))
+          lines.filter((l) => l.match(/^dev-service-test_(mongo|nginx).*Up/))
             .length,
           'Should output two services with Status "Up"'
         )
