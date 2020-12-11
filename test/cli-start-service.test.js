@@ -25,7 +25,7 @@ tap.test('$ cli start [service]', async (t) => {
 
     const result = await cli(['start', service], arenaPath)
 
-    t.strictEqual(1, result.code, 'Should return code 1')
+    t.notEqual(0, result.code, 'Should return code != 0')
     t.strictEqual(
       true,
       result.stderr.includes('ERROR'),
@@ -39,7 +39,7 @@ tap.test('$ cli start [service]', async (t) => {
 
     const result = await cli(['start', service], arenaPath)
 
-    t.strictEqual(1, result.code, 'Should return code 1')
+    t.notEqual(0, result.code, 'Should return code != 0')
     t.strictEqual(
       true,
       result.stderr.includes('ERROR'),
@@ -55,7 +55,7 @@ tap.test('$ cli start [service]', async (t) => {
       DOCKER_HOST: 'tcp://notexisting:2376'
     })
 
-    t.strictEqual(1, result.code, 'Should return code 1')
+    t.notEqual(0, result.code, 'Should return code != 0')
     t.strictEqual(
       true,
       result.stderr.includes('ERROR'),
@@ -70,7 +70,7 @@ tap.test('$ cli start [service]', async (t) => {
     const otherService = 'nats'
     const result = await cli(['start', otherService], arenaPath)
 
-    t.strictEqual(1, result.code, 'Should return code 1')
+    t.notEqual(0, result.code, 'Should return code != 0')
     t.strictEqual(
       true,
       result.stderr.includes('ERROR'),

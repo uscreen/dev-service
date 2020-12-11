@@ -22,7 +22,7 @@ tap.test('$ cli list', async (t) => {
 
     const result = await cli(['list'], arenaPath)
 
-    t.strictEqual(1, result.code, 'Should return code 1')
+    t.notEqual(0, result.code, 'Should return code != 0')
     t.strictEqual(
       true,
       result.stderr.includes('ERROR'),
@@ -36,7 +36,7 @@ tap.test('$ cli list', async (t) => {
 
     const result = await cli(['list'], arenaPath)
 
-    t.strictEqual(1, result.code, 'Should return code 1')
+    t.notEqual(0, result.code, 'Should return code != 0')
     t.strictEqual(
       true,
       result.stderr.includes('ERROR'),
@@ -55,7 +55,7 @@ tap.test('$ cli list', async (t) => {
           DOCKER_HOST: 'tcp://notexisting:2376'
         })
 
-        t.strictEqual(1, result.code, 'Should return code 1')
+        t.notEqual(0, result.code, 'Should return code != 0')
         t.strictEqual(
           true,
           result.stderr.includes('ERROR'),
