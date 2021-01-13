@@ -4,7 +4,7 @@ const cli = require('commander')
 
 const { version } = require('../src/constants')
 
-const { portsUsed, error } = require('../src/utils')
+const { checkUsedPorts, error } = require('../src/utils')
 
 cli
   .version(version)
@@ -12,9 +12,9 @@ cli
   .action(async (service) => {
     try {
       if (service) {
-        await portsUsed(service)
+        await checkUsedPorts(service)
       } else {
-        await portsUsed()
+        await checkUsedPorts()
       }
     } catch (e) {
       error(e)

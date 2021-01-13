@@ -5,8 +5,7 @@ const path = require('path')
 const readPkg = require('read-pkg')
 const chalk = require('chalk')
 const YAML = require('yaml')
-const findProcess = require('find-process')
-const { spawn } = require('child_process')
+const { exec, spawn } = require('child_process')
 
 const { root, COMPOSE_DIR } = require('../src/constants')
 
@@ -40,6 +39,79 @@ const checkComposeDir = () => {
  */
 const getComposeFiles = () =>
   fs.readdirSync(COMPOSE_DIR).filter((f) => f !== '.gitignore')
+
+/**
+ * Get all ports used (by given service)
+ */
+const getPorts = (service) => {
+  const files = getComposeFiles()
+  const ports = []
+  for (const f of files) {
+    if (service && `${service}.yml` !== f) continue
+
+    const yaml = YAML.parse(
+      fs.readFileSync(path.resolve(COMPOSE_DIR, f), 'utf8')
+    )
+    ports.push(
+      Object.values(yaml.services)
+        .map((v) => v.ports)
+        .flat()
+    )
+  }
+
+  const uniquePorts = [
+    ...new Set(
+      ports
+        .flat(2)
+        .map((p) => p.split(':'))
+        .flat()
+    )
+  ]
+
+  return uniquePorts
+}
+
+/**
+ * Find process listening to given port
+ */
+const getPID = (port) =>
+  new Promise((resolve, reject) => {
+    exec(
+      'netstat -anv -p TCP && netstat -anv -p UDP',
+      function (err, stdout, stderr) {
+        if (err || stderr.toString().trim()) {
+          return reject(err)
+        }
+
+        const process = stdout
+          .toString()
+          .split(/\n/)
+          .map((r) => r.split(/\s+/))
+          .filter((r) => r[0].match(/^(udp|tcp)/))
+          .find((r) => r[3].match(`\\.${port}`))
+
+        if (!process) return resolve(null)
+
+        resolve(process[8])
+      }
+    )
+  })
+
+/**
+ * Get processes for given ports
+ */
+const getPIDs = async (ports) => {
+  const processes = {}
+
+  for (const port of ports) {
+    const pid = await getPID(port)
+    if (pid) {
+      processes[port] = pid
+    }
+  }
+
+  return processes
+}
 
 /**
  * Removes all content from compose directory
@@ -106,70 +178,24 @@ module.exports.compose = async (...params) => {
 }
 
 /**
- * executes docker-compose command
+ * check for processes using needed ports
  */
-module.exports.portsUsed = async (service) => {
+module.exports.checkUsedPorts = async (service) => {
   if (!checkComposeDir()) {
     throw Error('No services found. Try running `service install`')
   }
 
-  const files = getComposeFiles()
-  const ports = []
-  const s = service
-  for (const f of files) {
-    if (s && `${s}.yml` !== f) continue
+  const uniquePorts = getPorts(service)
+  const pids = await getPIDs(uniquePorts)
 
-    const service = YAML.parse(
-      fs.readFileSync(path.resolve(COMPOSE_DIR, f), 'utf8')
-    )
-    ports.push(
-      Object.values(service.services)
-        .map((v) => v.ports)
-        .flat()
+  if (Object.keys(pids).length > 0) {
+    throw Error(
+      [
+        'Required port(s) are already allocated:',
+        ...Object.entries(pids).map(
+          ([port, pid]) => `- port ${port} is used by process with pid ${pid}`
+        )
+      ].join('\n')
     )
   }
-
-  const uniquePorts = [
-    ...new Set(
-      ports
-        .flat(2)
-        .map((p) => p.split(':'))
-        .flat()
-    )
-  ]
-
-  const usedPorts = []
-  for (const port of uniquePorts) {
-    const portUsed = await findProcess('port', port)
-    if (portUsed.length > 0) {
-      usedPorts.push(port)
-      console.log(
-        'Found %s process' +
-          (portUsed.length === 1 ? '' : 'es') +
-          ' blocking required port ' +
-          port +
-          '\n',
-        portUsed.length
-      )
-
-      for (const item of portUsed) {
-        console.log(chalk.cyan('[%s]'), item.name || 'unknown')
-        console.log('pid: %s', chalk.white(item.pid))
-        console.log('cmd: %s', chalk.white(item.cmd))
-        console.log()
-      }
-    }
-  }
-
-  if (usedPorts.length > 0) {
-    throw Error(`required port(s) ${usedPorts.join(
-      ', '
-    )} found already alocated.
-      Please stop those processes prior to start services.
-      TIP1: check for running docker containers by "docker ps -a".
-      TIP2: stopping all brew services by "brew services stop --all".
-    `)
-  }
-
-  return false
 }

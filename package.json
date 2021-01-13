@@ -52,7 +52,6 @@
   },
   "dependencies": {
     "commander": "^4.1.0",
-    "find-process": "^1.4.3",
     "fs-extra": "^8.1.0",
     "read-pkg": "^5.2.0",
     "yaml": "^1.7.2"
