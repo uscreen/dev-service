@@ -86,6 +86,7 @@ const getPID = (port) =>
         const process = stdout
           .toString()
           .split(/\n/)
+          .filter((r) => r)
           .map((r) => r.split(/\s+/))
           .filter((r) => r[0].match(/^(udp|tcp)/))
           .filter((r) => r[5].match(/^(LISTEN|ESTABLISHED)$/))
@@ -99,15 +100,64 @@ const getPID = (port) =>
   })
 
 /**
- * Get processes for given ports
+ * Get pids for given ports
  */
 const getPIDs = async (ports) => {
-  const processes = {}
+  const pids = {}
 
   for (const port of ports) {
     const pid = await getPID(port)
     if (pid) {
-      processes[port] = pid
+      pids[port] = pid
+    }
+  }
+
+  return pids
+}
+
+/**
+ * Get process details for given pid
+ */
+const getProcess = async (pid) =>
+  new Promise((resolve, reject) => {
+    exec(
+      `ps -p ${pid} -ww -o pid,ppid,uid,gid,args`,
+      function (err, stdout, stderr) {
+        if (err || stderr.toString().trim()) {
+          return reject(err)
+        }
+
+        const processes = stdout
+          .toString()
+          .split(/\n/)
+          .slice(1) // skip headers
+          .filter((r) => r)
+          .map((r) => r.split(/\s+/))
+          .map(([pid, ppid, uid, gid, ...args]) => ({
+            pid,
+            ppid,
+            uid,
+            gid,
+            cmd: args.join(' ')
+          }))
+
+        if (!processes[0]) return resolve(null)
+
+        resolve(processes[0])
+      }
+    )
+  })
+
+/**
+ * Get process details for given pids
+ */
+const getProcesses = async (pids) => {
+  const processes = {}
+
+  for (const pid of pids) {
+    const process = await getProcess(pid)
+    if (process) {
+      processes[pid] = process
     }
   }
 
@@ -186,17 +236,24 @@ module.exports.checkUsedPorts = async (service) => {
     throw Error('No services found. Try running `service install`')
   }
 
-  const uniquePorts = getPorts(service)
-  const pids = await getPIDs(uniquePorts)
+  const ports = getPorts(service)
+  const portsToPids = await getPIDs(ports)
 
-  if (Object.keys(pids).length > 0) {
-    throw Error(
-      [
-        'Required port(s) are already allocated:',
-        ...Object.entries(pids).map(
-          ([port, pid]) => `- port ${port} is used by process with pid ${pid}`
-        )
-      ].join('\n')
-    )
-  }
+  if (Object.keys(portsToPids).length === 0) return // everything ok
+
+  const pids = [...new Set(Object.values(portsToPids))]
+  const pidsToProcesses = await getProcesses(pids)
+
+  throw Error(
+    [
+      'Required port(s) are already allocated:',
+      ...Object.entries(portsToPids).map(
+        ([port, pid]) =>
+          `- port ${port} is used by process with pid ${pid}` +
+          (pidsToProcesses[pid] && pidsToProcesses[pid].cmd
+            ? ` (${pidsToProcesses[pid].cmd})`
+            : '')
+      )
+    ].join('\n')
+  )
 }

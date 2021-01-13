@@ -6,9 +6,9 @@ const { version } = require('../src/constants')
 
 const { compose, error } = require('../src/utils')
 /**
- * @todo enable portsUsed, see below
+ * @todo enable checkUsedPorts, see below
  */
-// const { compose, portsUsed, error } = require('../src/utils')
+// const { compose, checkUsedPorts, error } = require('../src/utils')
 
 cli
   .version(version)
@@ -20,14 +20,14 @@ cli
          * @todo wants to have been checked before starting
          * currently breaks test -> use `service check && service start` instead
          */
-        // await portsUsed(service)
+        // await checkUsedPorts(service)
         await compose('up', '-d', service)
       } else {
         /**
          * @todo wants to have been checked before starting
          * currently breaks test -> use `service check && service start` instead
          */
-        // await portsUsed()
+        // await checkUsedPorts()
         await compose('up', '-d')
       }
     } catch (e) {
