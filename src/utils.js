@@ -91,9 +91,11 @@ module.exports.compose = async (...params) => {
     throw Error('No services found. Try running `service install`')
   }
 
+  const { projectname } = await this.readPackageJson()
   const files = getComposeFiles()
 
   const ps = []
+  ps.push('-p', projectname)
   for (const f of files) {
     ps.push('-f', f)
   }

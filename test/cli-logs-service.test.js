@@ -119,8 +119,7 @@ tap.test('$ cli logs [service]', async (t) => {
 
     t.strictEqual(
       true,
-      lines.filter((l) => l.match(/dev-service-test_nginx.*GET \/.*200/))
-        .length > 0,
+      lines.filter((l) => l.match(/nginx.*GET \/.*200/)).length > 0,
       'Should show request sent to nginx service in logs'
     )
   })

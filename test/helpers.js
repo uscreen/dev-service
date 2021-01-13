@@ -1,6 +1,7 @@
 'use strict'
 
 const path = require('path')
+const readPkg = require('read-pkg')
 const { exec } = require('child_process')
 const fs = require('fs-extra')
 const YAML = require('yaml')
@@ -37,10 +38,13 @@ module.exports.cli = (args, cwd, env, timeout) => {
   })
 }
 
-module.exports.compose = (...params) => {
+module.exports.compose = async (...params) => {
+  const packageJson = await readPkg({ cwd: arenaPath })
+  const projectname = packageJson.name || path.basename(arenaPath)
   const files = fs.readdirSync(composePath).filter((f) => f !== '.gitignore')
 
   const ps = []
+  ps.push('-p', projectname)
   for (const f of files) {
     ps.push('-f', f)
   }
