@@ -267,6 +267,10 @@ And the folder structure would look like this:
 
 > Format according to https://keepachangelog.com
 
+### v0.6.2
+#### Fixed
+- avoiding side effects between different dev repos
+
 ### v0.6.1
 #### Fixed
 - making tests work again after change in docker client api
