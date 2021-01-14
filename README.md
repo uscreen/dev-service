@@ -76,18 +76,15 @@ Any `service check` command will check for other processes already blocking the 
 Example output:
 
 ```bash
-service start
-Found 1 process blocking required port(s)
-
-[mongod]
-pid: 30862
-cmd: /usr/local/opt/mongodb-community/bin/mongod --config /usr/local/etc/mongod.conf
+$ service check
+ERROR: Required port(s) are already allocated:
+- port 4222 is used by process with pid 52956 (/usr/local/opt/nats-server/bin/nats-server)
 ```
 
 Startup issues should be easily resolvable by killing that process, ie.:
 
 ```bash
-$ kill 30862
+$ kill 52956
 ```
 
 Please also check for supervised processes (pm2, launchd, etc.) in case of a process restarts after killing.
@@ -257,7 +254,8 @@ And the folder structure would look like this:
 
 ## Roadmap
 
-- add tests for `service logs [servicename]`
+- make `service check [servicename]` recognize and ignore own services
+- add tests for `service check [servicename]`
 - add tests for service customization
 - fix tests to work in gitlab-ci
 - fix tests to work in parallel
@@ -266,6 +264,10 @@ And the folder structure would look like this:
 ## Changelog
 
 > Format according to https://keepachangelog.com
+
+### v0.7.0
+#### Changed
+- refactoring `service check` to avoid false positives
 
 ### v0.6.2
 #### Fixed
