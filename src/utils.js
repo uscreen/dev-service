@@ -90,7 +90,7 @@ const getPID = (port) =>
           .map((r) => r.split(/\s+/))
           .filter((r) => r[0].match(/^(udp|tcp)/))
           .filter((r) => r[5].match(/^(LISTEN|ESTABLISHED)$/))
-          .find((r) => r[3].match(`\\.${port}`))
+          .find((r) => r[3].match(`\\.${port}$`))
 
         if (!process) return resolve(null)
 
