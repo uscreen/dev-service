@@ -7,7 +7,8 @@ const {
   compose,
   prepareArena,
   clearArena,
-  composePath
+  composePath,
+  webserver
 } = require('./helpers')
 
 const packageJson = {
@@ -82,6 +83,26 @@ tap.test('$ cli start', async (t) => {
         lines.every((s) => s.length === 64),
         'Both lines contain container ids'
       )
+    })
+  })
+
+  t.test("If one or more services' port(s) are already in use", (t) => {
+    prepareArena(packageJson)
+    cli(['install'], arenaPath).then(() => {
+      const server = webserver.start(80)
+
+      cli(['start'], arenaPath).then((result) => {
+        t.notEqual(0, result.code, 'Should return code != 0')
+        t.strictEqual(
+          true,
+          result.stderr.startsWith(
+            'ERROR: Required port(s) are already allocated'
+          ),
+          'Should output appropriate message to stderr'
+        )
+
+        webserver.stop(server, () => t.end())
+      })
     })
   })
 })
