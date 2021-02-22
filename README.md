@@ -99,6 +99,8 @@ Install all services specified in package.json.
 
 Start all or given installed service(s).
 
+By default, this command checks the port availability before starting any service(s).
+
 ### $ service stop [service]
 
 Stop all or given running service(s).
@@ -123,12 +125,14 @@ Show logs of all or given running services (abort with Ctrl-C).
 
 All provided services use their respective default ports:
 
-| service | used ports  |
-|---------|-------------|
-| redis   | 6379        |
-| mongo   | 27017       |
-| nats    | 4222, 8222  |
-| nginx   | 80, 443     |
+| service       | used ports  |
+|---------------|-------------|
+| redis         | 6379        |
+| mongo         | 27017       |
+| nats          | 4222, 8222  |
+| nginx         | 80, 443     |
+| rabbitmq      | 5672, 15672 |
+| elasticsearch | 9200        |
 
 ### nginx
 
@@ -264,6 +268,14 @@ And the folder structure would look like this:
 ## Changelog
 
 > Format according to https://keepachangelog.com
+
+### v0.8.0
+#### Added
+- tests for `service check`
+
+#### Changed
+- `service start` checks for used ports before starting any service(s)
+- updating list of provided services in readme
 
 ### v0.7.1
 #### Fixed
