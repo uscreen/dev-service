@@ -51,8 +51,8 @@
     "yorkie": "^2.0.0"
   },
   "dependencies": {
-    "commander": "^4.1.0",
-    "fs-extra": "^8.1.0",
+    "commander": "^7.1.0",
+    "fs-extra": "^9.1.0",
     "read-pkg": "^5.2.0",
     "yaml": "^1.7.2"
   }

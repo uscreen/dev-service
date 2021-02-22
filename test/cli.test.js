@@ -3,18 +3,27 @@ const { cli } = require('./helpers')
 
 tap.test('$ cli', async (t) => {
   const result = await cli([])
-  t.strictEqual(0, result.code, 'Should succeed')
+  t.strictEqual(1, result.code, 'Should fail')
+
+  t.strictEqual('', result.stdout, 'Should output nothing to stdout')
   t.strictEqual(
     true,
-    result.stdout.startsWith('Usage: cli [options] [command]'),
-    'Should print usage information'
+    result.stderr.startsWith('Usage: cli [options] [command]'),
+    'Should output usage information to stderr'
   )
   t.end()
 })
 
 tap.test('$ cli noop', async (t) => {
   const result = await cli(['noop'])
-  t.strictEqual(0, result.code, 'Should succeed')
-  t.strictEqual('', result.stdout, 'Should print empty string')
+  t.strictEqual(1, result.code, 'Should fail')
+  t.strictEqual('', result.stdout, 'Should output nothing to stdout')
+  t.strictEqual(
+    true,
+    result.stderr.startsWith(
+      "error: unknown command 'noop'. See 'cli --help'."
+    ),
+    'Should output error to stderr'
+  )
   t.end()
 })
