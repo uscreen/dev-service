@@ -4,6 +4,7 @@ const path = require('path')
 const readPkg = require('read-pkg')
 const { exec } = require('child_process')
 const fs = require('fs-extra')
+const http = require('http')
 const YAML = require('yaml')
 
 const { docker } = require('../src/utils')
@@ -103,4 +104,19 @@ module.exports.loadYaml = (filepath) => {
   const data = YAML.parse(content)
 
   return data
+}
+
+module.exports.webserver = {
+  start(port) {
+    const server = http.createServer((req, res) => {
+      res.end()
+    })
+    server.listen(port)
+
+    return server
+  },
+
+  stop(server, callback) {
+    server.close(callback)
+  }
 }
