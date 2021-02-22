@@ -265,6 +265,11 @@ And the folder structure would look like this:
 
 > Format according to https://keepachangelog.com
 
+### v0.7.1
+#### Fixed
+- fixing further false positives `service check`
+- package upgrades
+
 ### v0.7.0
 #### Changed
 - refactoring `service check` to avoid false positives
