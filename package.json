@@ -53,7 +53,7 @@
   "dependencies": {
     "commander": "^7.1.0",
     "fs-extra": "^9.1.0",
-    "read-pkg": "^5.2.0",
+    "read-pkg": "^6.0.0",
     "yaml": "^1.7.2"
   }
 }
