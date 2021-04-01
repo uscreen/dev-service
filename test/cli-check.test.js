@@ -73,4 +73,25 @@ tap.test('$ cli check', async (t) => {
       })
     })
   })
+
+  t.test('With irregular name in package.json', (t) => {
+    const name = '@uscreen.de/dev-service-test'
+    prepareArena({ ...packageJson, name })
+    cli(['install'], arenaPath).then(() => {
+      const server = webserver.start(80)
+
+      cli(['check'], arenaPath).then((result) => {
+        t.notEqual(0, result.code, 'Should return code != 0')
+        t.strictEqual(
+          true,
+          result.stderr.startsWith(
+            'ERROR: Required port(s) are already allocated'
+          ),
+          'Should output appropriate message to stderr'
+        )
+
+        webserver.stop(server, () => t.end())
+      })
+    })
+  })
 })

@@ -18,14 +18,20 @@ module.exports.readPackageJson = async () => {
   })
 
   const services = packageJson.services || []
-  const projectname = packageJson.name || path.basename(root)
+  const name = packageJson.name || path.basename(root)
 
   if (services.length === 0) {
     throw Error('No services defined')
   }
 
-  return { packageJson, services, projectname }
+  return { packageJson, services, name }
 }
+
+/**
+ * Escape string for use in docker
+ */
+module.exports.escape = (name) =>
+  name.replace(/^[^a-zA-Z0-9]*/, '').replace(/[^a-zA-Z0-9.-]/g, '-')
 
 /**
  * Checks if compose directory exists and contains files
@@ -214,7 +220,8 @@ module.exports.compose = async (...params) => {
     throw Error('No services found. Try running `service install`')
   }
 
-  const { projectname } = await this.readPackageJson()
+  const { name } = await this.readPackageJson()
+  const projectname = this.escape(name)
   const files = getComposeFiles()
 
   const ps = []

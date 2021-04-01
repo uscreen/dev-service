@@ -7,7 +7,7 @@ const fs = require('fs-extra')
 const http = require('http')
 const YAML = require('yaml')
 
-const { docker } = require('../src/utils')
+const { docker, escape } = require('../src/utils')
 
 const arenaPath = path.resolve(__dirname, './_arena')
 const servicesPath = path.resolve(arenaPath, 'services')
@@ -16,6 +16,7 @@ const composePath = path.resolve(arenaPath, 'services/.compose')
 module.exports.arenaPath = arenaPath
 module.exports.servicesPath = servicesPath
 module.exports.composePath = composePath
+module.exports.escape = escape
 
 // for easy string testing: disable color output of chalk
 process.env.FORCE_COLOR = 0
@@ -41,7 +42,8 @@ module.exports.cli = (args, cwd, env, timeout) => {
 
 module.exports.compose = async (...params) => {
   const packageJson = await readPkg({ cwd: arenaPath })
-  const projectname = packageJson.name || path.basename(arenaPath)
+  const name = packageJson.name || path.basename(arenaPath)
+  const projectname = escape(name)
   const files = fs.readdirSync(composePath).filter((f) => f !== '.gitignore')
 
   const ps = []

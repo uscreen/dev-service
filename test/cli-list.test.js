@@ -4,6 +4,7 @@ const fs = require('fs-extra')
 const {
   arenaPath,
   cli,
+  escape,
   prepareArena,
   clearArena,
   composePath
@@ -93,6 +94,26 @@ tap.test('$ cli list', async (t) => {
           2,
           lines.filter((l) => l.match(/^dev-service-test_(mongo|nginx).*Up/))
             .length,
+          'Should output two services with Status "Up"'
+        )
+      })
+
+      t.test('With irregular name in package.json', async (t) => {
+        const name = '@uscreen.de/dev-service-test'
+        prepareArena({ ...packageJson, name })
+        await cli(['install'], arenaPath)
+        await cli(['start'], arenaPath)
+
+        const result = await cli(['list'], arenaPath)
+
+        t.strictEqual(0, result.code, 'Should return code 0')
+
+        const lines = result.stdout.split('\n').filter((s) => s)
+        t.strictEqual(
+          2,
+          lines.filter((l) =>
+            l.match(new RegExp(`^${escape(name)}_(mongo|nginx).*Up`))
+          ).length,
           'Should output two services with Status "Up"'
         )
       })

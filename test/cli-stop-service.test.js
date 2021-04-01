@@ -118,4 +118,25 @@ tap.test('$ cli stop [service]', async (t) => {
       t.strictEqual(1, lines.length, 'Should return one line')
     })
   })
+
+  t.test('With irregular name in package.json', async (t) => {
+    const name = '@uscreen.de/dev-service-test'
+    prepareArena({ ...packageJson, name })
+    await cli(['install'], arenaPath)
+    await cli(['start'], arenaPath)
+
+    const result = await cli(['stop', service], arenaPath)
+
+    t.strictEqual(0, result.code, 'Should return code 0')
+
+    t.test('Checking running containers', async (t) => {
+      const cresult = await compose('ps', '-q')
+      t.strictEqual(0, cresult.code, 'Should return code 0')
+
+      // Checking number of running containers (identified by 64-digit ids):
+      const lines = cresult.stdout.split('\n').filter((s) => s)
+
+      t.strictEqual(1, lines.length, 'Should return one line')
+    })
+  })
 })

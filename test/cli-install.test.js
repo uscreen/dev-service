@@ -5,6 +5,7 @@ const path = require('path')
 const {
   arenaPath,
   cli,
+  escape,
   prepareArena,
   clearArena,
   loadYaml,
@@ -169,4 +170,37 @@ tap.test('$ cli install', async (t) => {
       )
     }
   )
+
+  t.test('With irregular name in package.json', async (t) => {
+    const name = '@uscreen.de/dev-service-test'
+    prepareArena({
+      name,
+      services: ['mongo']
+    })
+
+    await cli(['install'], arenaPath)
+
+    t.strictEqual(
+      true,
+      fs.existsSync(composePath),
+      'Should create services folder'
+    )
+
+    t.strictEqual(
+      true,
+      fs.existsSync(path.resolve(composePath, 'mongo.yml')),
+      'Should create mongo.yml within services folder'
+    )
+    const mongoData = loadYaml(path.resolve(composePath, 'mongo.yml'))
+    t.strictEqual(
+      `${escape(name)}_mongo`,
+      mongoData.services.mongo.container_name,
+      'Should set the correct container name in mongo.yml'
+    )
+    let code = null
+    await docker('volume', 'inspect', `${escape(name)}-mongo-data`)
+      .then((c) => (code = c))
+      .catch((c) => (code = c))
+    t.strictEqual(0, code, 'Should create docker volume defined in mongo.yml')
+  })
 })

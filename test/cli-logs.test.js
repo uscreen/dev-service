@@ -105,4 +105,34 @@ tap.test('$ cli logs', async (t) => {
       'Should show request sent to nginx service in logs'
     )
   })
+
+  t.test('With irregular name in package.json', async (t) => {
+    const name = '@uscreen.de/dev-service-test'
+    prepareArena({ ...packageJson, name })
+    await cli(['install'], arenaPath)
+    await cli(['start'], arenaPath)
+
+    // send request 1s from now:
+    setTimeout(() => {
+      http.get('http://localhost')
+    }, 1000)
+
+    // record logs for the next 2s:
+    const result = await cli(['logs'], arenaPath, {}, 2000)
+
+    t.strictEqual(0, result.code, 'Should return code 0')
+
+    const lines = result.stdout
+      .split('\n')
+      .filter((s) => s)
+      .filter((l) => !l.match(/^Attaching to */))
+
+    t.strictEqual(true, lines.length > 0, 'Should show logs')
+
+    t.strictEqual(
+      true,
+      lines.filter((l) => l.match(/nginx.*GET \/.*200/)).length > 0,
+      'Should show request sent to nginx service in logs'
+    )
+  })
 })

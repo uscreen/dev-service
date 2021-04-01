@@ -14,6 +14,7 @@ const {
 
 const {
   readPackageJson,
+  escape,
   docker,
   error,
   resetComposeDir
@@ -152,7 +153,8 @@ const serviceInstall = async (data, projectname) => {
 }
 
 const install = async () => {
-  const { services, projectname } = await readPackageJson()
+  const { services, name } = await readPackageJson()
+  const projectname = escape(name)
 
   const data = services.map(readServiceData)
 
@@ -162,7 +164,10 @@ const install = async () => {
   }
 
   resetComposeDir(COMPOSE_DIR)
-  await Promise.all(data.map((d) => serviceInstall(d, projectname)))
+  const escapedProjectname = projectname
+    .replace(/^[^a-zA-Z0-9]*/, '')
+    .replace(/[^a-zA-Z0-9_.-]/g, '_')
+  await Promise.all(data.map((d) => serviceInstall(d, escapedProjectname)))
 
   console.log(`Done (${services.length} services installed).`)
 }
