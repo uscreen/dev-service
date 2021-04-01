@@ -269,6 +269,10 @@ And the folder structure would look like this:
 
 > Format according to https://keepachangelog.com
 
+### v0.8.1
+#### Fixed
+- avoiding errors when projectname contains certain special characters
+
 ### v0.8.0
 #### Added
 - tests for `service check`
