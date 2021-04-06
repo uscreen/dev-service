@@ -3,13 +3,20 @@
 import cli from 'commander'
 
 import { version } from '../src/constants.js'
-import { compose, checkUsedPorts, error } from '../src/utils.js'
+import {
+  compose,
+  checkOtherServices,
+  checkUsedPorts,
+  error
+} from '../src/utils.js'
 
 cli
   .version(version)
   .arguments('[service]')
   .action(async (service) => {
     try {
+      await checkOtherServices()
+
       if (service) {
         await checkUsedPorts(service)
         await compose('up', '-d', service)

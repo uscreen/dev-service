@@ -81,7 +81,7 @@ tap.test('$ cli check', async (t) => {
 
     const result = await cli(['check'], arenaPath)
 
-    t.strictEqual(0, result.code, 'Should return code 0')
+    t.equal(0, result.code, 'Should return code 0')
   })
 
   t.test('With irregular name in package.json', (t) => {

@@ -133,6 +133,71 @@ const getPorts = (service) => {
 }
 
 /**
+ * read path to compose file/folder via `docker inspect <containerId>`
+ */
+const getComposePath = (containerId) =>
+  new Promise((resolve, reject) => {
+    exec(`docker inspect ${containerId}`, function (err, stdout, stderr) {
+      if (err || stderr.toString().trim()) {
+        return reject(err)
+      }
+
+      const [data] = JSON.parse(stdout)
+
+      const result =
+        data &&
+        data.Config &&
+        data.Config.Labels &&
+        data.Config.Labels['com.docker.compose.project.working_dir']
+
+      resolve(result || null)
+    })
+  })
+
+/**
+ * Get paths to compose files/folders from running containers
+ */
+const getComposePaths = () =>
+  new Promise((resolve, reject) => {
+    exec('docker ps -q', function (err, stdout, stderr) {
+      if (err || stderr.toString().trim()) {
+        return reject(err)
+      }
+
+      const containers = stdout.split(/\n/).filter((r) => r)
+
+      Promise.all(containers.map(getComposePath))
+        .then((ps) => {
+          const paths = Array.from(new Set(ps)).filter((p) => p)
+
+          resolve(paths)
+        })
+        .catch((err) => {
+          reject(err)
+        })
+    })
+  })
+
+/**
+ * Get paths to other running dev-service instances
+ */
+export const checkOtherServices = async () => {
+  const paths = (await getComposePaths())
+    .filter((p) => p !== COMPOSE_DIR)
+    .filter((p) => p.endsWith('/services/.compose'))
+    .map((p) => p.replace(/\/services\/.compose$/, ''))
+
+  if (paths.length > 0) {
+    warning(
+      [
+        'dev-service is already running, started in following folder(s):',
+        ...paths.map((p) => `  ${p}`)
+      ].join('\n')
+    )
+  }
+}
+
+/**
  * Find process listening to given port
  */
 const getPID = (port) =>
@@ -238,8 +303,15 @@ export const resetComposeDir = () => {
  * Show error message & exit
  */
 export const error = (e) => {
-  console.error(chalk.red(`ERROR: ${e.message}`))
+  console.error(chalk.red(`ERROR: ${e.message}\n`))
   process.exit(e.code || 1)
+}
+
+/**
+ * Show warn message
+ */
+export const warning = (message) => {
+  console.error(chalk.yellow(`WARNING: ${message}\n`))
 }
 
 /**

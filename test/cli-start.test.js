@@ -113,17 +113,17 @@ tap.test('$ cli start', async (t) => {
 
     const result = await cli(['start'], arenaPath)
 
-    t.strictEqual(0, result.code, 'Should return code 0')
+    t.equal(0, result.code, 'Should return code 0')
 
     t.test('Checking running containers', async (t) => {
       const cresult = await compose('ps', '-q')
-      t.strictEqual(0, cresult.code, 'Should return code 0')
+      t.equal(0, cresult.code, 'Should return code 0')
 
       // Checking number of running containers (identified by 64-digit ids):
       const lines = cresult.stdout.split('\n').filter((s) => s)
 
-      t.strictEqual(2, lines.length, 'Should return two lines')
-      t.strictEqual(
+      t.equal(2, lines.length, 'Should return two lines')
+      t.equal(
         true,
         lines.every((s) => s.length === 64),
         'Both lines contain container ids'

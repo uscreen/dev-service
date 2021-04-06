@@ -109,8 +109,8 @@ tap.test('$ cli start [service]', async (t) => {
       const server = webserver.start(27017)
 
       cli(['start', service], arenaPath).then((result) => {
-        t.notEqual(0, result.code, 'Should return code != 0')
-        t.strictEqual(
+        t.not(0, result.code, 'Should return code != 0')
+        t.equal(
           true,
           result.stderr.startsWith(
             'ERROR: Required port(s) are already allocated'
@@ -130,17 +130,17 @@ tap.test('$ cli start [service]', async (t) => {
 
     const result = await cli(['start', service], arenaPath)
 
-    t.strictEqual(0, result.code, 'Should return code 0')
+    t.equal(0, result.code, 'Should return code 0')
 
     t.test('Checking running containers', async (t) => {
       const cresult = await compose('ps', '-q')
-      t.strictEqual(0, cresult.code, 'Should return code 0')
+      t.equal(0, cresult.code, 'Should return code 0')
 
       // Checking number of running containers (identified by 64-digit ids):
       const lines = cresult.stdout.split('\n').filter((s) => s)
 
-      t.strictEqual(1, lines.length, 'Should return one line')
-      t.strictEqual(
+      t.equal(1, lines.length, 'Should return one line')
+      t.equal(
         true,
         lines.every((s) => s.length === 64),
         'Both lines contain container ids'
