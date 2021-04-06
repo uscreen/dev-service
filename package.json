@@ -26,9 +26,9 @@
   },
   "scripts": {
     "lint": "eslint '**/*.js' --fix",
-    "test": "tap test/**/*.test.js",
-    "test:cov": "tap --coverage-report=html test/**/*.test.js",
-    "test:ci": "tap --coverage-report=text-summary test/**/*.test.js"
+    "test": "c8 --all tap --no-coverage test/**/*.test.js",
+    "test:cov": "c8 --all --reporter html tap --no-coverage test/**/*.test.js",
+    "test:ci": "c8 --all --reporter text-summary tap --no-coverage test/**/*.test.js"
   },
   "gitHooks": {
     "pre-commit": "lint-staged"
@@ -52,6 +52,7 @@
     "yorkie": "^2.0.0"
   },
   "dependencies": {
+    "c8": "^7.7.0",
     "commander": "^7.1.0",
     "fs-extra": "^9.1.0",
     "read-pkg": "^6.0.0",
