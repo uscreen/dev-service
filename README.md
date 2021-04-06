@@ -61,8 +61,6 @@ Next, run `service install` and you will end up with a directory structure like:
 
 ### Running
 
-Before running the services you should ensure that the used ports (see below) are not occupied by other applications or services running locally on your computer.
-
 Start all services with `service start`. You can run `service list` to see the stats of the started services, use `service logs` for showing the services' logs (abort with ⌘-C).
 
 By default, the started Nginx service returns `Hello World` when called via `curl localhost`.
@@ -71,17 +69,50 @@ Stop the services with `service stop`.
 
 ### Preflight check
 
-Any `service check` command will check for other processes already blocking the required port(s). As you might be using a brew installed MongoDB, system-wide webserver, and such.
+Before `service start` starts the services, it checks for two potential sources of error:
 
-Example output:
+1. Are other dev-service instances already running? If so, an appropriate warning message is displayed.
+2. Are ports already in use that are required by the services to be started? If so, an error message is displayed and the process is aborted.
+
+This check can also be triggered separately via `service check`
+
+#### Example 1:
 
 ```bash
-$ service check
+$ service start
+WARNING: dev-service is already running, started in following folder(s):
+  /path/to/some-other-dev-repo
+```
+
+In this example, another dev-service instance is already running, but there are no port conflicts. So the current `service start` command is not cancelled.
+
+#### Example 2:
+
+```bash
+$ service start
+WARNING: dev-service is already running, started in following folder(s):
+  /path/to/some-other-dev-repo
+
 ERROR: Required port(s) are already allocated:
 - port 4222 is used by process with pid 52956 (/usr/local/opt/nats-server/bin/nats-server)
 ```
 
-Startup issues should be easily resolvable by killing that process, ie.:
+In this example, the port is used by a service started by an already running dev-service instance. To solve the issue, just run `service stop` in the specified folder, i.e.:
+
+```bash
+$ cd /path/to/some-other-dev-repo
+$ service stop
+```
+
+#### Example 3:
+
+```bash
+$ service start
+ERROR: Required port(s) are already allocated:
+- port 4222 is used by process with pid 52956 (/usr/local/opt/nats-server/bin/nats-server)
+```
+
+In this example, a running process (not started by dev-service) uses the port. This should be easily resolvable by killing that process, i.e.:
 
 ```bash
 $ kill 52956
@@ -268,6 +299,20 @@ And the folder structure would look like this:
 ## Changelog
 
 > Format according to https://keepachangelog.com
+
+### v0.9.0
+#### Added
+- display warning if other dev-service instances are running
+
+#### Changed
+- migrate to ESM (due to package requirements)
+
+#### Fixed
+- don’t observe own ports in port check.
+
+#### Removed
+- support for node 10 (due to migration to ESM)
+
 
 ### v0.8.1
 #### Fixed
