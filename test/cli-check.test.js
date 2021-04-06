@@ -1,14 +1,14 @@
-const tap = require('tap')
-const fs = require('fs-extra')
+import tap from 'tap'
+import fs from 'fs-extra'
 
-const {
+import {
   arenaPath,
   cli,
   prepareArena,
   clearArena,
   composePath,
   webserver
-} = require('./helpers')
+} from './helpers.js'
 
 const packageJson = {
   name: 'dev-service-test',

@@ -1,24 +1,24 @@
 #!/usr/bin/env node
 
-const cli = require('commander')
-const path = require('path')
-const fs = require('fs-extra')
-const YAML = require('yaml')
+import cli from 'commander'
+import path from 'path'
+import fs from 'fs-extra'
+import YAML from 'yaml'
 
-const {
+import {
   version,
   TEMPLATES_DIR,
   SERVICES_DIR,
   COMPOSE_DIR
-} = require('../src/constants')
+} from '../src/constants.js'
 
-const {
+import {
   readPackageJson,
   escape,
   docker,
   error,
   resetComposeDir
-} = require('../src/utils')
+} from '../src/utils.js'
 
 /**
  * Helper methods
@@ -153,7 +153,7 @@ const serviceInstall = async (data, projectname) => {
 }
 
 const install = async () => {
-  const { services, name } = await readPackageJson()
+  const { services, name } = readPackageJson()
   const projectname = escape(name)
 
   const data = services.map(readServiceData)

@@ -1,5 +1,5 @@
-const tap = require('tap')
-const { cli } = require('./helpers')
+import tap from 'tap'
+import { cli } from './helpers.js'
 
 tap.test('$ cli', async (t) => {
   const result = await cli([])

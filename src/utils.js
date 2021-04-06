@@ -1,21 +1,28 @@
 'use strict'
 
-const fs = require('fs-extra')
-const path = require('path')
-const readPkg = require('read-pkg')
-const chalk = require('chalk')
-const YAML = require('yaml')
-const { exec, spawn } = require('child_process')
+import fs from 'fs-extra'
+import path from 'path'
+import { fileURLToPath } from 'url'
+import { readPackageSync } from 'read-pkg'
+import chalk from 'chalk'
+import YAML from 'yaml'
+import { exec, spawn } from 'child_process'
 
-const { root, COMPOSE_DIR } = require('../src/constants')
+import { root, COMPOSE_DIR } from '../src/constants.js'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 /**
  * Read package json
  */
-module.exports.readPackageJson = async () => {
-  const packageJson = await readPkg({ cwd: root }).catch((e) => {
-    throw Error('No package.json')
-  })
+export const readPackageJson = () => {
+  let packageJson = null
+  try {
+    packageJson = readPackageSync({ cwd: root })
+  } catch (e) {}
+
+  if (!packageJson) throw Error('No package.json')
 
   const services = packageJson.services || []
   const name = packageJson.name || path.basename(root)
@@ -30,7 +37,7 @@ module.exports.readPackageJson = async () => {
 /**
  * Escape string for use in docker
  */
-module.exports.escape = (name) =>
+export const escape = (name) =>
   name.replace(/^[^a-zA-Z0-9]*/, '').replace(/[^a-zA-Z0-9.-]/g, '-')
 
 /**
@@ -173,7 +180,7 @@ const getProcesses = async (pids) => {
 /**
  * Removes all content from compose directory
  */
-module.exports.resetComposeDir = () => {
+export const resetComposeDir = () => {
   fs.removeSync(COMPOSE_DIR)
   fs.ensureDirSync(COMPOSE_DIR)
   fs.writeFileSync(path.resolve(COMPOSE_DIR, '.gitignore'), '*', 'utf8')
@@ -182,7 +189,7 @@ module.exports.resetComposeDir = () => {
 /**
  * Show error message & exit
  */
-module.exports.error = (e) => {
+export const error = (e) => {
   console.error(chalk.red(`ERROR: ${e.message}`))
   process.exit(e.code || 1)
 }
@@ -190,7 +197,7 @@ module.exports.error = (e) => {
 /**
  * spawns a child process and returns a promise
  */
-const run = (command, parameters = [], cwd = null, stdio = [0, 1, 2]) =>
+export const run = (command, parameters = [], cwd = null, stdio = [0, 1, 2]) =>
   new Promise((resolve, reject) => {
     const c = spawn(command, parameters, {
       cwd,
@@ -203,25 +210,24 @@ const run = (command, parameters = [], cwd = null, stdio = [0, 1, 2]) =>
       reject(e)
     })
   })
-module.exports.run = run
 
 /**
  * executes docker command
  */
-module.exports.docker = async (...params) => {
+export const docker = async (...params) => {
   return run('docker', params, __dirname, [null, null, null])
 }
 
 /**
  * executes docker-compose command
  */
-module.exports.compose = async (...params) => {
+export const compose = async (...params) => {
   if (!checkComposeDir()) {
     throw Error('No services found. Try running `service install`')
   }
 
-  const { name } = await this.readPackageJson()
-  const projectname = this.escape(name)
+  const { name } = await readPackageJson()
+  const projectname = escape(name)
   const files = getComposeFiles()
 
   const ps = []
@@ -238,7 +244,7 @@ module.exports.compose = async (...params) => {
 /**
  * check for processes using needed ports
  */
-module.exports.checkUsedPorts = async (service) => {
+export const checkUsedPorts = async (service) => {
   if (!checkComposeDir()) {
     throw Error('No services found. Try running `service install`')
   }

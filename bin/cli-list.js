@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
-const cli = require('commander')
+import cli from 'commander'
 
-const { version } = require('../src/constants')
+import { version } from '../src/constants.js'
 
-const { compose, error } = require('../src/utils')
+import { compose, error } from '../src/utils.js'
 
 cli.version(version).action(async () => {
   try {

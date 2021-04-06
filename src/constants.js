@@ -1,25 +1,23 @@
 'use strict'
 
-const path = require('path')
+import path from 'path'
+import { createRequire } from 'module'
+import { fileURLToPath } from 'url'
+
+const require = createRequire(import.meta.url)
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 /**
  * Initialize
  */
 
 // Dev-Service
-const { version } = require('../package.json')
-const TEMPLATES_DIR = path.resolve(__dirname, '../templates')
+export const { version } = require('../package.json')
+export const TEMPLATES_DIR = path.resolve(__dirname, '../templates')
 
 // Project
-const root = path.resolve(process.cwd())
+export const root = path.resolve(process.cwd())
 
-const SERVICES_DIR = path.resolve(root, 'services')
-const COMPOSE_DIR = path.resolve(root, 'services/.compose')
-
-module.exports = {
-  root,
-  version,
-  TEMPLATES_DIR,
-  SERVICES_DIR,
-  COMPOSE_DIR
-}
+export const SERVICES_DIR = path.resolve(root, 'services')
+export const COMPOSE_DIR = path.resolve(root, 'services/.compose')

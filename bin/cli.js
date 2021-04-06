@@ -1,6 +1,9 @@
 #!/usr/bin/env node
 
-const { Command } = require('commander')
+import { Command } from 'commander'
+import { createRequire } from 'module'
+
+const require = createRequire(import.meta.url)
 const cli = new Command()
 
 /**

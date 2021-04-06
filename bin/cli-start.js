@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
-const cli = require('commander')
+import cli from 'commander'
 
-const { version } = require('../src/constants')
-const { compose, checkUsedPorts, error } = require('../src/utils')
+import { version } from '../src/constants.js'
+import { compose, checkUsedPorts, error } from '../src/utils.js'
 
 cli
   .version(version)

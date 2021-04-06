@@ -1,27 +1,28 @@
 'use strict'
 
-const path = require('path')
-const readPkg = require('read-pkg')
-const { exec } = require('child_process')
-const fs = require('fs-extra')
-const http = require('http')
-const YAML = require('yaml')
+import path from 'path'
+import { fileURLToPath } from 'url'
+import { readPackageSync } from 'read-pkg'
+import { exec } from 'child_process'
+import fs from 'fs-extra'
+import http from 'http'
+import YAML from 'yaml'
 
-const { docker, escape } = require('../src/utils')
+import { docker, escape } from '../src/utils.js'
 
-const arenaPath = path.resolve(__dirname, './_arena')
-const servicesPath = path.resolve(arenaPath, 'services')
-const composePath = path.resolve(arenaPath, 'services/.compose')
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
-module.exports.arenaPath = arenaPath
-module.exports.servicesPath = servicesPath
-module.exports.composePath = composePath
-module.exports.escape = escape
+export const arenaPath = path.resolve(__dirname, './_arena')
+export const servicesPath = path.resolve(arenaPath, 'services')
+export const composePath = path.resolve(arenaPath, 'services/.compose')
+
+export { escape }
 
 // for easy string testing: disable color output of chalk
 process.env.FORCE_COLOR = 0
 
-module.exports.cli = (args, cwd, env, timeout) => {
+export const cli = (args, cwd, env, timeout) => {
   env = { ...process.env, ...env }
 
   return new Promise((resolve) => {
@@ -40,8 +41,8 @@ module.exports.cli = (args, cwd, env, timeout) => {
   })
 }
 
-module.exports.compose = async (...params) => {
-  const packageJson = await readPkg({ cwd: arenaPath })
+export const compose = async (...params) => {
+  const packageJson = readPackageSync({ cwd: arenaPath })
   const name = packageJson.name || path.basename(arenaPath)
   const projectname = escape(name)
   const files = fs.readdirSync(composePath).filter((f) => f !== '.gitignore')
@@ -70,7 +71,7 @@ module.exports.compose = async (...params) => {
   })
 }
 
-module.exports.prepareArena = (packageJson) => {
+export const prepareArena = (packageJson) => {
   fs.removeSync(arenaPath)
   fs.mkdirSync(arenaPath)
 
@@ -87,10 +88,10 @@ module.exports.prepareArena = (packageJson) => {
   )
 }
 
-module.exports.clearArena = async () => {
+export const clearArena = async () => {
   if (fs.existsSync(composePath)) {
-    await module.exports.compose('stop').catch((e) => {})
-    await module.exports.compose('rm', '-fv').catch((e) => {})
+    await compose('stop').catch((e) => {})
+    await compose('rm', '-fv').catch((e) => {})
   }
 
   fs.removeSync(arenaPath)
@@ -99,7 +100,7 @@ module.exports.clearArena = async () => {
   await docker('volume', 'rm', 'dev-service-test-mongo-data').catch((e) => {})
 }
 
-module.exports.loadYaml = (filepath) => {
+export const loadYaml = (filepath) => {
   const content = fs.readFileSync(filepath, {
     encoding: 'utf-8'
   })
@@ -108,7 +109,7 @@ module.exports.loadYaml = (filepath) => {
   return data
 }
 
-module.exports.webserver = {
+export const webserver = {
   start(port) {
     const server = http.createServer((req, res) => {
       res.end()
