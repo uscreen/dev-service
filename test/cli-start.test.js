@@ -24,8 +24,8 @@ tap.test('$ cli start', async (t) => {
 
     const result = await cli(['start'], arenaPath)
 
-    t.notEqual(0, result.code, 'Should return code != 0')
-    t.strictEqual(
+    t.not(0, result.code, 'Should return code != 0')
+    t.equal(
       true,
       result.stderr.includes('ERROR'),
       'Should output error message'
@@ -38,8 +38,8 @@ tap.test('$ cli start', async (t) => {
 
     const result = await cli(['start'], arenaPath)
 
-    t.notEqual(0, result.code, 'Should return code != 0')
-    t.strictEqual(
+    t.not(0, result.code, 'Should return code != 0')
+    t.equal(
       true,
       result.stderr.includes('ERROR'),
       'Should output error message'
@@ -54,8 +54,8 @@ tap.test('$ cli start', async (t) => {
       DOCKER_HOST: 'tcp://notexisting:2376'
     })
 
-    t.notEqual(0, result.code, 'Should return code != 0')
-    t.strictEqual(
+    t.not(0, result.code, 'Should return code != 0')
+    t.equal(
       true,
       result.stderr.includes('ERROR'),
       'Should output error message'
@@ -68,17 +68,17 @@ tap.test('$ cli start', async (t) => {
 
     const result = await cli(['start'], arenaPath)
 
-    t.strictEqual(0, result.code, 'Should return code 0')
+    t.equal(0, result.code, 'Should return code 0')
 
     t.test('Checking running containers', async (t) => {
       const cresult = await compose('ps', '-q')
-      t.strictEqual(0, cresult.code, 'Should return code 0')
+      t.equal(0, cresult.code, 'Should return code 0')
 
       // Checking number of running containers (identified by 64-digit ids):
       const lines = cresult.stdout.split('\n').filter((s) => s)
 
-      t.strictEqual(2, lines.length, 'Should return two lines')
-      t.strictEqual(
+      t.equal(2, lines.length, 'Should return two lines')
+      t.equal(
         true,
         lines.every((s) => s.length === 64),
         'Both lines contain container ids'
@@ -92,8 +92,8 @@ tap.test('$ cli start', async (t) => {
       const server = webserver.start(80)
 
       cli(['start'], arenaPath).then((result) => {
-        t.notEqual(0, result.code, 'Should return code != 0')
-        t.strictEqual(
+        t.not(0, result.code, 'Should return code != 0')
+        t.equal(
           true,
           result.stderr.startsWith(
             'ERROR: Required port(s) are already allocated'
@@ -113,17 +113,17 @@ tap.test('$ cli start', async (t) => {
 
     const result = await cli(['start'], arenaPath)
 
-    t.strictEqual(0, result.code, 'Should return code 0')
+    t.equal(0, result.code, 'Should return code 0')
 
     t.test('Checking running containers', async (t) => {
       const cresult = await compose('ps', '-q')
-      t.strictEqual(0, cresult.code, 'Should return code 0')
+      t.equal(0, cresult.code, 'Should return code 0')
 
       // Checking number of running containers (identified by 64-digit ids):
       const lines = cresult.stdout.split('\n').filter((s) => s)
 
-      t.strictEqual(2, lines.length, 'Should return two lines')
-      t.strictEqual(
+      t.equal(2, lines.length, 'Should return two lines')
+      t.equal(
         true,
         lines.every((s) => s.length === 64),
         'Both lines contain container ids'

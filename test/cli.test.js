@@ -3,10 +3,10 @@ import { cli } from './helpers.js'
 
 tap.test('$ cli', async (t) => {
   const result = await cli([])
-  t.strictEqual(1, result.code, 'Should fail')
+  t.equal(1, result.code, 'Should fail')
 
-  t.strictEqual('', result.stdout, 'Should output nothing to stdout')
-  t.strictEqual(
+  t.equal('', result.stdout, 'Should output nothing to stdout')
+  t.equal(
     true,
     result.stderr.startsWith('Usage: cli [options] [command]'),
     'Should output usage information to stderr'
@@ -16,9 +16,9 @@ tap.test('$ cli', async (t) => {
 
 tap.test('$ cli noop', async (t) => {
   const result = await cli(['noop'])
-  t.strictEqual(1, result.code, 'Should fail')
-  t.strictEqual('', result.stdout, 'Should output nothing to stdout')
-  t.strictEqual(
+  t.equal(1, result.code, 'Should fail')
+  t.equal('', result.stdout, 'Should output nothing to stdout')
+  t.equal(
     true,
     result.stderr.startsWith(
       "error: unknown command 'noop'. See 'cli --help'."

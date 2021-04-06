@@ -23,8 +23,8 @@ tap.test('$ cli logs', async (t) => {
 
     const result = await cli(['logs'], arenaPath)
 
-    t.notEqual(0, result.code, 'Should return code != 0')
-    t.strictEqual(
+    t.not(0, result.code, 'Should return code != 0')
+    t.equal(
       true,
       result.stderr.includes('ERROR'),
       'Should output error message'
@@ -37,8 +37,8 @@ tap.test('$ cli logs', async (t) => {
 
     const result = await cli(['logs'], arenaPath)
 
-    t.notEqual(0, result.code, 'Should return code != 0')
-    t.strictEqual(
+    t.not(0, result.code, 'Should return code != 0')
+    t.equal(
       true,
       result.stderr.includes('ERROR'),
       'Should output error message'
@@ -53,8 +53,8 @@ tap.test('$ cli logs', async (t) => {
       DOCKER_HOST: 'tcp://notexisting:2376'
     })
 
-    t.notEqual(0, result.code, 'Should return code != 0')
-    t.strictEqual(
+    t.not(0, result.code, 'Should return code != 0')
+    t.equal(
       true,
       result.stderr.includes('ERROR'),
       'Should output error message'
@@ -67,14 +67,14 @@ tap.test('$ cli logs', async (t) => {
 
     const result = await cli(['logs'], arenaPath, {}, 2000)
 
-    t.strictEqual(0, result.code, 'Should return code 0')
+    t.equal(0, result.code, 'Should return code 0')
 
     const lines = result.stdout
       .split('\n')
       .filter((s) => s)
       .filter((l) => !l.match(/^Attaching to */))
 
-    t.strictEqual(0, lines.length, 'Should show no logs')
+    t.equal(0, lines.length, 'Should show no logs')
   })
 
   t.test('With running services', async (t) => {
@@ -90,16 +90,16 @@ tap.test('$ cli logs', async (t) => {
     // record logs for the next 2s:
     const result = await cli(['logs'], arenaPath, {}, 2000)
 
-    t.strictEqual(0, result.code, 'Should return code 0')
+    t.equal(0, result.code, 'Should return code 0')
 
     const lines = result.stdout
       .split('\n')
       .filter((s) => s)
       .filter((l) => !l.match(/^Attaching to */))
 
-    t.strictEqual(true, lines.length > 0, 'Should show logs')
+    t.equal(true, lines.length > 0, 'Should show logs')
 
-    t.strictEqual(
+    t.equal(
       true,
       lines.filter((l) => l.match(/nginx.*GET \/.*200/)).length > 0,
       'Should show request sent to nginx service in logs'
@@ -120,16 +120,16 @@ tap.test('$ cli logs', async (t) => {
     // record logs for the next 2s:
     const result = await cli(['logs'], arenaPath, {}, 2000)
 
-    t.strictEqual(0, result.code, 'Should return code 0')
+    t.equal(0, result.code, 'Should return code 0')
 
     const lines = result.stdout
       .split('\n')
       .filter((s) => s)
       .filter((l) => !l.match(/^Attaching to */))
 
-    t.strictEqual(true, lines.length > 0, 'Should show logs')
+    t.equal(true, lines.length > 0, 'Should show logs')
 
-    t.strictEqual(
+    t.equal(
       true,
       lines.filter((l) => l.match(/nginx.*GET \/.*200/)).length > 0,
       'Should show request sent to nginx service in logs'

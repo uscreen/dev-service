@@ -23,8 +23,8 @@ tap.test('$ cli list', async (t) => {
 
     const result = await cli(['list'], arenaPath)
 
-    t.notEqual(0, result.code, 'Should return code != 0')
-    t.strictEqual(
+    t.not(0, result.code, 'Should return code != 0')
+    t.equal(
       true,
       result.stderr.includes('ERROR'),
       'Should output error message'
@@ -37,8 +37,8 @@ tap.test('$ cli list', async (t) => {
 
     const result = await cli(['list'], arenaPath)
 
-    t.notEqual(0, result.code, 'Should return code != 0')
-    t.strictEqual(
+    t.not(0, result.code, 'Should return code != 0')
+    t.equal(
       true,
       result.stderr.includes('ERROR'),
       'Should output error message'
@@ -56,8 +56,8 @@ tap.test('$ cli list', async (t) => {
           DOCKER_HOST: 'tcp://notexisting:2376'
         })
 
-        t.notEqual(0, result.code, 'Should return code != 0')
-        t.strictEqual(
+        t.not(0, result.code, 'Should return code != 0')
+        t.equal(
           true,
           result.stderr.includes('ERROR'),
           'Should output error message'
@@ -70,10 +70,10 @@ tap.test('$ cli list', async (t) => {
 
         const result = await cli(['list'], arenaPath)
 
-        t.strictEqual(0, result.code, 'Should return code 0')
+        t.equal(0, result.code, 'Should return code 0')
 
         const lines = result.stdout.split('\n').filter((s) => s)
-        t.strictEqual(
+        t.equal(
           0,
           lines.filter((l) => l.match(/^dev-service-test_.*Up/)).length,
           'Should output no services with Status "Up"'
@@ -87,10 +87,10 @@ tap.test('$ cli list', async (t) => {
 
         const result = await cli(['list'], arenaPath)
 
-        t.strictEqual(0, result.code, 'Should return code 0')
+        t.equal(0, result.code, 'Should return code 0')
 
         const lines = result.stdout.split('\n').filter((s) => s)
-        t.strictEqual(
+        t.equal(
           2,
           lines.filter((l) => l.match(/^dev-service-test_(mongo|nginx).*Up/))
             .length,
@@ -106,10 +106,10 @@ tap.test('$ cli list', async (t) => {
 
         const result = await cli(['list'], arenaPath)
 
-        t.strictEqual(0, result.code, 'Should return code 0')
+        t.equal(0, result.code, 'Should return code 0')
 
         const lines = result.stdout.split('\n').filter((s) => s)
-        t.strictEqual(
+        t.equal(
           2,
           lines.filter((l) =>
             l.match(new RegExp(`^${escape(name)}_(mongo|nginx).*Up`))

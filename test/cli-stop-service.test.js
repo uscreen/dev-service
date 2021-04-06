@@ -25,8 +25,8 @@ tap.test('$ cli stop [service]', async (t) => {
 
     const result = await cli(['stop', service], arenaPath)
 
-    t.notEqual(0, result.code, 'Should return code != 0')
-    t.strictEqual(
+    t.not(0, result.code, 'Should return code != 0')
+    t.equal(
       true,
       result.stderr.includes('ERROR'),
       'Should output error message'
@@ -39,8 +39,8 @@ tap.test('$ cli stop [service]', async (t) => {
 
     const result = await cli(['stop', service], arenaPath)
 
-    t.notEqual(0, result.code, 'Should return code != 0')
-    t.strictEqual(
+    t.not(0, result.code, 'Should return code != 0')
+    t.equal(
       true,
       result.stderr.includes('ERROR'),
       'Should output error message'
@@ -56,8 +56,8 @@ tap.test('$ cli stop [service]', async (t) => {
       DOCKER_HOST: 'tcp://notexisting:2376'
     })
 
-    t.notEqual(0, result.code, 'Should return code != 0')
-    t.strictEqual(
+    t.not(0, result.code, 'Should return code != 0')
+    t.equal(
       true,
       result.stderr.includes('ERROR'),
       'Should output error message'
@@ -72,8 +72,8 @@ tap.test('$ cli stop [service]', async (t) => {
     const otherService = 'nats'
     const result = await cli(['start', otherService], arenaPath)
 
-    t.notEqual(0, result.code, 'Should return code != 0')
-    t.strictEqual(
+    t.not(0, result.code, 'Should return code != 0')
+    t.equal(
       true,
       result.stderr.includes('ERROR'),
       'Should output error message'
@@ -86,16 +86,16 @@ tap.test('$ cli stop [service]', async (t) => {
 
     const result = await cli(['stop', service], arenaPath)
 
-    t.strictEqual(0, result.code, 'Should return code 0')
+    t.equal(0, result.code, 'Should return code 0')
 
     t.test('Checking running containers', async (t) => {
       const cresult = await compose('ps', '-q')
-      t.strictEqual(0, cresult.code, 'Should return code 0')
+      t.equal(0, cresult.code, 'Should return code 0')
 
       // Checking number of running containers (identified by 64-digit ids):
       const lines = cresult.stdout.split('\n').filter((s) => s)
 
-      t.strictEqual(0, lines.length, 'Should return zero lines')
+      t.equal(0, lines.length, 'Should return zero lines')
     })
   })
 
@@ -106,16 +106,16 @@ tap.test('$ cli stop [service]', async (t) => {
 
     const result = await cli(['stop', service], arenaPath)
 
-    t.strictEqual(0, result.code, 'Should return code 0')
+    t.equal(0, result.code, 'Should return code 0')
 
     t.test('Checking running containers', async (t) => {
       const cresult = await compose('ps', '-q')
-      t.strictEqual(0, cresult.code, 'Should return code 0')
+      t.equal(0, cresult.code, 'Should return code 0')
 
       // Checking number of running containers (identified by 64-digit ids):
       const lines = cresult.stdout.split('\n').filter((s) => s)
 
-      t.strictEqual(1, lines.length, 'Should return one line')
+      t.equal(1, lines.length, 'Should return one line')
     })
   })
 
@@ -127,16 +127,16 @@ tap.test('$ cli stop [service]', async (t) => {
 
     const result = await cli(['stop', service], arenaPath)
 
-    t.strictEqual(0, result.code, 'Should return code 0')
+    t.equal(0, result.code, 'Should return code 0')
 
     t.test('Checking running containers', async (t) => {
       const cresult = await compose('ps', '-q')
-      t.strictEqual(0, cresult.code, 'Should return code 0')
+      t.equal(0, cresult.code, 'Should return code 0')
 
       // Checking number of running containers (identified by 64-digit ids):
       const lines = cresult.stdout.split('\n').filter((s) => s)
 
-      t.strictEqual(1, lines.length, 'Should return one line')
+      t.equal(1, lines.length, 'Should return one line')
     })
   })
 })

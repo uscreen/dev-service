@@ -23,14 +23,14 @@ tap.test('$ cli install', async (t) => {
 
     const result = await cli(['install'], arenaPath)
 
-    t.notEqual(0, result.code, 'Should return code != 0')
-    t.strictEqual(
+    t.not(0, result.code, 'Should return code != 0')
+    t.equal(
       true,
       result.stderr.includes('ERROR'),
       'Should output error message'
     )
 
-    t.strictEqual(
+    t.equal(
       false,
       fs.existsSync(servicesPath),
       'Should not create services folder'
@@ -44,14 +44,14 @@ tap.test('$ cli install', async (t) => {
 
       const result = await cli(['install'], arenaPath)
 
-      t.notEqual(0, result.code, 'Should return code != 0')
-      t.strictEqual(
+      t.not(0, result.code, 'Should return code != 0')
+      t.equal(
         true,
         result.stderr.includes('ERROR'),
         'Should output error message'
       )
 
-      t.strictEqual(
+      t.equal(
         false,
         fs.existsSync(servicesPath),
         'Should not create services folder'
@@ -66,14 +66,14 @@ tap.test('$ cli install', async (t) => {
 
       const result = await cli(['install'], arenaPath)
 
-      t.notEqual(0, result.code, 'Should return code != 0')
-      t.strictEqual(
+      t.not(0, result.code, 'Should return code != 0')
+      t.equal(
         true,
         result.stderr.includes('ERROR'),
         'Should output error message'
       )
 
-      t.strictEqual(
+      t.equal(
         false,
         fs.existsSync(servicesPath),
         'Should not create services folder'
@@ -88,14 +88,14 @@ tap.test('$ cli install', async (t) => {
 
       const result = await cli(['install'], arenaPath)
 
-      t.notEqual(0, result.code, 'Should return code != 0')
-      t.strictEqual(
+      t.not(0, result.code, 'Should return code != 0')
+      t.equal(
         true,
         result.stderr.includes('ERROR'),
         'Should output error message'
       )
 
-      t.strictEqual(
+      t.equal(
         false,
         fs.existsSync(servicesPath),
         'Should not create services folder'
@@ -113,24 +113,20 @@ tap.test('$ cli install', async (t) => {
 
       await cli(['install'], arenaPath)
 
-      t.strictEqual(
-        true,
-        fs.existsSync(composePath),
-        'Should create services folder'
-      )
+      t.equal(true, fs.existsSync(composePath), 'Should create services folder')
 
-      t.strictEqual(
+      t.equal(
         true,
         fs.existsSync(path.resolve(composePath, 'mongo.yml')),
         'Should create mongo.yml within services folder'
       )
       const mongoData = loadYaml(path.resolve(composePath, 'mongo.yml'))
-      t.strictEqual(
+      t.equal(
         'mongo:latest',
         mongoData.services.mongo.image,
         'Should use the correct image in mongo.yml'
       )
-      t.strictEqual(
+      t.equal(
         'dev-service-test_mongo',
         mongoData.services.mongo.container_name,
         'Should set the correct container name in mongo.yml'
@@ -139,31 +135,31 @@ tap.test('$ cli install', async (t) => {
       await docker('volume', 'inspect', 'dev-service-test-mongo-data')
         .then((c) => (code = c))
         .catch((c) => (code = c))
-      t.strictEqual(0, code, 'Should create docker volume defined in mongo.yml')
+      t.equal(0, code, 'Should create docker volume defined in mongo.yml')
 
-      t.strictEqual(
+      t.equal(
         true,
         fs.existsSync(path.resolve(composePath, 'nginx.yml')),
         'Should create nginx.yml within services folder'
       )
       const nginxData = loadYaml(path.resolve(composePath, 'nginx.yml'))
-      t.strictEqual(
+      t.equal(
         'nginx',
         nginxData.services.nginx.image,
         'Should use the correct image in nginx.yml'
       )
-      t.strictEqual(
+      t.equal(
         'dev-service-test_nginx',
         nginxData.services.nginx.container_name,
         'Should set the correct container name in nginx.yml'
       )
-      t.strictEqual(
+      t.equal(
         true,
         fs.existsSync(path.resolve(servicesPath, 'nginx')),
         'Should create local config files if not existing'
       )
 
-      t.strictEqual(
+      t.equal(
         2,
         fs.readdirSync(composePath).filter((f) => f !== '.gitignore').length,
         'Should not create any other yml files'
@@ -180,19 +176,15 @@ tap.test('$ cli install', async (t) => {
 
     await cli(['install'], arenaPath)
 
-    t.strictEqual(
-      true,
-      fs.existsSync(composePath),
-      'Should create services folder'
-    )
+    t.equal(true, fs.existsSync(composePath), 'Should create services folder')
 
-    t.strictEqual(
+    t.equal(
       true,
       fs.existsSync(path.resolve(composePath, 'mongo.yml')),
       'Should create mongo.yml within services folder'
     )
     const mongoData = loadYaml(path.resolve(composePath, 'mongo.yml'))
-    t.strictEqual(
+    t.equal(
       `${escape(name)}_mongo`,
       mongoData.services.mongo.container_name,
       'Should set the correct container name in mongo.yml'
@@ -201,6 +193,6 @@ tap.test('$ cli install', async (t) => {
     await docker('volume', 'inspect', `${escape(name)}-mongo-data`)
       .then((c) => (code = c))
       .catch((c) => (code = c))
-    t.strictEqual(0, code, 'Should create docker volume defined in mongo.yml')
+    t.equal(0, code, 'Should create docker volume defined in mongo.yml')
   })
 })

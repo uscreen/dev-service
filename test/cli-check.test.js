@@ -23,8 +23,8 @@ tap.test('$ cli check', async (t) => {
 
     const result = await cli(['check'], arenaPath)
 
-    t.notEqual(0, result.code, 'Should return code != 0')
-    t.strictEqual(
+    t.not(0, result.code, 'Should return code != 0')
+    t.equal(
       true,
       result.stderr.includes('ERROR'),
       'Should output error message'
@@ -37,8 +37,8 @@ tap.test('$ cli check', async (t) => {
 
     const result = await cli(['check'], arenaPath)
 
-    t.notEqual(0, result.code, 'Should return code != 0')
-    t.strictEqual(
+    t.not(0, result.code, 'Should return code != 0')
+    t.equal(
       true,
       result.stderr.includes('ERROR'),
       'Should output error message'
@@ -51,7 +51,7 @@ tap.test('$ cli check', async (t) => {
 
     const result = await cli(['check'], arenaPath)
 
-    t.strictEqual(0, result.code, 'Should return code 0')
+    t.equal(0, result.code, 'Should return code 0')
   })
 
   t.test("If one or more services' port(s) are already in use", (t) => {
@@ -60,8 +60,8 @@ tap.test('$ cli check', async (t) => {
       const server = webserver.start(80)
 
       cli(['check'], arenaPath).then((result) => {
-        t.notEqual(0, result.code, 'Should return code != 0')
-        t.strictEqual(
+        t.not(0, result.code, 'Should return code != 0')
+        t.equal(
           true,
           result.stderr.startsWith(
             'ERROR: Required port(s) are already allocated'
@@ -81,8 +81,8 @@ tap.test('$ cli check', async (t) => {
       const server = webserver.start(80)
 
       cli(['check'], arenaPath).then((result) => {
-        t.notEqual(0, result.code, 'Should return code != 0')
-        t.strictEqual(
+        t.not(0, result.code, 'Should return code != 0')
+        t.equal(
           true,
           result.stderr.startsWith(
             'ERROR: Required port(s) are already allocated'
