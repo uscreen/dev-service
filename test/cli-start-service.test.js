@@ -13,7 +13,7 @@ import {
 
 const packageJson = {
   name: 'dev-service-test',
-  services: ['mongo:latest', 'nginx']
+  services: ['mongo:latest', 'redis']
 }
 
 const service = 'mongo'

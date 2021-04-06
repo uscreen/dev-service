@@ -12,7 +12,7 @@ import {
 
 const packageJson = {
   name: 'dev-service-test',
-  services: ['mongo:latest', 'nginx']
+  services: ['mongo:latest', 'redis']
 }
 
 tap.test('$ cli check', async (t) => {
@@ -57,7 +57,7 @@ tap.test('$ cli check', async (t) => {
   t.test("If one or more services' port(s) are already in use", (t) => {
     prepareArena(packageJson)
     cli(['install'], arenaPath).then(() => {
-      const server = webserver.start(80)
+      const server = webserver.start(6379)
 
       cli(['check'], arenaPath).then((result) => {
         t.not(0, result.code, 'Should return code != 0')
@@ -88,7 +88,7 @@ tap.test('$ cli check', async (t) => {
     const name = '@uscreen.de/dev-service-test'
     prepareArena({ ...packageJson, name })
     cli(['install'], arenaPath).then(() => {
-      const server = webserver.start(80)
+      const server = webserver.start(6379)
 
       cli(['check'], arenaPath).then((result) => {
         t.not(0, result.code, 'Should return code != 0')

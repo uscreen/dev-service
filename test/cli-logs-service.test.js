@@ -12,10 +12,10 @@ import {
 
 const packageJson = {
   name: 'dev-service-test',
-  services: ['mongo:latest', 'nginx']
+  services: ['mongo:latest', 'redis']
 }
 
-const service = 'nginx'
+const service = 'mongo'
 
 tap.test('$ cli logs [service]', async (t) => {
   t.afterEach(clearArena)
@@ -102,7 +102,7 @@ tap.test('$ cli logs [service]', async (t) => {
 
     // send request 1s from now:
     setTimeout(() => {
-      http.get('http://localhost')
+      http.get('http://localhost:27017')
     }, 1000)
 
     // record logs for the next 2s:
@@ -119,8 +119,8 @@ tap.test('$ cli logs [service]', async (t) => {
 
     t.equal(
       true,
-      lines.filter((l) => l.match(/nginx.*GET \/.*200/)).length > 0,
-      'Should show request sent to nginx service in logs'
+      lines.filter((l) => l.match(/mongo.*connection.accepted/)).length > 0,
+      'Should show request sent to mongo service in logs'
     )
   })
 
@@ -132,7 +132,7 @@ tap.test('$ cli logs [service]', async (t) => {
 
     // send request 1s from now:
     setTimeout(() => {
-      http.get('http://localhost')
+      http.get('http://localhost:27017')
     }, 1000)
 
     // record logs for the next 2s:
@@ -149,8 +149,8 @@ tap.test('$ cli logs [service]', async (t) => {
 
     t.equal(
       true,
-      lines.filter((l) => l.match(/nginx.*GET \/.*200/)).length > 0,
-      'Should show request sent to nginx service in logs'
+      lines.filter((l) => l.match(/mongo.*connection.accepted/)).length > 0,
+      'Should show request sent to mongo service in logs'
     )
   })
 })

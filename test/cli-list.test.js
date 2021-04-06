@@ -12,7 +12,7 @@ import {
 
 const packageJson = {
   name: 'dev-service-test',
-  services: ['mongo:latest', 'nginx']
+  services: ['mongo:latest', 'redis']
 }
 
 tap.test('$ cli list', async (t) => {
@@ -92,7 +92,7 @@ tap.test('$ cli list', async (t) => {
         const lines = result.stdout.split('\n').filter((s) => s)
         t.equal(
           2,
-          lines.filter((l) => l.match(/^dev-service-test_(mongo|nginx).*Up/))
+          lines.filter((l) => l.match(/^dev-service-test_(mongo|redis).*Up/))
             .length,
           'Should output two services with Status "Up"'
         )
@@ -112,7 +112,7 @@ tap.test('$ cli list', async (t) => {
         t.equal(
           2,
           lines.filter((l) =>
-            l.match(new RegExp(`^${escape(name)}_(mongo|nginx).*Up`))
+            l.match(new RegExp(`^${escape(name)}_(mongo|redis).*Up`))
           ).length,
           'Should output two services with Status "Up"'
         )
