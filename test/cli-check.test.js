@@ -74,6 +74,16 @@ tap.test('$ cli check', async (t) => {
     })
   })
 
+  t.test('If one ore more services are already running', async (t) => {
+    prepareArena(packageJson)
+    await cli(['install'], arenaPath)
+    await cli(['start'], arenaPath)
+
+    const result = await cli(['check'], arenaPath)
+
+    t.strictEqual(0, result.code, 'Should return code 0')
+  })
+
   t.test('With irregular name in package.json', (t) => {
     const name = '@uscreen.de/dev-service-test'
     prepareArena({ ...packageJson, name })

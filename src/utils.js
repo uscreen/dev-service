@@ -54,6 +54,54 @@ const getComposeFiles = () =>
   fs.readdirSync(COMPOSE_DIR).filter((f) => f !== '.gitignore')
 
 /**
+ * Get own ports
+ */
+const getContainerPorts = (containerId) =>
+  new Promise((resolve, reject) => {
+    exec(`docker port ${containerId}`, function (err, stdout, stderr) {
+      if (err || stderr.toString().trim()) {
+        return reject(err)
+      }
+
+      const lines = stdout.split('\n').filter((l) => l)
+      const ports = lines
+        .map((l) => l.match(/.*:(\d+)/))
+        .map((m) => (m.length >= 1 ? m[1] : null))
+        .filter((p) => p)
+
+      resolve(ports)
+    })
+  })
+
+const getOwnPorts = () =>
+  new Promise((resolve, reject) => {
+    const { name } = readPackageJson()
+    const projectname = escape(name)
+    const files = getComposeFiles()
+
+    const ps = []
+    ps.push('-p', projectname)
+    for (const f of files) {
+      ps.push('-f', path.resolve(COMPOSE_DIR, f))
+    }
+
+    ps.push('ps', '-q')
+
+    exec(`docker-compose ${ps.join(' ')}`, function (err, stdout, stderr) {
+      if (err || stderr.toString().trim()) {
+        return reject(err)
+      }
+
+      const ids = stdout.split('\n').filter((id) => id)
+
+      Promise.all(ids.map(getContainerPorts)).then((ps) => {
+        const ports = [].concat(...ps)
+        resolve(ports)
+      })
+    })
+  })
+
+/**
  * Get all ports used (by given service)
  */
 const getPorts = (service) => {
@@ -250,7 +298,10 @@ export const checkUsedPorts = async (service) => {
   }
 
   const ports = getPorts(service)
-  const portsToPids = await getPIDs(ports)
+  const ownPorts = await getOwnPorts()
+  const otherPorts = ports.filter((p) => !ownPorts.includes(p))
+
+  const portsToPids = await getPIDs(otherPorts)
 
   if (Object.keys(portsToPids).length === 0) return // everything ok
 

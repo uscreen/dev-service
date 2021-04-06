@@ -7,7 +7,8 @@ import {
   compose,
   prepareArena,
   clearArena,
-  composePath
+  composePath,
+  webserver
 } from './helpers.js'
 
 const packageJson = {
@@ -95,6 +96,51 @@ tap.test('$ cli start [service]', async (t) => {
 
       t.equal(1, lines.length, 'Should return one line')
       t.equal(
+        true,
+        lines.every((s) => s.length === 64),
+        'Both lines contain container ids'
+      )
+    })
+  })
+
+  t.test("If one or more service's port(s) are already in use", (t) => {
+    prepareArena(packageJson)
+    cli(['install'], arenaPath).then(() => {
+      const server = webserver.start(27017)
+
+      cli(['start', service], arenaPath).then((result) => {
+        t.notEqual(0, result.code, 'Should return code != 0')
+        t.strictEqual(
+          true,
+          result.stderr.startsWith(
+            'ERROR: Required port(s) are already allocated'
+          ),
+          'Should output appropriate message to stderr'
+        )
+
+        webserver.stop(server, () => t.end())
+      })
+    })
+  })
+
+  t.test('If service is already running', async (t) => {
+    prepareArena(packageJson)
+    await cli(['install'], arenaPath)
+    await cli(['start', service], arenaPath)
+
+    const result = await cli(['start', service], arenaPath)
+
+    t.strictEqual(0, result.code, 'Should return code 0')
+
+    t.test('Checking running containers', async (t) => {
+      const cresult = await compose('ps', '-q')
+      t.strictEqual(0, cresult.code, 'Should return code 0')
+
+      // Checking number of running containers (identified by 64-digit ids):
+      const lines = cresult.stdout.split('\n').filter((s) => s)
+
+      t.strictEqual(1, lines.length, 'Should return one line')
+      t.strictEqual(
         true,
         lines.every((s) => s.length === 64),
         'Both lines contain container ids'
