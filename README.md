@@ -10,7 +10,7 @@
 - a local or remote docker host
 - a docker client connected to that host
 - `docker` and `docker-compose` located in your `$PATH`
-- `node` v10.x, v12.x or higher
+- `node` v12.20 or higher, v14.0 or higher
 
 ## Install
 
@@ -299,6 +299,10 @@ And the folder structure would look like this:
 ## Changelog
 
 > Format according to https://keepachangelog.com
+
+### v0.9.1
+#### Fixed
+- adjust node requirements
 
 ### v0.9.0
 #### Added

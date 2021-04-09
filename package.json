@@ -22,7 +22,7 @@
   "author": "Martin Herting <herting@uscreen.de>",
   "license": "MIT",
   "engines": {
-    "node": ">=12"
+    "node": "^12.20 || >=14"
   },
   "scripts": {
     "lint": "eslint '**/*.js' --fix",
