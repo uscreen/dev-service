@@ -202,27 +202,22 @@ export const checkOtherServices = async () => {
  */
 const getPID = (port) =>
   new Promise((resolve, reject) => {
-    exec(
-      'netstat -anv -p TCP && netstat -anv -p UDP',
-      function (err, stdout, stderr) {
-        if (err || stderr.toString().trim()) {
-          return reject(err)
-        }
+    exec(`lsof -nP -i:${port}`, function (_, stdout, stderr) {
+      // `lsof` already returns a non-zero exit code if it did not find any running
+      // process for the given port. Therefore we refrain from rejecting this Promise
+      // if an error was handed over.
 
-        const process = stdout
-          .toString()
-          .split(/\n/)
-          .filter((r) => r)
-          .map((r) => r.split(/\s+/))
-          .filter((r) => r[0].match(/^(udp|tcp)/))
-          .filter((r) => r[5].match(/^(LISTEN|ESTABLISHED)$/))
-          .find((r) => r[3].match(`\\.${port}$`))
+      const process = stdout
+        .toString()
+        .split(/\n/)
+        .filter((r) => r)
+        .map((r) => r.split(/\s+/))
+        .find((r) => (r[9] || '').match(/(LISTEN)/))
 
-        if (!process) return resolve(null)
+      if (!process) return resolve(null)
 
-        resolve(process[8])
-      }
-    )
+      resolve(process[1])
+    })
   })
 
 /**
