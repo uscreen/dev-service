@@ -300,6 +300,10 @@ And the folder structure would look like this:
 
 > Format according to https://keepachangelog.com
 
+### v0.9.2
+#### Fixed
+- fixing bug with mismatching PIDs.
+
 ### v0.9.1
 #### Fixed
 - adjust node requirements
