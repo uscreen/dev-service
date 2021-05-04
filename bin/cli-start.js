@@ -3,12 +3,8 @@
 import cli from 'commander'
 
 import { version } from '../src/constants.js'
-import {
-  compose,
-  checkOtherServices,
-  checkUsedPorts,
-  error
-} from '../src/utils.js'
+import { checkUsedPorts, checkOtherServices } from '../src/check.js'
+import { compose, error } from '../src/utils.js'
 
 cli
   .version(version)
