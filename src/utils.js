@@ -114,20 +114,14 @@ const getPorts = (service) => {
       fs.readFileSync(path.resolve(COMPOSE_DIR, f), 'utf8')
     )
     ports.push(
-      Object.values(yaml.services)
+      ...Object.values(yaml.services)
         .map((v) => v.ports)
+        .filter((p) => p)
         .flat()
     )
   }
 
-  const uniquePorts = [
-    ...new Set(
-      ports
-        .flat(2)
-        .map((p) => p.split(':'))
-        .flat()
-    )
-  ]
+  const uniquePorts = [...new Set(ports.map((p) => p.split(':')).flat())]
 
   return uniquePorts
 }

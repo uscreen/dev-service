@@ -104,4 +104,19 @@ tap.test('$ cli check', async (t) => {
       })
     })
   })
+
+  t.test('If a minimal customized service is given', async (t) => {
+    prepareArena({
+      ...packageJson,
+      services: [
+        ...packageJson.services,
+        { image: 'docker.elastic.co/elasticsearch/elasticsearch:6.4.2' }
+      ]
+    })
+    await cli(['install'], arenaPath)
+
+    const result = await cli(['check'], arenaPath)
+
+    t.equal(0, result.code, 'Should not crash and return code 0')
+  })
 })
