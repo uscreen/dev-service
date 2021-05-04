@@ -244,10 +244,11 @@ volumes:
 
 This action has the following features & caveats:
 
-- The service's name is automatically derived from the service's image name
+- The service's name is automatically derived from the service's image name. Installing a service without specifying an image will fail.
 - An adequate `container_name` is automatically added and will overwrite any existing container name
 - Volumes can only be given in "short syntax"
 - All specified named volumes are automatically created if not already existing
+- When referring to a file, keep in mind to specify the path relative to `services/.compose`
 
 ### Mapping host paths
 
