@@ -22,7 +22,7 @@ export const readPackageJson = () => {
     packageJson = readPackageSync({ cwd: root })
   } catch (e) {}
 
-  if (!packageJson) throw Error('No package.json')
+  if (!packageJson) throw Error('Missing or invalid package.json')
 
   const services = packageJson.services || []
   const name = packageJson.name || path.basename(root)
