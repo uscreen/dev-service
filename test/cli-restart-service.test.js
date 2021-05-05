@@ -7,11 +7,7 @@ import {
   compose,
   prepareArena,
   clearArena,
-  composePath,
-  otherArenaPath,
-  prepareOtherArena,
-  clearOtherArena,
-  webserver
+  composePath
 } from './helpers.js'
 
 const packageJson = {
@@ -19,13 +15,16 @@ const packageJson = {
   services: ['mongo:latest', 'nginx']
 }
 
+const service = 'mongo'
+const otherService = 'nginx'
+
 tap.test('$ cli start', async (t) => {
   t.afterEach(clearArena)
 
   t.test('Within a folder with no .compose subfolder', async (t) => {
     prepareArena(packageJson)
 
-    const result = await cli(['start'], arenaPath)
+    const result = await cli(['restart', service], arenaPath)
 
     t.not(0, result.code, 'Should return code != 0')
     t.equal(
@@ -39,7 +38,7 @@ tap.test('$ cli start', async (t) => {
     prepareArena(packageJson)
     fs.ensureDirSync(composePath)
 
-    const result = await cli(['start'], arenaPath)
+    const result = await cli(['restart', service], arenaPath)
 
     t.not(0, result.code, 'Should return code != 0')
     t.equal(
@@ -53,7 +52,7 @@ tap.test('$ cli start', async (t) => {
     prepareArena(packageJson)
     await cli(['install'], arenaPath)
 
-    const result = await cli(['start'], arenaPath, {
+    const result = await cli(['restart', service], arenaPath, {
       DOCKER_HOST: 'tcp://notexisting:2376'
     })
 
@@ -65,13 +64,47 @@ tap.test('$ cli start', async (t) => {
     )
   })
 
-  t.test('If services are defined in .compose subfolder', async (t) => {
+  t.test('With no running services', async (t) => {
     prepareArena(packageJson)
     await cli(['install'], arenaPath)
 
-    const result = await cli(['start'], arenaPath)
+    const result = await cli(['restart', service], arenaPath)
+
+    t.not(0, result.code, 'Should return code != 0')
+    t.equal(
+      true,
+      result.stderr.includes('ERROR'),
+      'Should output error message'
+    )
+  })
+
+  t.test('If only other services are running', async (t) => {
+    prepareArena(packageJson)
+    await cli(['install'], arenaPath)
+    await cli(['start', otherService], arenaPath)
+
+    const result = await cli(['restart', service], arenaPath)
+
+    t.not(0, result.code, 'Should return code != 0')
+    t.equal(
+      true,
+      result.stderr.includes('ERROR'),
+      'Should output error message'
+    )
+  })
+
+  t.test('If service is already running', async (t) => {
+    prepareArena(packageJson)
+    await cli(['install'], arenaPath)
+    await cli(['start', service], arenaPath)
+
+    const result = await cli(['restart', service], arenaPath)
 
     t.equal(0, result.code, 'Should return code 0')
+    const ls = result.stderr
+      .split('\n')
+      .filter((s) => s && s.match(/restart/i) && s.match(/done/i))
+    t.equal(1, ls.length, 'Should output one line confirming restart to stderr')
 
     t.test('Checking running containers', async (t) => {
       const cresult = await compose('ps', '-q')
@@ -80,43 +113,27 @@ tap.test('$ cli start', async (t) => {
       // Checking number of running containers (identified by 64-digit ids):
       const lines = cresult.stdout.split('\n').filter((s) => s)
 
-      t.equal(2, lines.length, 'Should return two lines')
+      t.equal(1, lines.length, 'Should return one line')
       t.equal(
         true,
         lines.every((s) => s.length === 64),
-        'Both lines contain container ids'
+        'Line contains container id'
       )
     })
   })
 
-  t.test("If one or more services' port(s) are already in use", (t) => {
-    prepareArena(packageJson)
-    cli(['install'], arenaPath).then(() => {
-      const server = webserver.start(80)
-
-      cli(['start'], arenaPath).then((result) => {
-        t.not(0, result.code, 'Should return code != 0')
-        t.equal(
-          true,
-          result.stderr.startsWith(
-            'ERROR: Required port(s) are already allocated'
-          ),
-          'Should output appropriate message to stderr'
-        )
-
-        webserver.stop(server, () => t.end())
-      })
-    })
-  })
-
-  t.test('If services are already running', async (t) => {
+  t.test('If all services are already running', async (t) => {
     prepareArena(packageJson)
     await cli(['install'], arenaPath)
     await cli(['start'], arenaPath)
 
-    const result = await cli(['start'], arenaPath)
+    const result = await cli(['restart', service], arenaPath)
 
     t.equal(0, result.code, 'Should return code 0')
+    const ls = result.stderr
+      .split('\n')
+      .filter((s) => s && s.match(/restart/i) && s.match(/done/i))
+    t.equal(1, ls.length, 'Should output one line confirming restart to stderr')
 
     t.test('Checking running containers', async (t) => {
       const cresult = await compose('ps', '-q')
@@ -133,44 +150,14 @@ tap.test('$ cli start', async (t) => {
       )
     })
   })
-
-  t.test(
-    'If services of another dev-service instance are running',
-    async (t) => {
-      const otherPackageJson = {
-        name: 'other-dev-service-test',
-        services: ['redis']
-      }
-
-      prepareOtherArena(otherPackageJson)
-      await cli(['install'], otherArenaPath)
-      await cli(['start'], otherArenaPath)
-
-      prepareArena(packageJson)
-      await cli(['install'], arenaPath)
-
-      const result = await cli(['start'], arenaPath)
-      t.ok(
-        result.stderr.includes('WARNING: dev-service is already running'),
-        'Should show warning'
-      )
-      t.ok(
-        result.stderr.includes('_otherarena'),
-        'Should show reference to other dev-service instance'
-      )
-
-      t.equal(0, result.code, 'Should not crash and return code 0')
-
-      clearOtherArena()
-    }
-  )
 
   t.test('With irregular name in package.json', async (t) => {
     const name = '@uscreen.de/dev-service-test'
     prepareArena({ ...packageJson, name })
     await cli(['install'], arenaPath)
+    await cli(['start'], arenaPath)
 
-    const result = await cli(['start'], arenaPath)
+    const result = await cli(['restart', service], arenaPath)
 
     t.equal(0, result.code, 'Should return code 0')
 

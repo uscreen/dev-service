@@ -18,13 +18,15 @@ const packageJson = {
   services: ['mongo:latest', 'nginx']
 }
 
+const service = 'mongo'
+
 tap.test('$ cli check', async (t) => {
   t.afterEach(clearArena)
 
   t.test('Within a folder with no .compose subfolder', async (t) => {
     prepareArena(packageJson)
 
-    const result = await cli(['check'], arenaPath)
+    const result = await cli(['check', service], arenaPath)
 
     t.not(0, result.code, 'Should return code != 0')
     t.equal(
@@ -38,7 +40,7 @@ tap.test('$ cli check', async (t) => {
     prepareArena(packageJson)
     fs.ensureDirSync(composePath)
 
-    const result = await cli(['check'], arenaPath)
+    const result = await cli(['check', service], arenaPath)
 
     t.not(0, result.code, 'Should return code != 0')
     t.equal(
@@ -48,21 +50,21 @@ tap.test('$ cli check', async (t) => {
     )
   })
 
-  t.test("If all services' ports are available", async (t) => {
+  t.test("If service's ports are available", async (t) => {
     prepareArena(packageJson)
     await cli(['install'], arenaPath)
 
-    const result = await cli(['check'], arenaPath)
+    const result = await cli(['check', service], arenaPath)
 
     t.equal(0, result.code, 'Should return code 0')
   })
 
-  t.test("If one or more services' port(s) are already in use", (t) => {
+  t.test("If service's port(s) are already in use", (t) => {
     prepareArena(packageJson)
     cli(['install'], arenaPath).then(() => {
-      const server = webserver.start(80)
+      const server = webserver.start(27017)
 
-      cli(['check'], arenaPath).then((result) => {
+      cli(['check', service], arenaPath).then((result) => {
         t.not(0, result.code, 'Should return code != 0')
         t.equal(
           true,
@@ -77,12 +79,22 @@ tap.test('$ cli check', async (t) => {
     })
   })
 
-  t.test('If services are already running', async (t) => {
+  t.test('If service is already running', async (t) => {
+    prepareArena(packageJson)
+    await cli(['install'], arenaPath)
+    await cli(['start', service], arenaPath)
+
+    const result = await cli(['check', service], arenaPath)
+
+    t.equal(0, result.code, 'Should return code 0')
+  })
+
+  t.test('If all services are already running', async (t) => {
     prepareArena(packageJson)
     await cli(['install'], arenaPath)
     await cli(['start'], arenaPath)
 
-    const result = await cli(['check'], arenaPath)
+    const result = await cli(['check', service], arenaPath)
 
     t.equal(0, result.code, 'Should return code 0')
   })
@@ -102,7 +114,7 @@ tap.test('$ cli check', async (t) => {
       prepareArena(packageJson)
       await cli(['install'], arenaPath)
 
-      const result = await cli(['check'], arenaPath)
+      const result = await cli(['check', service], arenaPath)
       t.ok(
         result.stderr.includes('WARNING: dev-service is already running'),
         'Should show warning'
@@ -122,9 +134,9 @@ tap.test('$ cli check', async (t) => {
     const name = '@uscreen.de/dev-service-test'
     prepareArena({ ...packageJson, name })
     cli(['install'], arenaPath).then(() => {
-      const server = webserver.start(80)
+      const server = webserver.start(27017)
 
-      cli(['check'], arenaPath).then((result) => {
+      cli(['check', service], arenaPath).then((result) => {
         t.not(0, result.code, 'Should return code != 0')
         t.equal(
           true,
@@ -149,7 +161,7 @@ tap.test('$ cli check', async (t) => {
     })
     await cli(['install'], arenaPath)
 
-    const result = await cli(['check'], arenaPath)
+    const result = await cli(['check', service], arenaPath)
 
     t.equal(0, result.code, 'Should not crash and return code 0')
   })

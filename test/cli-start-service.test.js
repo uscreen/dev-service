@@ -101,7 +101,7 @@ tap.test('$ cli start [service]', async (t) => {
       t.equal(
         true,
         lines.every((s) => s.length === 64),
-        'Both lines contain container ids'
+        'Line contains container id'
       )
     })
   })
@@ -143,6 +143,31 @@ tap.test('$ cli start [service]', async (t) => {
       const lines = cresult.stdout.split('\n').filter((s) => s)
 
       t.equal(1, lines.length, 'Should return one line')
+      t.equal(
+        true,
+        lines.every((s) => s.length === 64),
+        'Line contains container id'
+      )
+    })
+  })
+
+  t.test('If all services are already running', async (t) => {
+    prepareArena(packageJson)
+    await cli(['install'], arenaPath)
+    await cli(['start'], arenaPath)
+
+    const result = await cli(['start', service], arenaPath)
+
+    t.equal(0, result.code, 'Should return code 0')
+
+    t.test('Checking running containers', async (t) => {
+      const cresult = await compose('ps', '-q')
+      t.equal(0, cresult.code, 'Should return code 0')
+
+      // Checking number of running containers (identified by 64-digit ids):
+      const lines = cresult.stdout.split('\n').filter((s) => s)
+
+      t.equal(2, lines.length, 'Should return two lines')
       t.equal(
         true,
         lines.every((s) => s.length === 64),
@@ -201,7 +226,7 @@ tap.test('$ cli start [service]', async (t) => {
       t.equal(
         true,
         lines.every((s) => s.length === 64),
-        'Both lines contain container ids'
+        'Line contains container id'
       )
     })
   })
