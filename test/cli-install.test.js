@@ -82,9 +82,9 @@ tap.test('$ cli install', async (t) => {
   )
 
   t.test(
-    'Within a folder with a package.json containing an invalid services',
+    'Within a folder with a package.json containing an unsupported service',
     async (t) => {
-      prepareArena({ services: ['invalid-service-name'] })
+      prepareArena({ services: ['unsupported-service-name'] })
 
       const result = await cli(['install'], arenaPath)
 
@@ -104,17 +104,51 @@ tap.test('$ cli install', async (t) => {
   )
 
   t.test(
-    'Within a folder with a package.json containing some services',
+    'Within a folder with a package.json containing an invalid custom service',
+    async (t) => {
+      prepareArena({ services: [{}] })
+
+      const result = await cli(['install'], arenaPath)
+
+      t.not(0, result.code, 'Should return code != 0')
+      t.equal(
+        true,
+        result.stderr.includes('ERROR'),
+        'Should output error message'
+      )
+
+      t.equal(
+        false,
+        fs.existsSync(servicesPath),
+        'Should not create services folder'
+      )
+    }
+  )
+
+  t.test(
+    'Within a folder with a package.json containing standard & custom services',
     async (t) => {
       prepareArena({
         name: 'dev-service-test',
-        services: ['mongo:latest', 'nginx']
+        services: [
+          'mongo:latest',
+          'nginx',
+          {
+            image: 'docker.elastic.co/elasticsearch/elasticsearch:6.4.2',
+            ports: ['9200:9200'],
+            volumes: [
+              'elasticsearch-data:/usr/share/elasticsearch/data:delegated'
+            ]
+          }
+        ]
       })
 
-      await cli(['install'], arenaPath)
+      const result = await cli(['install'], arenaPath)
+      t.equal(0, result.code, 'Should return code 0')
 
       t.equal(true, fs.existsSync(composePath), 'Should create services folder')
 
+      // mongo
       t.equal(
         true,
         fs.existsSync(path.resolve(composePath, 'mongo.yml')),
@@ -137,6 +171,7 @@ tap.test('$ cli install', async (t) => {
         .catch((c) => (code = c))
       t.equal(0, code, 'Should create docker volume defined in mongo.yml')
 
+      // nginx
       t.equal(
         true,
         fs.existsSync(path.resolve(composePath, 'nginx.yml')),
@@ -159,8 +194,37 @@ tap.test('$ cli install', async (t) => {
         'Should create local config files if not existing'
       )
 
+      // elasticsearch
       t.equal(
-        2,
+        true,
+        fs.existsSync(path.resolve(composePath, 'elasticsearch.yml')),
+        'Should create elasticsearch.yml within services folder'
+      )
+      const elasticData = loadYaml(
+        path.resolve(composePath, 'elasticsearch.yml')
+      )
+      t.equal(
+        'docker.elastic.co/elasticsearch/elasticsearch:6.4.2',
+        elasticData.services.elasticsearch.image,
+        'Should use the correct image in elasticsearch.yml'
+      )
+      t.equal(
+        'dev-service-test_elasticsearch',
+        elasticData.services.elasticsearch.container_name,
+        'Should set the correct container name in elasticsearch.yml'
+      )
+      code = null
+      await docker('volume', 'inspect', 'dev-service-test-elasticsearch-data')
+        .then((c) => (code = c))
+        .catch((c) => (code = c))
+      t.equal(
+        0,
+        code,
+        'Should create docker volume defined in elasticsearch.yml'
+      )
+
+      t.equal(
+        3,
         fs.readdirSync(composePath).filter((f) => f !== '.gitignore').length,
         'Should not create any other yml files'
       )

@@ -153,16 +153,32 @@ const serviceInstall = async (data, projectname) => {
 }
 
 const install = async () => {
-  const { services, name } = readPackageJson()
+  const { services: all, name } = readPackageJson()
   const projectname = escape(name)
 
-  const data = services.map(readServiceData)
+  // cleanse services from falsy values:
+  const services = all.filter((s) => s)
 
-  const invalid = data.filter((d) => !d.template).map((d) => d.name)
+  // validate custom services:
+  const invalid = services.filter((s) => typeof s === 'object' && !s.image)
   if (invalid.length > 0) {
-    throw Error(`Invalid services: ${invalid.join(', ')}`)
+    throw Error(
+      `Invalid custom services:\n${invalid
+        .map((i) => JSON.stringify(i, null, 2))
+        .join(',\n')}`
+    )
   }
 
+  // create services data:
+  const data = services.map(readServiceData)
+
+  // exit if not all services' images are supported:
+  const unsupported = data.filter((d) => !d.template).map((d) => d.name)
+  if (unsupported.length > 0) {
+    throw Error(`Unsupported services: ${unsupported.join(', ')}`)
+  }
+
+  // install services:
   resetComposeDir(COMPOSE_DIR)
   const escapedProjectname = projectname
     .replace(/^[^a-zA-Z0-9]*/, '')
