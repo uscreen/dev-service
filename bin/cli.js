@@ -28,10 +28,3 @@ cli
  * read args
  */
 cli.parse(process.argv)
-
-/**
- * output help as default
- */
-if (!process.argv.slice(2).length) {
-  cli.help()
-}
