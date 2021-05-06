@@ -8,6 +8,9 @@ import {
   prepareArena,
   clearArena,
   composePath,
+  otherArenaPath,
+  prepareOtherArena,
+  clearOtherArena,
   webserver
 } from './helpers.js'
 
@@ -130,6 +133,37 @@ tap.test('$ cli start', async (t) => {
       )
     })
   })
+
+  t.test(
+    'If services of another dev-service instance are running',
+    async (t) => {
+      const otherPackageJson = {
+        name: 'other-dev-service-test',
+        services: ['redis']
+      }
+
+      prepareOtherArena(otherPackageJson)
+      await cli(['install'], otherArenaPath)
+      await cli(['start'], otherArenaPath)
+
+      prepareArena(packageJson)
+      await cli(['install'], arenaPath)
+
+      const result = await cli(['start'], arenaPath)
+      t.ok(
+        result.stderr.includes('WARNING: dev-service is already running'),
+        'Should show warning'
+      )
+      t.ok(
+        result.stderr.includes('_otherarena'),
+        'Should show reference to other dev-service instance'
+      )
+
+      t.equal(0, result.code, 'Should not crash and return code 0')
+
+      clearOtherArena()
+    }
+  )
 
   t.test('With irregular name in package.json', async (t) => {
     const name = '@uscreen.de/dev-service-test'

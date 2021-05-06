@@ -17,6 +17,9 @@ export const arenaPath = path.resolve(__dirname, './_arena')
 export const servicesPath = path.resolve(arenaPath, 'services')
 export const composePath = path.resolve(arenaPath, 'services/.compose')
 
+export const otherArenaPath = path.resolve(__dirname, './_otherarena')
+const otherComposePath = path.resolve(otherArenaPath, 'services/.compose')
+
 export { escape }
 
 // for easy string testing: disable color output of chalk
@@ -41,11 +44,14 @@ export const cli = (args, cwd, env, timeout) => {
   })
 }
 
-export const compose = async (...params) => {
-  const packageJson = readPackageSync({ cwd: arenaPath })
-  const name = packageJson.name || path.basename(arenaPath)
+const _compose = (other = false) => async (...params) => {
+  const ap = other ? otherArenaPath : arenaPath
+  const cp = other ? otherComposePath : composePath
+
+  const packageJson = readPackageSync({ cwd: ap })
+  const name = packageJson.name || path.basename(ap)
   const projectname = escape(name)
-  const files = fs.readdirSync(composePath).filter((f) => f !== '.gitignore')
+  const files = fs.readdirSync(cp).filter((f) => f !== '.gitignore')
 
   const ps = []
   ps.push('-p', projectname)
@@ -58,7 +64,7 @@ export const compose = async (...params) => {
   return new Promise((resolve) => {
     exec(
       `docker-compose ${ps.join(' ')}`,
-      { cwd: composePath },
+      { cwd: cp },
       (error, stdout, stderr) => {
         resolve({
           code: error && error.code ? error.code : 0,
@@ -71,16 +77,18 @@ export const compose = async (...params) => {
   })
 }
 
-export const prepareArena = (packageJson) => {
-  fs.removeSync(arenaPath)
-  fs.mkdirSync(arenaPath)
+const _prepareArena = (other = false) => (packageJson) => {
+  const ap = other ? otherArenaPath : arenaPath
+
+  fs.removeSync(ap)
+  fs.mkdirSync(ap)
 
   if (!packageJson) {
     return
   }
 
   fs.writeFileSync(
-    path.resolve(arenaPath, 'package.json'),
+    path.resolve(ap, 'package.json'),
     JSON.stringify(packageJson),
     {
       encoding: 'utf-8'
@@ -88,17 +96,28 @@ export const prepareArena = (packageJson) => {
   )
 }
 
-export const clearArena = async () => {
-  if (fs.existsSync(composePath)) {
-    await compose('stop').catch((e) => {})
-    await compose('rm', '-fv').catch((e) => {})
+const _clearArena = (other = false) => async () => {
+  const ap = other ? otherArenaPath : arenaPath
+  const cp = other ? otherComposePath : composePath
+
+  if (fs.existsSync(cp)) {
+    await _compose(other)('stop').catch((e) => {})
+    await _compose(other)('rm', '-fv').catch((e) => {})
   }
 
-  fs.removeSync(arenaPath)
+  fs.removeSync(ap)
 
   // Catch error if volume not exists:
-  await docker('volume', 'rm', 'dev-service-test-mongo-data').catch((e) => {})
+  if (!other)
+    await docker('volume', 'rm', 'dev-service-test-mongo-data').catch((e) => {})
 }
+
+export const compose = _compose(false)
+export const prepareArena = _prepareArena(false)
+export const clearArena = _clearArena(false)
+
+export const prepareOtherArena = _prepareArena(true)
+export const clearOtherArena = _clearArena(true)
 
 export const loadYaml = (filepath) => {
   const content = fs.readFileSync(filepath, {
