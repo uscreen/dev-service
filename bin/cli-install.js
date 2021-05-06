@@ -180,10 +180,7 @@ const install = async () => {
 
   // install services:
   resetComposeDir(COMPOSE_DIR)
-  const escapedProjectname = projectname
-    .replace(/^[^a-zA-Z0-9]*/, '')
-    .replace(/[^a-zA-Z0-9_.-]/g, '_')
-  await Promise.all(data.map((d) => serviceInstall(d, escapedProjectname)))
+  await Promise.all(data.map((d) => serviceInstall(d, projectname)))
 
   console.log(`Done (${services.length} services installed).`)
 }
