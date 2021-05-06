@@ -108,8 +108,12 @@ const _clearArena = (other = false) => async () => {
   fs.removeSync(ap)
 
   // Catch error if volume not exists:
-  if (!other)
-    await docker('volume', 'rm', 'dev-service-test-mongo-data').catch((e) => {})
+  if (!other) {
+    await Promise.all([
+      docker('volume', 'rm', 'dev-service-test-mongo-data'),
+      docker('volume', 'rm', 'dev-service-test-elasticsearch-data')
+    ]).catch((e) => {})
+  }
 }
 
 export const compose = _compose(false)
