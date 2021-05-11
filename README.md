@@ -301,9 +301,16 @@ And the folder structure would look like this:
 
 > Format according to https://keepachangelog.com
 
+### v0.9.3
+#### Added
+- validation of custom service definitions
+
+#### Fixed
+- vulnerabilites due to used packages
+
 ### v0.9.2
 #### Fixed
-- fixing bug with mismatching PIDs.
+- bug with mismatching PIDs
 
 ### v0.9.1
 #### Fixed
@@ -321,7 +328,6 @@ And the folder structure would look like this:
 
 #### Removed
 - support for node 10 (due to migration to ESM)
-
 
 ### v0.8.1
 #### Fixed
