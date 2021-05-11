@@ -230,4 +230,72 @@ tap.test('$ cli start [service]', async (t) => {
       )
     })
   })
+
+  t.test('If the HOST part of a port mapping is in use', (t) => {
+    prepareArena({
+      ...packageJson,
+      services: [
+        'mongo:latest',
+        {
+          image: 'redis:latest',
+          ports: ['16379:6379'] // HOST:CONTAINER
+        }
+      ]
+    })
+
+    cli(['install'], arenaPath).then(() => {
+      const server = webserver.start(16379)
+
+      cli(['start', 'redis'], arenaPath).then((result) => {
+        t.not(0, result.code, 'Should return code != 0')
+        t.equal(
+          true,
+          result.stderr.startsWith(
+            'ERROR: Required port(s) are already allocated'
+          ),
+          'Should output appropriate message to stderr'
+        )
+
+        webserver.stop(server, () => t.end())
+      })
+    })
+  })
+
+  t.test('If the CONTAINER part of a port mapping is in use', (t) => {
+    prepareArena({
+      ...packageJson,
+      services: [
+        'mongo:latest',
+        {
+          image: 'redis:latest',
+          ports: ['16379:6379'] // HOST:CONTAINER
+        }
+      ]
+    })
+
+    cli(['install'], arenaPath).then(() => {
+      const server = webserver.start(6379)
+
+      cli(['start', 'redis'], arenaPath).then((result) => {
+        t.equal(0, result.code, 'Should return code 0')
+
+        t.test('Checking running containers', async (t) => {
+          const cresult = await compose('ps', '-q')
+          t.equal(0, cresult.code, 'Should return code 0')
+
+          // Checking number of running containers (identified by 64-digit ids):
+          const lines = cresult.stdout.split('\n').filter((s) => s)
+
+          t.equal(1, lines.length, 'Should return one line')
+          t.equal(
+            true,
+            lines.every((s) => s.length === 64),
+            'Line contains container id'
+          )
+        })
+
+        webserver.stop(server, () => t.end())
+      })
+    })
+  })
 })

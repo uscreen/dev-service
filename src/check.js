@@ -86,7 +86,7 @@ const getRequiredPorts = (service) => {
     )
   }
 
-  const uniquePorts = [...new Set(ports.map((p) => p.split(':')).flat())]
+  const uniquePorts = [...new Set(ports.map((p) => p.split(':')[0]))]
 
   return uniquePorts
 }

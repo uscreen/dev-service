@@ -301,6 +301,10 @@ And the folder structure would look like this:
 
 > Format according to https://keepachangelog.com
 
+### v0.9.4
+##### Fixed
+- `service check` no more checks for ports given as `CONTAINER` part of a port mapping (`HOST:CONTAINER`)
+
 ### v0.9.3
 #### Added
 - validation of custom service definitions
