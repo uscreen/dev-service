@@ -14,6 +14,14 @@ import {
 
 import { docker } from '../src/utils.js'
 
+const readVolumeOptions = () => {
+  const raw = fs.readFileSync(path.resolve(servicesPath, '.options'), {
+    encoding: 'utf-8'
+  })
+  const options = JSON.parse(raw)
+  return options.volumes
+}
+
 tap.test('$ cli install --enable-volumes-id', async (t) => {
   t.afterEach(clearArena)
 
@@ -34,18 +42,18 @@ tap.test('$ cli install --enable-volumes-id', async (t) => {
       'Should create mongo.yml within services folder'
     )
     t.ok(
-      fs.existsSync(path.resolve(servicesPath, '.volumesid')),
-      'Should create .volumesid within services folder'
+      fs.existsSync(path.resolve(servicesPath, '.options')),
+      'Should create .options within services folder'
     )
-    const volumesID = fs.readFileSync(
-      path.resolve(servicesPath, '.volumesid'),
-      {
-        encoding: 'utf-8'
-      }
-    )
+    const { id: volumesID, mode: volumesMode } = readVolumeOptions()
     t.ok(
       volumesID.match(/^[a-z0-9]{12}$/i),
-      '... and containing volume ID of 12 characters/numbers'
+      '... containing volume ID of 12 characters/numbers'
+    )
+    t.equal(
+      'volumes-id',
+      volumesMode,
+      '... containing the correct volumes mode'
     )
 
     const volumeName = `${volumesID}-mongo-data`
@@ -77,18 +85,18 @@ tap.test('$ cli install --enable-volumes-id', async (t) => {
     t.equal(0, result.code, 'Should return code 0')
 
     t.ok(
-      fs.existsSync(path.resolve(servicesPath, '.volumesid')),
-      'Should create .volumesid within services folder'
+      fs.existsSync(path.resolve(servicesPath, '.options')),
+      'Should create .options within services folder'
     )
-    const volumesID = fs.readFileSync(
-      path.resolve(servicesPath, '.volumesid'),
-      {
-        encoding: 'utf-8'
-      }
-    )
+    const { id: volumesID, mode: volumesMode } = readVolumeOptions()
     t.ok(
       volumesID.match(/^[a-z0-9]{12}$/i),
-      '... and containing volume ID of 12 characters/numbers'
+      '... containing volume ID of 12 characters/numbers'
+    )
+    t.equal(
+      'volumes-id',
+      volumesMode,
+      '... containing the correct volumes mode'
     )
 
     const volumeName = `${volumesID}-mongo-data`
@@ -115,27 +123,17 @@ tap.test('$ cli install --enable-volumes-id', async (t) => {
 
     await cli(['install', '--enable-volumes-id'], arenaPath)
 
-    const initialVolumesID = fs.readFileSync(
-      path.resolve(servicesPath, '.volumesid'),
-      {
-        encoding: 'utf-8'
-      }
-    )
+    const { id: initialVolumesID } = readVolumeOptions()
 
     const result = await cli(['install', '--enable-volumes-id'], arenaPath)
 
     t.equal(0, result.code, 'Should return code 0')
 
     t.ok(
-      fs.existsSync(path.resolve(servicesPath, '.volumesid')),
-      'Should create .volumesid within services folder'
+      fs.existsSync(path.resolve(servicesPath, '.options')),
+      'Should create .options within services folder'
     )
-    const volumesID = fs.readFileSync(
-      path.resolve(servicesPath, '.volumesid'),
-      {
-        encoding: 'utf-8'
-      }
-    )
+    const { id: volumesID } = readVolumeOptions()
     t.equal(initialVolumesID, volumesID, 'Should not change volumes id')
 
     const volumeName = `${volumesID}-mongo-data`
@@ -166,27 +164,17 @@ tap.test('$ cli install', async (t) => {
 
     await cli(['install', '--enable-volumes-id'], arenaPath)
 
-    const initialVolumesID = fs.readFileSync(
-      path.resolve(servicesPath, '.volumesid'),
-      {
-        encoding: 'utf-8'
-      }
-    )
+    const { id: initialVolumesID } = readVolumeOptions()
 
     const result = await cli(['install'], arenaPath)
 
     t.equal(0, result.code, 'Should return code 0')
 
     t.ok(
-      fs.existsSync(path.resolve(servicesPath, '.volumesid')),
-      'Should not remove .volumesid within services folder'
+      fs.existsSync(path.resolve(servicesPath, '.options')),
+      'Should not remove .options within services folder'
     )
-    const volumesID = fs.readFileSync(
-      path.resolve(servicesPath, '.volumesid'),
-      {
-        encoding: 'utf-8'
-      }
-    )
+    const { id: volumesID } = readVolumeOptions()
     t.equal(initialVolumesID, volumesID, 'Should not change volumes id')
 
     const volumeName = `${volumesID}-mongo-data`

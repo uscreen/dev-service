@@ -3,6 +3,7 @@
 import path from 'path'
 import fs from 'fs-extra'
 import YAML from 'yaml'
+import parseJson from 'parse-json'
 import { customAlphabet } from 'nanoid'
 
 import { TEMPLATES_DIR, SERVICES_DIR, COMPOSE_DIR } from './constants.js'
@@ -19,7 +20,7 @@ const nanoid = customAlphabet(
   12
 )
 
-const VOLUMES_ID_PATH = path.resolve(SERVICES_DIR, '.volumesid')
+const OPTIONS_PATH = path.resolve(SERVICES_DIR, '.options')
 
 /**
  * Helper methods
@@ -39,21 +40,18 @@ const fillTemplate = (template, data) => {
   return template
 }
 
-const ensureVolumeId = () => {
-  return getVolumesID() || createVolumesID()
+const getOptions = () => {
+  const raw =
+    fs.existsSync(OPTIONS_PATH) &&
+    fs.readFileSync(OPTIONS_PATH, { encoding: 'utf-8' })
+  const options = parseJson(raw || null)
+
+  return options || {}
 }
 
-const getVolumesID = () => {
-  return (
-    fs.existsSync(VOLUMES_ID_PATH) &&
-    fs.readFileSync(VOLUMES_ID_PATH, { encoding: 'utf-8' })
-  )
-}
-
-const createVolumesID = () => {
-  const id = nanoid()
-  fs.writeFileSync(VOLUMES_ID_PATH, id)
-  return id
+const setOptions = (options) => {
+  const raw = JSON.stringify(options, null, 2)
+  fs.writeFileSync(OPTIONS_PATH, raw)
 }
 
 const ensureVolumes = async (content) => {
@@ -171,7 +169,7 @@ const serviceInstall = async (data, projectname, volumesID) => {
   copyAdditionalFiles(data.name)
 }
 
-export const install = async (options) => {
+export const install = async (opts) => {
   const { services: all, name } = readPackageJson()
   const projectname = escape(name)
 
@@ -199,8 +197,25 @@ export const install = async (options) => {
 
   // install services:
   resetComposeDir(COMPOSE_DIR)
-  const volumesID = options.enableVolumesId ? ensureVolumeId() : getVolumesID()
-  await Promise.all(data.map((d) => serviceInstall(d, projectname, volumesID)))
 
-  if (volumesID) console.log(`Done (${services.length} services installed).`)
+  const options = getOptions()
+  options.volumes = options.volumes || {}
+
+  if (opts.enableVolumesId) {
+    options.volumes.mode = 'volumes-id'
+    options.volumes.id = options.volumes.id || nanoid()
+
+    setOptions(options)
+  }
+
+  if (options.volumes.mode === 'volumes-id') {
+    const volumesID = options.volumes.id
+    await Promise.all(
+      data.map((d) => serviceInstall(d, projectname, volumesID))
+    )
+  } else {
+    await Promise.all(data.map((d) => serviceInstall(d, projectname)))
+  }
+
+  console.log(`Done (${services.length} services installed).`)
 }
