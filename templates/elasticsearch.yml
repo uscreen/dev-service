@@ -16,4 +16,4 @@ services:
 volumes:
   elasticsearch-data:
     external:
-      name: {{projectname}}-elasticsearch-data
+      name: {{volumesID}}-elasticsearch-data

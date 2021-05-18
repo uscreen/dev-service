@@ -6,12 +6,15 @@ import { version } from '../src/constants.js'
 import { error } from '../src/utils.js'
 import { install } from '../src/install.js'
 
-cli.version(version).action(async () => {
-  try {
-    await install()
-  } catch (e) {
-    error(e)
-  }
-})
+cli
+  .version(version)
+  .option('--enable-volumes-id', 'Using unique ID when naming volumes')
+  .action(async (options) => {
+    try {
+      await install(options)
+    } catch (e) {
+      error(e)
+    }
+  })
 
 cli.parse(process.argv)

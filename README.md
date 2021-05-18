@@ -126,6 +126,16 @@ Please also check for supervised processes (pm2, launchd, etc.) in case of a pro
 
 Install all services specified in package.json.
 
+#### Options
+
+##### `--enable-volumes-id`
+
+> ***experimental feature***
+
+Creates a unique ID and uses it when naming the services' volumes, thus avoiding conflicts between volumes of different dev-service instances. Every subsequent call of `service install` will (re-)create volume names with the same ID.
+
+**Warning**: With this option, already installed services will no longer use already existing volumes named the classical way.
+
 ### $ service start [service]
 
 Start all or given installed service(s).

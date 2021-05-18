@@ -3,6 +3,7 @@
 import path from 'path'
 import fs from 'fs-extra'
 import YAML from 'yaml'
+import { customAlphabet } from 'nanoid'
 
 import { TEMPLATES_DIR, SERVICES_DIR, COMPOSE_DIR } from './constants.js'
 
@@ -12,6 +13,13 @@ import {
   docker,
   resetComposeDir
 } from '../src/utils.js'
+
+const nanoid = customAlphabet(
+  '1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ',
+  12
+)
+
+const VOLUMES_ID_PATH = path.resolve(SERVICES_DIR, '.volumesid')
 
 /**
  * Helper methods
@@ -29,6 +37,23 @@ const fillTemplate = (template, data) => {
   }
 
   return template
+}
+
+const ensureVolumeId = () => {
+  return getVolumesID() || createVolumesID()
+}
+
+const getVolumesID = () => {
+  return (
+    fs.existsSync(VOLUMES_ID_PATH) &&
+    fs.readFileSync(VOLUMES_ID_PATH, { encoding: 'utf-8' })
+  )
+}
+
+const createVolumesID = () => {
+  const id = nanoid()
+  fs.writeFileSync(VOLUMES_ID_PATH, id)
+  return id
 }
 
 const ensureVolumes = async (content) => {
@@ -131,11 +156,12 @@ const readStandardServiceData = (service) => {
   return result
 }
 
-const serviceInstall = async (data, projectname) => {
+const serviceInstall = async (data, projectname, volumesID) => {
   const content = fillTemplate(data.template, {
     image: data.image,
     container_name: `${projectname}_${data.name}`,
-    projectname: projectname
+    projectname: projectname,
+    volumesID: volumesID || projectname
   })
 
   await ensureVolumes(content)
@@ -145,7 +171,7 @@ const serviceInstall = async (data, projectname) => {
   copyAdditionalFiles(data.name)
 }
 
-export const install = async () => {
+export const install = async (options) => {
   const { services: all, name } = readPackageJson()
   const projectname = escape(name)
 
@@ -173,7 +199,8 @@ export const install = async () => {
 
   // install services:
   resetComposeDir(COMPOSE_DIR)
-  await Promise.all(data.map((d) => serviceInstall(d, projectname)))
+  const volumesID = options.enableVolumesId ? ensureVolumeId() : getVolumesID()
+  await Promise.all(data.map((d) => serviceInstall(d, projectname, volumesID)))
 
-  console.log(`Done (${services.length} services installed).`)
+  if (volumesID) console.log(`Done (${services.length} services installed).`)
 }
