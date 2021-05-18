@@ -187,3 +187,36 @@ tap.test('$ cli install', async (t) => {
     )
   })
 })
+
+tap.test('$ cli install --enable-classic-volumes', async (t) => {
+  t.afterEach(clearArena)
+
+  t.test('With already installed services (with volumes-id)', async (t) => {
+    prepareArena({
+      name: 'dev-service-test',
+      services: ['mongo:latest']
+    })
+
+    await cli(['install', '--enable-volumes-id'], arenaPath)
+
+    const result = await cli(['install', '--enable-classic-volumes'], arenaPath)
+
+    t.equal(0, result.code, 'Should return code 0')
+
+    t.ok(
+      fs.existsSync(path.resolve(servicesPath, '.options')),
+      'Should not remove .options within services folder'
+    )
+    const volumes = readVolumeOptions()
+    t.notOk(volumes, 'Should remove volumes section in options')
+
+    const volumeName = 'dev-service-test-mongo-data'
+
+    const mongoData = loadYaml(path.resolve(composePath, 'mongo.yml'))
+    t.equal(
+      volumeName,
+      mongoData.volumes['mongo-data'].external.name,
+      'Should correct volume name in mongo.yml'
+    )
+  })
+})

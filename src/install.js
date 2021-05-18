@@ -44,9 +44,8 @@ const getOptions = () => {
   const raw =
     fs.existsSync(OPTIONS_PATH) &&
     fs.readFileSync(OPTIONS_PATH, { encoding: 'utf-8' })
-  const options = parseJson(raw || null)
 
-  return options || {}
+  return raw ? parseJson(raw) : {}
 }
 
 const setOptions = (options) => {
@@ -199,16 +198,25 @@ export const install = async (opts) => {
   resetComposeDir(COMPOSE_DIR)
 
   const options = getOptions()
-  options.volumes = options.volumes || {}
 
   if (opts.enableVolumesId) {
-    options.volumes.mode = 'volumes-id'
-    options.volumes.id = options.volumes.id || nanoid()
+    const id = (options.volumes && options.volumes.id) || nanoid()
+
+    options.volumes = {
+      mode: 'volumes-id',
+      id
+    }
 
     setOptions(options)
   }
 
-  if (options.volumes.mode === 'volumes-id') {
+  if (opts.enableClassicVolumes) {
+    delete options.volumes
+
+    setOptions(options)
+  }
+
+  if (options.volumes && options.volumes.mode === 'volumes-id') {
     const volumesID = options.volumes.id
     await Promise.all(
       data.map((d) => serviceInstall(d, projectname, volumesID))

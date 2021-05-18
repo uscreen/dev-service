@@ -136,6 +136,12 @@ Creates a unique ID and uses it when naming the services' volumes, thus avoiding
 
 **Warning**: With this option, already installed services will no longer use already existing volumes named the classical way.
 
+##### `--enable-classic-volumes`
+
+Disables volumes ID and uses the project name when naming the services' volumes.
+
+**Warning**: With this option, installed services will no longer use already existing volumes named with volumes ID.
+
 ### $ service start [service]
 
 Start all or given installed service(s).

@@ -9,6 +9,7 @@ import { install } from '../src/install.js'
 cli
   .version(version)
   .option('--enable-volumes-id', 'Using unique ID when naming volumes')
+  .option('--enable-classic-volumes', "Don't use unique ID when naming volumes")
   .action(async (options) => {
     try {
       await install(options)
