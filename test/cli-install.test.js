@@ -168,7 +168,7 @@ tap.test('$ cli install', async (t) => {
       let code = null
       await docker('volume', 'inspect', 'dev-service-test-mongo-data')
         .then((c) => (code = c))
-        .catch((c) => (code = c))
+        .catch((e) => (code = e.code))
       t.equal(0, code, 'Should create docker volume defined in mongo.yml')
 
       // nginx
@@ -216,7 +216,7 @@ tap.test('$ cli install', async (t) => {
       code = null
       await docker('volume', 'inspect', 'dev-service-test-elasticsearch-data')
         .then((c) => (code = c))
-        .catch((c) => (code = c))
+        .catch((e) => (code = e.code))
       t.equal(
         0,
         code,
@@ -256,7 +256,7 @@ tap.test('$ cli install', async (t) => {
     let code = null
     await docker('volume', 'inspect', `${escape(name)}-mongo-data`)
       .then((c) => (code = c))
-      .catch((c) => (code = c))
+      .catch((e) => (code = e.code))
     t.equal(0, code, 'Should create docker volume defined in mongo.yml')
   })
 })

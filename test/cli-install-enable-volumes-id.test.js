@@ -68,7 +68,7 @@ tap.test('$ cli install --enable-volumes-id', async (t) => {
     let code = null
     await docker('volume', 'inspect', volumeName)
       .then((c) => (code = c))
-      .catch((c) => (code = c))
+      .catch((e) => (code = e.code))
     t.equal(0, code, 'Should create correctly named volume')
   })
 
@@ -111,7 +111,7 @@ tap.test('$ cli install --enable-volumes-id', async (t) => {
     let code = null
     await docker('volume', 'inspect', volumeName)
       .then((c) => (code = c))
-      .catch((c) => (code = c))
+      .catch((e) => (code = e.code))
     t.equal(0, code, 'Should create correctly named volume')
   })
 
@@ -148,7 +148,7 @@ tap.test('$ cli install --enable-volumes-id', async (t) => {
     let code = null
     await docker('volume', 'inspect', volumeName)
       .then((c) => (code = c))
-      .catch((c) => (code = c))
+      .catch((e) => (code = e.code))
     t.equal(0, code, 'Should create correctly named volume')
   })
 })
