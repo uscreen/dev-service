@@ -21,3 +21,4 @@ export const root = path.resolve(process.cwd())
 
 export const SERVICES_DIR = path.resolve(root, 'services')
 export const COMPOSE_DIR = path.resolve(root, 'services/.compose')
+export const VOLUMES_DIR = path.resolve(root, 'services/.volumes')

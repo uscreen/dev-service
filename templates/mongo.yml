@@ -7,9 +7,14 @@ services:
     ports:
       - 27017:27017
     volumes:
+{{mapped-volumes}}
+      - ../.volumes/mongo-data:/data/db:delegated
+{{/mapped-volumes}}
+{{named-volumes}}
       - mongo-data:/data/db:delegated
 
 volumes:
   mongo-data:
     external:
-      name: {{volumesID}}-mongo-data
+      name: {{volumesPrefix}}-mongo-data
+{{/named-volumes}}

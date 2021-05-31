@@ -6,14 +6,19 @@ services:
     container_name: {{container_name}}
     ports:
       - 9200:9200
-    volumes:
-      - elasticsearch-data:/usr/share/elasticsearch/data:delegated
     environment:
       - cluster.name={{projectname}}-elasticsearch-cluster
       - cluster.routing.allocation.disk.threshold_enabled=false
       - discovery.type=single-node
+    volumes:
+{{mapped-volumes}}
+      - ../.volumes/elasticsearch-data:/usr/share/elasticsearch/data:delegated
+{{/mapped-volumes}}
+{{named-volumes}}
+      - elasticsearch-data:/usr/share/elasticsearch/data:delegated
 
 volumes:
   elasticsearch-data:
     external:
-      name: {{volumesID}}-elasticsearch-data
+      name: {{volumesPrefix}}-elasticsearch-data
+{{/named-volumes}}

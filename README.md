@@ -134,13 +134,21 @@ Install all services specified in package.json.
 
 Creates a unique ID and uses it when naming the services' volumes, thus avoiding conflicts between volumes of different dev-service instances. Every subsequent call of `service install` will (re-)create volume names with the same ID.
 
-**Warning**: With this option, already installed services will no longer use already existing volumes named the classical way.
+**Warning**: With this option, already installed services will no longer use already existing volumes not created with `--enable-volumes-id`.
+
+##### `--enable-mapped-volumes`
+
+> ***experimental feature***
+
+Maps services' volumes into local directories (`./services/.volumes/<volume-name>`) instead of storing them inside of the Docker Desktop virtual machine. Every subsequent call of `service install` will use this mappings.
+
+**Warning**: With this option, already installed services will no longer use already existing volumes not created with `--enable-mapped-volumes`.
 
 ##### `--enable-classic-volumes`
 
 Disables volumes ID and uses the project name when naming the services' volumes.
 
-**Warning**: With this option, installed services will no longer use already existing volumes named with volumes ID.
+**Warning**: With this option, already installed services will no longer use already existing volumes created with `--enable-volumes-id` or `--enable-mapped-volumes`.
 
 ### $ service start [service]
 

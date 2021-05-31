@@ -6,7 +6,12 @@ import YAML from 'yaml'
 import parseJson from 'parse-json'
 import { customAlphabet } from 'nanoid'
 
-import { TEMPLATES_DIR, SERVICES_DIR, COMPOSE_DIR } from './constants.js'
+import {
+  TEMPLATES_DIR,
+  SERVICES_DIR,
+  COMPOSE_DIR,
+  VOLUMES_DIR
+} from './constants.js'
 
 import {
   readPackageJson,
@@ -32,9 +37,19 @@ const getName = (service) => {
   return name
 }
 
-const fillTemplate = (template, data) => {
+const fillTemplate = (template, data, removeSections, keepSections) => {
   for (const key in data) {
     template = template.replace(new RegExp(`{{${key}}}`, 'g'), data[key])
+  }
+
+  for (const r of removeSections) {
+    template = template.replace(
+      new RegExp(`{{${r}}}(.|\n)*{{/${r}}}\n?`, 'gm'),
+      ''
+    )
+  }
+  for (const k of keepSections) {
+    template = template.replace(new RegExp(`{{/?${k}}}\n?`, 'gm'), '')
   }
 
   return template
@@ -53,7 +68,12 @@ const setOptions = (options) => {
   fs.writeFileSync(OPTIONS_PATH, raw)
 }
 
-const ensureVolumes = async (content) => {
+const ensureVolumesDir = async () => {
+  fs.ensureDirSync(VOLUMES_DIR)
+  fs.writeFileSync(path.resolve(VOLUMES_DIR, '.gitignore'), '*', 'utf8')
+}
+
+const ensureNamedVolumes = async (content) => {
   const data = YAML.parse(content)
   if (!data || !data.volumes) return
 
@@ -153,15 +173,31 @@ const readStandardServiceData = (service) => {
   return result
 }
 
-const serviceInstall = async (data, projectname, volumesID) => {
-  const content = fillTemplate(data.template, {
-    image: data.image,
-    container_name: `${projectname}_${data.name}`,
-    projectname: projectname,
-    volumesID: volumesID || projectname
-  })
+const serviceInstall = async (data, projectname, volumeType, volumesPrefix) => {
+  const removeSections = ['mapped-volumes', 'named-volumes'].filter(
+    (e) => e !== volumeType
+  )
+  const keepSections = [volumeType]
 
-  await ensureVolumes(content)
+  const content = fillTemplate(
+    data.template,
+    {
+      image: data.image,
+      container_name: `${projectname}_${data.name}`,
+      projectname,
+      volumesPrefix
+    },
+    removeSections,
+    keepSections
+  )
+
+  if (volumeType === 'mapped-volumes') {
+    await ensureVolumesDir()
+  }
+
+  if (volumeType === 'named-volumes') {
+    await ensureNamedVolumes(content)
+  }
 
   writeFile(data.name, content)
 
@@ -210,6 +246,14 @@ export const install = async (opts) => {
     setOptions(options)
   }
 
+  if (opts.enableMappedVolumes) {
+    options.volumes = {
+      mode: 'mapped-volumes'
+    }
+
+    setOptions(options)
+  }
+
   if (opts.enableClassicVolumes) {
     delete options.volumes
 
@@ -217,12 +261,23 @@ export const install = async (opts) => {
   }
 
   if (options.volumes && options.volumes.mode === 'volumes-id') {
-    const volumesID = options.volumes.id
+    const volumesPrefix = options.volumes.id
     await Promise.all(
-      data.map((d) => serviceInstall(d, projectname, volumesID))
+      data.map((d) =>
+        serviceInstall(d, projectname, 'named-volumes', volumesPrefix)
+      )
+    )
+  } else if (options.volumes && options.volumes.mode === 'mapped-volumes') {
+    await Promise.all(
+      data.map((d) => serviceInstall(d, projectname, 'mapped-volumes'))
     )
   } else {
-    await Promise.all(data.map((d) => serviceInstall(d, projectname)))
+    const volumesPrefix = projectname
+    await Promise.all(
+      data.map((d) =>
+        serviceInstall(d, projectname, 'named-volumes', volumesPrefix)
+      )
+    )
   }
 
   console.log(`Done (${services.length} services installed).`)

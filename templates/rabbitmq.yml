@@ -9,9 +9,14 @@ services:
       - 5672:5672
       - 15672:15672
     volumes:
+{{mapped-volumes}}
+      - ../.volumes/rabbit-data:/var/lib/rabbitmq/mnesia/rabbit@{{container_name}}-host
+{{/mapped-volumes}}
+{{named-volumes}}
       - rabbit-data:/var/lib/rabbitmq/mnesia/rabbit@{{container_name}}-host
 
 volumes:
   rabbit-data:
     external:
-      name: {{volumesID}}-rabbit-data
+      name: {{volumesPrefix}}-rabbit-data
+{{/named-volumes}}

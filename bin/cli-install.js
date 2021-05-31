@@ -8,8 +8,12 @@ import { install } from '../src/install.js'
 
 cli
   .version(version)
-  .option('--enable-volumes-id', 'Using unique ID when naming volumes')
-  .option('--enable-classic-volumes', "Don't use unique ID when naming volumes")
+  .option(
+    '--enable-classic-volumes',
+    "Deriving volume names from current project's name"
+  )
+  .option('--enable-volumes-id', 'Deriving volume names from a unique ID')
+  .option('--enable-mapped-volumes', 'Mapping volumes into local file system')
   .action(async (options) => {
     try {
       await install(options)

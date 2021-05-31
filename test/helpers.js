@@ -16,6 +16,7 @@ const __dirname = path.dirname(__filename)
 export const arenaPath = path.resolve(__dirname, './_arena')
 export const servicesPath = path.resolve(arenaPath, 'services')
 export const composePath = path.resolve(arenaPath, 'services/.compose')
+export const volumesPath = path.resolve(arenaPath, 'services/.volumes')
 
 export const otherArenaPath = path.resolve(__dirname, './_otherarena')
 const otherComposePath = path.resolve(otherArenaPath, 'services/.compose')
