@@ -44,77 +44,83 @@ export const cli = (args, cwd, env, timeout) => {
   })
 }
 
-const _compose = (other = false) => async (...params) => {
-  const ap = other ? otherArenaPath : arenaPath
-  const cp = other ? otherComposePath : composePath
+const _compose =
+  (other = false) =>
+  async (...params) => {
+    const ap = other ? otherArenaPath : arenaPath
+    const cp = other ? otherComposePath : composePath
 
-  const packageJson = readPackageSync({ cwd: ap })
-  const name = packageJson.name || path.basename(ap)
-  const projectname = escape(name)
-  const files = fs.readdirSync(cp).filter((f) => f !== '.gitignore')
+    const packageJson = readPackageSync({ cwd: ap })
+    const name = packageJson.name || path.basename(ap)
+    const projectname = escape(name)
+    const files = fs.readdirSync(cp).filter((f) => f !== '.gitignore')
 
-  const ps = []
-  ps.push('-p', projectname)
-  for (const f of files) {
-    ps.push('-f', f)
+    const ps = []
+    ps.push('-p', projectname)
+    for (const f of files) {
+      ps.push('-f', f)
+    }
+
+    ps.push(...params)
+
+    return new Promise((resolve) => {
+      exec(
+        `docker-compose ${ps.join(' ')}`,
+        { cwd: cp },
+        (error, stdout, stderr) => {
+          resolve({
+            code: error && error.code ? error.code : 0,
+            error,
+            stdout,
+            stderr
+          })
+        }
+      )
+    })
   }
 
-  ps.push(...params)
+const _prepareArena =
+  (other = false) =>
+  (packageJson) => {
+    const ap = other ? otherArenaPath : arenaPath
 
-  return new Promise((resolve) => {
-    exec(
-      `docker-compose ${ps.join(' ')}`,
-      { cwd: cp },
-      (error, stdout, stderr) => {
-        resolve({
-          code: error && error.code ? error.code : 0,
-          error,
-          stdout,
-          stderr
-        })
+    fs.removeSync(ap)
+    fs.mkdirSync(ap)
+
+    if (!packageJson) {
+      return
+    }
+
+    fs.writeFileSync(
+      path.resolve(ap, 'package.json'),
+      JSON.stringify(packageJson),
+      {
+        encoding: 'utf-8'
       }
     )
-  })
-}
-
-const _prepareArena = (other = false) => (packageJson) => {
-  const ap = other ? otherArenaPath : arenaPath
-
-  fs.removeSync(ap)
-  fs.mkdirSync(ap)
-
-  if (!packageJson) {
-    return
   }
 
-  fs.writeFileSync(
-    path.resolve(ap, 'package.json'),
-    JSON.stringify(packageJson),
-    {
-      encoding: 'utf-8'
+const _clearArena =
+  (other = false) =>
+  async () => {
+    const ap = other ? otherArenaPath : arenaPath
+    const cp = other ? otherComposePath : composePath
+
+    if (fs.existsSync(cp)) {
+      await _compose(other)('stop').catch((e) => {})
+      await _compose(other)('rm', '-fv').catch((e) => {})
     }
-  )
-}
 
-const _clearArena = (other = false) => async () => {
-  const ap = other ? otherArenaPath : arenaPath
-  const cp = other ? otherComposePath : composePath
+    fs.removeSync(ap)
 
-  if (fs.existsSync(cp)) {
-    await _compose(other)('stop').catch((e) => {})
-    await _compose(other)('rm', '-fv').catch((e) => {})
+    // Catch error if volume not exists:
+    if (!other) {
+      await Promise.all([
+        docker('volume', 'rm', 'dev-service-test-mongo-data'),
+        docker('volume', 'rm', 'dev-service-test-elasticsearch-data')
+      ]).catch((e) => {})
+    }
   }
-
-  fs.removeSync(ap)
-
-  // Catch error if volume not exists:
-  if (!other) {
-    await Promise.all([
-      docker('volume', 'rm', 'dev-service-test-mongo-data'),
-      docker('volume', 'rm', 'dev-service-test-elasticsearch-data')
-    ]).catch((e) => {})
-  }
-}
 
 export const compose = _compose(false)
 export const prepareArena = _prepareArena(false)
