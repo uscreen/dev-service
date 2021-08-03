@@ -20,9 +20,7 @@ tap.test('$ cli noop', async (t) => {
   t.equal('', result.stdout, 'Should output nothing to stdout')
   t.equal(
     true,
-    result.stderr.startsWith(
-      "error: unknown command 'noop'. See 'cli --help'."
-    ),
+    result.stderr.startsWith("error: unknown command 'noop'"),
     'Should output error to stderr'
   )
   t.end()

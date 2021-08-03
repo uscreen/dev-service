@@ -53,11 +53,11 @@
   },
   "dependencies": {
     "c8": "^7.7.0",
-    "commander": "^7.1.0",
+    "commander": "^8.1.0",
     "fs-extra": "^10.0.0",
     "nanoid": "^3.1.23",
     "parse-json": "^5.2.0",
     "read-pkg": "^6.0.0",
-    "yaml": "^1.7.2"
+    "yaml": "^1.10.2"
   }
 }
