@@ -328,6 +328,10 @@ And the folder structure would look like this:
 
 > Format according to https://keepachangelog.com
 
+### v0.11.0
+#### Added
+- new `service pull` command
+
 ### v0.10.0
 ##### Added
 - `service install` options to customize volume naming/creation
