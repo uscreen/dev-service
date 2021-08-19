@@ -12,7 +12,8 @@
     "service-start": "./bin/cli-start.js",
     "service-stop": "./bin/cli-stop.js",
     "service-restart": "./bin/cli-restart.js",
-    "service-check": "./bin/cli-check.js"
+    "service-check": "./bin/cli-check.js",
+    "service-pull": "./bin/cli-pull.js"
   },
   "homepage": "https://github.com/uscreen/dev-service",
   "repository": {

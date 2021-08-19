@@ -176,6 +176,12 @@ List running services.
 
 Show logs of all or given running services (abort with Ctrl-C).
 
+### $ service pull [service]
+
+Pulls current images for all or given installed service(s).
+
+This action updates already existing images - within the boundaries of the respective service's tag. For updating an image beyond these boundaries, adjust the respective service's tag in your service definition and rerun `service install`.
+
 ## Provided services
 
 All provided services use their respective default ports:

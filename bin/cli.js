@@ -23,6 +23,10 @@ cli
   .command('restart [service]', 'restart all or given installed services')
   .command('list', 'lists all running services')
   .command('logs [service]', 'prints logs of all or given running services')
+  .command(
+    'pull [service]',
+    'pulls current images for all or given installed services'
+  )
 
 /**
  * read args
