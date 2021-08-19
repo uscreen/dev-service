@@ -314,9 +314,6 @@ And the folder structure would look like this:
 
 ## Roadmap
 
-- make `service check [servicename]` recognize and ignore own services
-- add tests for `service check [servicename]`
-- add tests for service customization
 - fix tests to work in gitlab-ci
 - fix tests to work in parallel
 - add some examples
