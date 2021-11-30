@@ -47,7 +47,7 @@
   },
   "devDependencies": {
     "@uscreen.de/eslint-config-prettystandard-node": "^0.1.4",
-    "lint-staged": "^11.1.1",
+    "lint-staged": "^12.1.2",
     "prettier": "^2.3.2",
     "tap": "^15.0.2",
     "yorkie": "^2.0.0"
@@ -57,7 +57,7 @@
     "commander": "^8.1.0",
     "fs-extra": "^10.0.0",
     "nanoid": "^3.1.23",
-    "parse-json": "^5.2.0",
+    "parse-json": "^6.0.2",
     "read-pkg": "^7.0.0",
     "yaml": "^1.10.2"
   }
