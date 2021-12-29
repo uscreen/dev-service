@@ -26,10 +26,10 @@
     "node": "^12.20 || ^14.13 || >=15"
   },
   "scripts": {
-    "lint": "eslint '**/*.js' --fix",
     "test": "c8 --all tap --no-coverage test/**/*.test.js",
     "test:cov": "c8 --all --reporter html tap --no-coverage test/**/*.test.js && open coverage/index.html",
-    "test:ci": "c8 --all --reporter text-summary tap --no-coverage test/**/*.test.js"
+    "test:ci": "c8 --all --reporter text-summary tap --no-coverage test/**/*.test.js",
+    "prepare": "husky install"
   },
   "gitHooks": {
     "pre-commit": "lint-staged"
@@ -39,18 +39,11 @@
     "src/",
     "templates"
   ],
-  "lint-staged": {
-    "*.{js}": [
-      "eslint --fix",
-      "git add"
-    ]
-  },
   "devDependencies": {
-    "@uscreen.de/eslint-config-prettystandard-node": "^0.1.4",
-    "lint-staged": "^12.1.2",
-    "prettier": "^2.3.2",
-    "tap": "^15.0.2",
-    "yorkie": "^2.0.0"
+    "@uscreen.de/eslint-config-prettystandard-node": "^0.2.0",
+    "husky": ">=6",
+    "lint-staged": ">=10",
+    "tap": "^15.0.2"
   },
   "dependencies": {
     "c8": "^7.8.0",
@@ -60,5 +53,8 @@
     "parse-json": "^6.0.2",
     "read-pkg": "^7.0.0",
     "yaml": "^1.10.2"
+  },
+  "lint-staged": {
+    "*.js": "eslint --cache --fix"
   }
 }
