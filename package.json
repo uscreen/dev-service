@@ -1,6 +1,6 @@
 {
   "name": "@uscreen.de/dev-service",
-  "version": "0.11.4",
+  "version": "0.11.5",
   "description": "cli to manage services in dev repos",
   "main": "index.js",
   "type": "module",
@@ -40,9 +40,9 @@
     "templates"
   ],
   "devDependencies": {
-    "@uscreen.de/eslint-config-prettystandard-node": "^0.2.1",
+    "@uscreen.de/eslint-config-prettystandard-node": "^0.2.2",
     "husky": ">=6",
-    "lint-staged": ">=12.1.7",
+    "lint-staged": ">=12.3.2",
     "tap": "^15.1.6"
   },
   "dependencies": {
