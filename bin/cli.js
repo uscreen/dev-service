@@ -4,7 +4,7 @@ import { Command } from 'commander'
 import { createRequire } from 'module'
 
 const require = createRequire(import.meta.url)
-const cli = new Command()
+const program = new Command()
 
 /**
  * package.json content
@@ -14,7 +14,7 @@ const { version } = require('../package.json')
 /**
  * define the command
  */
-cli
+program
   .version(version)
   .command('install', 'install all services specified in package.json')
   .command('check [service]', 'check availabilty of all or given service ports')
@@ -31,4 +31,4 @@ cli
 /**
  * read args
  */
-cli.parse(process.argv)
+program.parse(process.argv)

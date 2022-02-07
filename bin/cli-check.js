@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 
-import cli from 'commander'
+import { program } from 'commander'
 
 import { version } from '../src/constants.js'
 import { checkUsedPorts, checkOtherServices } from '../src/check.js'
 import { error } from '../src/utils.js'
 
-cli
+program
   .version(version)
   .arguments('[service]')
   .action(async (service) => {
@@ -23,4 +23,4 @@ cli
     }
   })
 
-cli.parse(process.argv)
+program.parse(process.argv)

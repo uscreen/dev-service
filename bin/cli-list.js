@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 
-import cli from 'commander'
+import { program } from 'commander'
 
 import { version } from '../src/constants.js'
 
 import { compose, error } from '../src/utils.js'
 
-cli.version(version).action(async () => {
+program.version(version).action(async () => {
   try {
     await compose('ps')
   } catch (e) {
@@ -14,4 +14,4 @@ cli.version(version).action(async () => {
   }
 })
 
-cli.parse(process.argv)
+program.parse(process.argv)

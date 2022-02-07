@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 
-import cli from 'commander'
+import { program } from 'commander'
 
 import { version } from '../src/constants.js'
 import { error } from '../src/utils.js'
 import { install } from '../src/install.js'
 
-cli
+program
   .version(version)
   .option(
     '--enable-classic-volumes',
@@ -22,4 +22,4 @@ cli
     }
   })
 
-cli.parse(process.argv)
+program.parse(process.argv)
