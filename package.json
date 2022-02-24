@@ -48,8 +48,8 @@
   "dependencies": {
     "c8": "^7.11.0",
     "commander": "^9.0.0",
-    "fs-extra": "^10.0.0",
-    "nanoid": "^3.1.31",
+    "fs-extra": "^10.0.1",
+    "nanoid": "^3.3.1",
     "parse-json": "^6.0.2",
     "read-pkg": "^7.1.0",
     "yaml": "^1.10.2"
