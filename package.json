@@ -42,14 +42,14 @@
   "devDependencies": {
     "@uscreen.de/eslint-config-prettystandard-node": "^0.2.2",
     "husky": ">=6",
-    "lint-staged": ">=12.3.4",
-    "tap": "^15.1.6"
+    "lint-staged": ">=12.3.7",
+    "tap": "^16.0.1"
   },
   "dependencies": {
     "c8": "^7.11.0",
-    "commander": "^9.0.0",
+    "commander": "^9.1.0",
     "fs-extra": "^10.0.1",
-    "nanoid": "^3.3.1",
+    "nanoid": "^3.3.2",
     "parse-json": "^6.0.2",
     "read-pkg": "^7.1.0",
     "yaml": "^1.10.2"
