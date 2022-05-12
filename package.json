@@ -52,7 +52,7 @@
     "nanoid": "^3.3.2",
     "parse-json": "^6.0.2",
     "read-pkg": "^7.1.0",
-    "yaml": "^1.10.2"
+    "yaml": "^2.0.1"
   },
   "lint-staged": {
     "*.js": "eslint --cache --fix"
