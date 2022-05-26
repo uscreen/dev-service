@@ -31,8 +31,8 @@ const OPTIONS_PATH = path.resolve(SERVICES_DIR, '.options')
  * Helper methods
  */
 const getName = (service) => {
-  const [fullname] = service.split(':')
-  const [name] = fullname.split('/').slice(-1)
+  const withoutTag = service.replace(/:[a-z0-9_][a-z0-9_.-]{0,127}$/i, '')
+  const [name] = withoutTag.split('/').slice(-1)
 
   return name
 }

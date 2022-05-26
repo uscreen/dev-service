@@ -139,6 +139,12 @@ tap.test('$ cli install', async (t) => {
             volumes: [
               'elasticsearch-data:/usr/share/elasticsearch/data:delegated'
             ]
+          },
+          {
+            image: 'some.registry.uscreen.de:1234/some/path/to/foo'
+          },
+          {
+            image: 'some.registry.uscreen.de:1234/some/other/path/to/bar:latest'
           }
         ]
       })
@@ -223,8 +229,44 @@ tap.test('$ cli install', async (t) => {
         'Should create docker volume defined in elasticsearch.yml'
       )
 
+      // foo
       t.equal(
-        3,
+        true,
+        fs.existsSync(path.resolve(composePath, 'foo.yml')),
+        'Should create foo.yml within services folder'
+      )
+      const fooData = loadYaml(path.resolve(composePath, 'foo.yml'))
+      t.equal(
+        'some.registry.uscreen.de:1234/some/path/to/foo',
+        fooData.services.foo.image,
+        'Should use the correct image in foo.yml'
+      )
+      t.equal(
+        'dev-service-test_foo',
+        fooData.services.foo.container_name,
+        'Should set the correct container name in foo.yml'
+      )
+
+      // bar
+      t.equal(
+        true,
+        fs.existsSync(path.resolve(composePath, 'bar.yml')),
+        'Should create bar.yml within services folder'
+      )
+      const barData = loadYaml(path.resolve(composePath, 'bar.yml'))
+      t.equal(
+        'some.registry.uscreen.de:1234/some/other/path/to/bar:latest',
+        barData.services.bar.image,
+        'Should use the correct image in bar.yml'
+      )
+      t.equal(
+        'dev-service-test_bar',
+        barData.services.bar.container_name,
+        'Should set the correct container name in bar.yml'
+      )
+
+      t.equal(
+        5,
         fs.readdirSync(composePath).filter((f) => f !== '.gitignore').length,
         'Should not create any other yml files'
       )
