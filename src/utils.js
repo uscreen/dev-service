@@ -37,7 +37,7 @@ export const readPackageJson = () => {
  * Escape string for use in docker
  */
 export const escape = (name) =>
-  name.replace(/^[^a-zA-Z0-9]*/, '').replace(/[^a-zA-Z0-9.-]/g, '-')
+  name.replace(/^[^a-zA-Z0-9]*/, '').replace(/[^a-zA-Z0-9-]/g, '-')
 
 /**
  * Checks if compose directory exists and contains files
