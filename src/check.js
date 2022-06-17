@@ -6,6 +6,7 @@ import { exec } from 'child_process'
 import YAML from 'yaml'
 import {
   checkComposeDir,
+  escape,
   getComposeFiles,
   getComposePaths,
   readPackageJson,
