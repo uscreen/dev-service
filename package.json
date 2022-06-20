@@ -40,10 +40,10 @@
     "templates"
   ],
   "devDependencies": {
-    "@uscreen.de/eslint-config-prettystandard-node": "^0.2.2",
+    "@uscreen.de/eslint-config-prettystandard-node": "^0.2.4",
     "husky": ">=6",
-    "lint-staged": ">=13.0.1",
-    "tap": "^16.0.1"
+    "lint-staged": ">=13.0.2",
+    "tap": "^16.3.0"
   },
   "dependencies": {
     "c8": "^7.11.0",
