@@ -75,8 +75,8 @@ tap.test('$ cli list', async (t) => {
         const lines = result.stdout.split('\n').filter((s) => s)
         t.equal(
           0,
-          lines.filter((l) => l.match(/^dev-service-test_.*Up/)).length,
-          'Should output no services with Status "Up"'
+          lines.filter((l) => l.match(/^dev-service-test_.*running/)).length,
+          'Should output no services with Status "running"'
         )
       })
 
@@ -92,9 +92,10 @@ tap.test('$ cli list', async (t) => {
         const lines = result.stdout.split('\n').filter((s) => s)
         t.equal(
           2,
-          lines.filter((l) => l.match(/^dev-service-test_(mongo|nginx).*Up/))
-            .length,
-          'Should output two services with Status "Up"'
+          lines.filter((l) =>
+            l.match(/^dev-service-test_(mongo|nginx).*running/)
+          ).length,
+          'Should output two services with Status "running"'
         )
       })
 
@@ -112,9 +113,9 @@ tap.test('$ cli list', async (t) => {
         t.equal(
           2,
           lines.filter((l) =>
-            l.match(new RegExp(`^${escape(name)}_(mongo|nginx).*Up`))
+            l.match(new RegExp(`^${escape(name)}_(mongo|nginx).*running`))
           ).length,
-          'Should output two services with Status "Up"'
+          'Should output two services with Status "running"'
         )
       })
     }

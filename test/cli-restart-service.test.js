@@ -101,10 +101,15 @@ tap.test('$ cli start', async (t) => {
     const result = await cli(['restart', service], arenaPath)
 
     t.equal(0, result.code, 'Should return code 0')
+
     const ls = result.stderr
       .split('\n')
-      .filter((s) => s && s.match(/restart/i) && s.match(/done/i))
-    t.equal(1, ls.length, 'Should output one line confirming restart to stderr')
+      .filter((s) => s && s.match(/(restarting|started)/i))
+    t.equal(
+      2,
+      ls.length,
+      'Should output two lines confirming restart to stderr'
+    )
 
     t.test('Checking running containers', async (t) => {
       const cresult = await compose('ps', '-q')
@@ -132,8 +137,12 @@ tap.test('$ cli start', async (t) => {
     t.equal(0, result.code, 'Should return code 0')
     const ls = result.stderr
       .split('\n')
-      .filter((s) => s && s.match(/restart/i) && s.match(/done/i))
-    t.equal(1, ls.length, 'Should output one line confirming restart to stderr')
+      .filter((s) => s && s.match(/(restarting|started)/i))
+    t.equal(
+      2,
+      ls.length,
+      'Should output two lines confirming restart to stderr'
+    )
 
     t.test('Checking running containers', async (t) => {
       const cresult = await compose('ps', '-q')

@@ -72,11 +72,11 @@ tap.test('$ cli pull [service]', async (t) => {
 
     const lines = result.stderr.split('\n').filter((s) => s)
     t.ok(
-      lines.some((l) => l.match(/pulling.*mongo.*done/i)),
+      lines.some((l) => l.match(/mongo pulled/i)),
       `Should pull mongo image`
     )
     t.ok(
-      lines.every((l) => !l.match(/pulling.*nginx/i)),
+      lines.every((l) => !l.match(/nginx pulled/i)),
       `Should not pull nginx image`
     )
   })

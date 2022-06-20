@@ -69,10 +69,7 @@ tap.test('$ cli logs', async (t) => {
 
     t.equal(0, result.code, 'Should return code 0')
 
-    const lines = result.stdout
-      .split('\n')
-      .filter((s) => s)
-      .filter((l) => !l.match(/^Attaching to */))
+    const lines = result.stdout.split('\n').filter((s) => s)
 
     t.equal(0, lines.length, 'Should show no logs')
   })
@@ -92,10 +89,7 @@ tap.test('$ cli logs', async (t) => {
 
     t.equal(0, result.code, 'Should return code 0')
 
-    const lines = result.stdout
-      .split('\n')
-      .filter((s) => s)
-      .filter((l) => !l.match(/^Attaching to */))
+    const lines = result.stdout.split('\n').filter((s) => s)
 
     t.equal(true, lines.length > 0, 'Should show logs')
 
@@ -122,10 +116,7 @@ tap.test('$ cli logs', async (t) => {
 
     t.equal(0, result.code, 'Should return code 0')
 
-    const lines = result.stdout
-      .split('\n')
-      .filter((s) => s)
-      .filter((l) => !l.match(/^Attaching to */))
+    const lines = result.stdout.split('\n').filter((s) => s)
 
     t.equal(true, lines.length > 0, 'Should show logs')
 

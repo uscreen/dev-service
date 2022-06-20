@@ -71,7 +71,7 @@ tap.test('$ cli pull', async (t) => {
     const lines = result.stderr.split('\n').filter((s) => s)
     for (const s of ['nginx', 'mongo']) {
       t.ok(
-        lines.some((l) => l.match(RegExp(`pulling.*${s}.*done`, 'i'))),
+        lines.some((l) => l.match(RegExp(`${s} pulled`, 'i'))),
         `Should pull ${s} image`
       )
     }
