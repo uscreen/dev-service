@@ -1,12 +1,27 @@
-image: node:lts-alpine
+image: docker:dind
 
 cache:
   paths:
     - node_modules/
     - .yarn
 
+variables:
+  DOCKER_DRIVER: overlay2
+
 stages:
+  - test
   - audit
+
+test:
+  stage: test
+  before_script:
+    - apk update
+    - apk add --update docker-compose nodejs yarn
+  script:
+    # - docker ps -q
+    - yarn install --pure-lockfile --cache-folder .yarn
+    - yarn test:ci
+  coverage: '/^Statements\s*:\s*([^%]+)/'
 
 audit:
   stage: audit
