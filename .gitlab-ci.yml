@@ -16,7 +16,8 @@ test:
   stage: test
   before_script:
     - apk update
-    - apk add --update docker-compose nodejs yarn
+    - apk add --update docker-compose nodejs yarn lsof procps
+      # We install lsof & procps to provide full versions of `lsof` & `ps`
   script:
     # - docker ps -q
     - yarn install --pure-lockfile --cache-folder .yarn
