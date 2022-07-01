@@ -1,6 +1,5 @@
 import tap from 'tap'
 import fs from 'fs-extra'
-import http from 'http'
 
 import {
   arenaPath,
@@ -74,15 +73,14 @@ tap.test('$ cli logs', async (t) => {
     t.equal(0, lines.length, 'Should show no logs')
   })
 
+  /**
+   * dev-repo_mongo  | {"t":{"$date":"2022-07-01T07:47:12.343+00:00"},"s":"I",  "c":"NETWORK",  "id":23016,   "ctx":"listener","msg":"Waiting for connections","attr":{"port":27017,"ssl":"off"}}
+   */
+
   t.test('With running services', async (t) => {
     prepareArena(packageJson)
     await cli(['install'], arenaPath)
     await cli(['start'], arenaPath)
-
-    // send request 1s from now:
-    setTimeout(() => {
-      http.get('http://localhost')
-    }, 1000)
 
     // record logs for the next 2s:
     const result = await cli(['logs'], arenaPath, {}, 2000)
@@ -95,8 +93,9 @@ tap.test('$ cli logs', async (t) => {
 
     t.equal(
       true,
-      lines.filter((l) => l.match(/nginx.*GET \/.*200/)).length > 0,
-      'Should show request sent to nginx service in logs'
+      lines.filter((l) => l.match(/mongo.*waiting for connections/i)).length >
+        0,
+      'Should show mongo waiting for connections in logs'
     )
   })
 
@@ -106,13 +105,8 @@ tap.test('$ cli logs', async (t) => {
     await cli(['install'], arenaPath)
     await cli(['start'], arenaPath)
 
-    // send request 1s from now:
-    setTimeout(() => {
-      http.get('http://localhost')
-    }, 1000)
-
     // record logs for the next 2s:
-    const result = await cli(['logs'], arenaPath, {}, 2000)
+    const result = await cli(['logs'], arenaPath, {}, 3000)
 
     t.equal(0, result.code, 'Should return code 0')
 
@@ -122,8 +116,9 @@ tap.test('$ cli logs', async (t) => {
 
     t.equal(
       true,
-      lines.filter((l) => l.match(/nginx.*GET \/.*200/)).length > 0,
-      'Should show request sent to nginx service in logs'
+      lines.filter((l) => l.match(/mongo.*waiting for connections/i)).length >
+        0,
+      'Should show mongo waiting for connections in logs'
     )
   })
 })
