@@ -40,7 +40,7 @@
     "templates"
   ],
   "devDependencies": {
-    "@uscreen.de/eslint-config-prettystandard-node": "^0.2.5",
+    "@uscreen.de/eslint-config-prettystandard-node": "^0.2.6",
     "husky": ">=6",
     "lint-staged": ">=13.0.3",
     "tap": "^16.3.0"
