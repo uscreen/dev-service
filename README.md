@@ -328,6 +328,10 @@ And the folder structure would look like this:
 
 > Format according to https://keepachangelog.com
 
+### v0.11.17
+#### Fixed
+- custom services with container ports lower than 60 now work as expected
+
 ### v0.11.0
 #### Added
 - new `service pull` command

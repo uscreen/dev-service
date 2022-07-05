@@ -156,7 +156,10 @@ const readCustomServiceData = (service) => {
     volumes
   }
 
-  const template = YAML.stringify(templateObject)
+  const template = YAML.stringify(templateObject, {
+    defaultKeyType: 'PLAIN',
+    defaultStringType: 'QUOTE_DOUBLE'
+  })
 
   return { name, image, template }
 }
