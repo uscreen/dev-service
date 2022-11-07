@@ -92,7 +92,7 @@ tap.test('$ cli start', async (t) => {
   t.test("If one or more services' port(s) are already in use", (t) => {
     prepareArena(packageJson)
     cli(['install'], arenaPath).then(() => {
-      const server = webserver.start(80)
+      const server = webserver.start(27017)
 
       cli(['start'], arenaPath).then((result) => {
         t.not(0, result.code, 'Should return code != 0')
