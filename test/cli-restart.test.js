@@ -69,12 +69,8 @@ tap.test('$ cli start', async (t) => {
 
     const result = await cli(['restart'], arenaPath)
 
-    t.not(0, result.code, 'Should return code != 0')
-    t.equal(
-      true,
-      result.stderr.includes('ERROR'),
-      'Should output error message'
-    )
+    t.equal(0, result.code, 'Should return code === 0')
+    t.equal('', result.stderr, 'Should not output error message')
   })
 
   t.test('If one service is already running', async (t) => {
