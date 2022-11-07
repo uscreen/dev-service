@@ -1,9 +1,0 @@
-language: node_js
-os:
-  - linux
-  # docker support is limited to linux in travis
-services:
-  - docker
-node_js:
-  - node
-  - lts/*
