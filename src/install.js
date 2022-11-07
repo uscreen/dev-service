@@ -44,7 +44,7 @@ const fillTemplate = (template, data, removeSections, keepSections) => {
 
   for (const r of removeSections) {
     template = template.replace(
-      new RegExp(`{{${r}}}(.|\n)*{{/${r}}}\n?`, 'gm'),
+      new RegExp(`{{${r}}}(.|\n)*?{{/${r}}}\n?`, 'gm'),
       ''
     )
   }

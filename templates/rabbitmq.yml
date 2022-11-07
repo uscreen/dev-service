@@ -8,7 +8,9 @@ services:
     ports:
       - 5672:5672
       - 15672:15672
+{{mapped-volumes}}
     user: ${CURRENT_UID}
+{{/mapped-volumes}}
     volumes:
 {{mapped-volumes}}
       - ../.volumes/rabbit-data:/var/lib/rabbitmq/mnesia/rabbit@{{container_name}}-host
