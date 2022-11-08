@@ -1,5 +1,6 @@
 # dev-service
 
+[![Test CI](https://github.com/uscreen/dev-service/actions/workflows/node.js.yml/badge.svg)](https://github.com/uscreen/dev-service/actions/workflows/node.js.yml)
 [![Known Vulnerabilities](https://snyk.io/test/github/uscreen/dev-service/badge.svg?targetFile=package.json)](https://snyk.io/test/github/uscreen/dev-service?targetFile=package.json)
 
 > Manage docker services for local development
@@ -9,7 +10,7 @@
 - a local or remote docker host
 - a docker client connected to that host
 - `docker` and `docker-compose` located in your `$PATH`
-- `node` v12.20 or higher, v14.13 or higher, or v15 or higher
+- `node` v14.13 or higher, or v15 or higher
 
 ## Install
 
