@@ -6,6 +6,7 @@ services:
     container_name: {{container_name}}
     ports:
       - 9200:9200
+    user: ${CURRENT_UID}
     environment:
       - cluster.name={{projectname}}-elasticsearch-cluster
       - cluster.routing.allocation.disk.threshold_enabled=false

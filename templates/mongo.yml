@@ -6,6 +6,7 @@ services:
     container_name: {{container_name}}
     ports:
       - 27017:27017
+    user: ${CURRENT_UID}
     volumes:
 {{mapped-volumes}}
       - ../.volumes/mongo-data:/data/db:delegated
