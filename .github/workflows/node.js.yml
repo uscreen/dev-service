@@ -5,7 +5,7 @@ name: Test CI
 
 on:
   push:
-    branches: ["master", "feature/github-ci-fixes"]
+    branches: ["master"]
   pull_request:
     branches: ["master"]
 
@@ -17,8 +17,6 @@ jobs:
         node-version: [14.x, 16.x, 18.x]
     steps:
       - uses: actions/checkout@v3
-        with:
-          ref: "feature/github-ci-fixes"
       - uses: KengoTODA/actions-setup-docker-compose@main
         with:
           version: "2.12.1"
