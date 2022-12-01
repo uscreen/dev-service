@@ -1,0 +1,25 @@
+version: '2.4'
+
+services:
+  mariadb:
+    image: {{image}}
+    container_name: {{container_name}}
+    ports:
+      - 3306:3306
+{{mapped-volumes}}
+    user: ${CURRENT_UID}
+{{/mapped-volumes}}
+    environment:
+      - MARIADB_ROOT_PASSWORD=rootpassword
+    volumes:
+{{mapped-volumes}}
+      - ../.volumes/mariadb-data:/var/lib/mysql:delegated
+{{/mapped-volumes}}
+{{named-volumes}}
+      - mariadb-data:/var/lib/mysql:delegated
+
+volumes:
+  mariadb-data:
+    external:
+      name: {{volumesPrefix}}-mariadb-data
+{{/named-volumes}}

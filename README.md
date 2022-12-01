@@ -194,6 +194,7 @@ All provided services use their respective default ports:
 | nginx         | 80, 443     |
 | rabbitmq      | 5672, 15672 |
 | elasticsearch | 9200        |
+| mariadb       | 3306        |
 
 ### nginx
 
