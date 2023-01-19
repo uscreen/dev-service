@@ -26,9 +26,9 @@
     "node": "^14.13 || >=15"
   },
   "scripts": {
-    "test": "c8 --all tap --no-coverage test/**/*.test.js",
-    "test:cov": "c8 --all --reporter html tap --no-coverage test/**/*.test.js && open coverage/index.html",
-    "test:ci": "c8 --all --reporter text-summary tap --no-coverage test/**/*.test.js",
+    "test": "c8 tap",
+    "test:cov": "c8 --reporter=html --reporter=text tap",
+    "test:ci": "tap",
     "prepare": "husky install"
   },
   "gitHooks": {

@@ -1,5 +1,8 @@
 {
   "timeout": 120,
   "reporter": "spec",
-  "jobs": 1
+  "jobs": 1,
+  "check-coverage": false,
+  "no-coverage": true,
+  "test-regex": "\\w+\\.test\\.js$"
 }
