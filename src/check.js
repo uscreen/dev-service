@@ -224,8 +224,6 @@ const getProcess = async (pid) =>
             cmd: args.join(' ')
           }))
 
-        if (!processes[0]) return resolve(null)
-
         resolve(processes[0])
       }
     )

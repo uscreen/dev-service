@@ -58,9 +58,10 @@ export const getComposeFiles = () =>
 const getComposePath = (containerId) =>
   new Promise((resolve, reject) => {
     exec(`docker inspect ${containerId}`, function (err, stdout, stderr) {
-      if (err || stderr.toString().trim()) {
-        return reject(err)
-      }
+      if (err) reject(err)
+
+      const errMessage = stderr.toString().trim()
+      if (errMessage) reject(new Error(errMessage))
 
       const [data] = JSON.parse(stdout)
 
@@ -70,7 +71,7 @@ const getComposePath = (containerId) =>
         data.Config.Labels &&
         data.Config.Labels['com.docker.compose.project.working_dir']
 
-      resolve(result || null)
+      resolve(result)
     })
   })
 
@@ -92,9 +93,7 @@ export const getComposePaths = () =>
 
           resolve(paths)
         })
-        .catch((err) => {
-          reject(err)
-        })
+        .catch(reject)
     })
   })
 
