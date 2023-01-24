@@ -1,7 +1,8 @@
 # dev-service
 
-[![Test CI](https://github.com/uscreen/dev-service/actions/workflows/node.js.yml/badge.svg)](https://github.com/uscreen/dev-service/actions/workflows/node.js.yml)
+[![Test CI](https://github.com/uscreen/dev-service/actions/workflows/main.yml/badge.svg)](https://github.com/uscreen/dev-service/actions/workflows/node.js.yml)
 [![Known Vulnerabilities](https://snyk.io/test/github/uscreen/dev-service/badge.svg?targetFile=package.json)](https://snyk.io/test/github/uscreen/dev-service?targetFile=package.json)
+[![NPM Version](https://badge.fury.io/js/@uscreen.de%2Fdev-service.svg)](https://badge.fury.io/js/@uscreen.de%2Fdev-service)
 
 > Manage docker services for local development
 
