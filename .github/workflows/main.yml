@@ -36,6 +36,11 @@ jobs:
       - name: Run tests
         run: CURRENT_UID=$(id -u):$(id -g) npm run test:ci
 
+      - name: Coveralls
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
   automerge:
     if: >
         github.event_name == 'pull_request' &&
