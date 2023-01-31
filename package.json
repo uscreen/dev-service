@@ -18,7 +18,7 @@
   "homepage": "https://github.com/uscreen/dev-service",
   "repository": {
     "type": "git",
-    "url": "https://github.com:uscreen/dev-service.git"
+    "url": "git+https://github.com/uscreen/dev-service.git"
   },
   "author": "Martin Herting <herting@uscreen.de>",
   "license": "MIT",
