@@ -23,7 +23,7 @@
   "author": "Martin Herting <herting@uscreen.de>",
   "license": "MIT",
   "engines": {
-    "node": "^14.13 || >=15"
+    "node": ">=16"
   },
   "scripts": {
     "test": "c8 tap",
