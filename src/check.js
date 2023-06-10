@@ -110,8 +110,12 @@ const getOwnPorts = () =>
     ps.push('ps', '-q')
 
     exec(`docker-compose ${ps.join(' ')}`, function (err, stdout, stderr) {
-      if (err || stderr.toString().trim()) {
+      if (err) {
         return reject(err)
+      }
+
+      if (stderr.toString().trim()) {
+        return reject(stderr.toString().trim())
       }
 
       const ids = stdout.split('\n').filter((id) => id)
