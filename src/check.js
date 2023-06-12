@@ -110,13 +110,10 @@ const getOwnPorts = () =>
     ps.push('ps', '-q')
 
     exec(`docker-compose ${ps.join(' ')}`, function (err, stdout, stderr) {
-      if (err) {
-        return reject(err)
-      }
+      if (err) return reject(err)
 
-      if (stderr.toString().trim()) {
-        return reject(stderr.toString().trim())
-      }
+      const errMessage = stderr.toString().trim()
+      if (errMessage) return reject(Error(errMessage))
 
       const ids = stdout.split('\n').filter((id) => id)
 
@@ -133,9 +130,10 @@ const getOwnPorts = () =>
 const getContainerPorts = (containerId) =>
   new Promise((resolve, reject) => {
     exec(`docker port ${containerId}`, function (err, stdout, stderr) {
-      if (err || stderr.toString().trim()) {
-        return reject(err)
-      }
+      if (err) return reject(err)
+
+      const errMessage = stderr.toString().trim()
+      if (errMessage) return reject(Error(errMessage))
 
       const lines = stdout.split('\n').filter((l) => l)
       const ports = lines
@@ -210,9 +208,10 @@ const getProcess = async (pid) =>
     exec(
       `ps -p ${pid} -ww -o pid,ppid,uid,gid,args`,
       function (err, stdout, stderr) {
-        if (err || stderr.toString().trim()) {
-          return reject(err)
-        }
+        if (err) return reject(err)
+
+        const errMessage = stderr.toString().trim()
+        if (errMessage) return reject(Error(errMessage))
 
         const processes = stdout
           .toString()

@@ -61,7 +61,7 @@ const getComposePath = (containerId) =>
       if (err) reject(err)
 
       const errMessage = stderr.toString().trim()
-      if (errMessage) reject(new Error(errMessage))
+      if (errMessage) reject(Error(errMessage))
 
       const [data] = JSON.parse(stdout)
 
@@ -81,9 +81,10 @@ const getComposePath = (containerId) =>
 export const getComposePaths = () =>
   new Promise((resolve, reject) => {
     exec('docker ps -q', function (err, stdout, stderr) {
-      if (err || stderr.toString().trim()) {
-        return reject(err)
-      }
+      if (err) reject(err)
+
+      const errMessage = stderr.toString().trim()
+      if (errMessage) reject(Error(errMessage))
 
       const containers = stdout.split(/\n/).filter((r) => r)
 
