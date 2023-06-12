@@ -7,7 +7,7 @@ services:
     ports:
       - 3306:3306
 {{mapped-volumes}}
-    user: ${CURRENT_UID}
+    user: '{{current_uid}}'
 {{/mapped-volumes}}
     environment:
       - MARIADB_ROOT_PASSWORD=rootpassword

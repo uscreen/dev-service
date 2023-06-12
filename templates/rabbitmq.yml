@@ -9,7 +9,7 @@ services:
       - 5672:5672
       - 15672:15672
 {{mapped-volumes}}
-    user: ${CURRENT_UID}
+    user: '{{current_uid}}'
 {{/mapped-volumes}}
     volumes:
 {{mapped-volumes}}

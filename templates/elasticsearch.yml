@@ -7,7 +7,7 @@ services:
     ports:
       - 9200:9200
 {{mapped-volumes}}
-    user: ${CURRENT_UID}
+    user: '{{current_uid}}'
 {{/mapped-volumes}}
     environment:
       - cluster.name={{projectname}}-elasticsearch-cluster

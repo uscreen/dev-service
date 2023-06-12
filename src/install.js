@@ -1,6 +1,7 @@
 'use strict'
 
 import path from 'path'
+import os from 'os'
 import fs from 'fs-extra'
 import YAML from 'yaml'
 import parseJson from 'parse-json'
@@ -52,6 +53,8 @@ const fillTemplate = (template, data, removeSections, keepSections) => {
     template = template.replace(new RegExp(`{{/?${k}}}\n?`, 'gm'), '')
   }
 
+  template = template.replace('{{current_uid}}', os.userInfo().uid)
+
   return template
 }
 
@@ -79,9 +82,9 @@ const ensureNamedVolumes = async (content) => {
 
   const volumes = []
   for (const key in data.volumes) {
-    if (!data.volumes[key].external) continue
+    if (!data.volumes[key]) continue
 
-    const name = data.volumes[key].external.name
+    const name = data.volumes[key].name
     if (!name) continue
 
     volumes.push(name)
@@ -141,9 +144,7 @@ const readCustomServiceData = (service) => {
 
       // volume is named => we add it to top level "volumes" directive:
       volumes[volumeName] = {
-        external: {
-          name: `{{projectname}}-${volumeName}`
-        }
+        name: `{{projectname}}-${volumeName}`
       }
     }
   }
