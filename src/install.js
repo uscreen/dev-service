@@ -144,7 +144,8 @@ const readCustomServiceData = (service) => {
 
       // volume is named => we add it to top level "volumes" directive:
       volumes[volumeName] = {
-        name: `{{projectname}}-${volumeName}`
+        name: `{{projectname}}-${volumeName}`,
+        external: true
       }
     }
   }
