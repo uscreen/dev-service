@@ -22,7 +22,7 @@ jobs:
       - name: Setup docker-compose
         uses: KengoTODA/actions-setup-docker-compose@main
         with:
-          version: "2.12.1"
+          version: "2.18.1"
 
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
