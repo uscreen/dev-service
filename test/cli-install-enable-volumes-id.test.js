@@ -61,7 +61,7 @@ tap.test('$ cli install --enable-volumes-id', async (t) => {
     const mongoData = loadYaml(path.resolve(composePath, 'mongo.yml'))
     t.equal(
       volumeName,
-      mongoData.volumes['mongo-data'].external.name,
+      mongoData.volumes['mongo-data'].name,
       'Should set volume name correctly in mongo.yml'
     )
 
@@ -104,7 +104,7 @@ tap.test('$ cli install --enable-volumes-id', async (t) => {
     const mongoData = loadYaml(path.resolve(composePath, 'mongo.yml'))
     t.equal(
       volumeName,
-      mongoData.volumes['mongo-data'].external.name,
+      mongoData.volumes['mongo-data'].name,
       'Should set volume name correctly in mongo.yml'
     )
 
@@ -141,7 +141,7 @@ tap.test('$ cli install --enable-volumes-id', async (t) => {
     const mongoData = loadYaml(path.resolve(composePath, 'mongo.yml'))
     t.equal(
       volumeName,
-      mongoData.volumes['mongo-data'].external.name,
+      mongoData.volumes['mongo-data'].name,
       'Should set volume name correctly in mongo.yml'
     )
 
@@ -182,7 +182,7 @@ tap.test('$ cli install', async (t) => {
     const mongoData = loadYaml(path.resolve(composePath, 'mongo.yml'))
     t.equal(
       volumeName,
-      mongoData.volumes['mongo-data'].external.name,
+      mongoData.volumes['mongo-data'].name,
       'Should keep correct volume name in mongo.yml'
     )
   })
@@ -215,7 +215,7 @@ tap.test('$ cli install --enable-classic-volumes', async (t) => {
     const mongoData = loadYaml(path.resolve(composePath, 'mongo.yml'))
     t.equal(
       volumeName,
-      mongoData.volumes['mongo-data'].external.name,
+      mongoData.volumes['mongo-data'].name,
       'Should correct volume name in mongo.yml'
     )
   })

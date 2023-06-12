@@ -18,6 +18,5 @@ services:
 
 volumes:
   mongo-data:
-    external:
-      name: {{volumesPrefix}}-mongo-data
+    name: {{volumesPrefix}}-mongo-data
 {{/named-volumes}}

@@ -215,7 +215,7 @@ tap.test('$ cli install --enable-classic-volumes', async (t) => {
     const mongoData = loadYaml(path.resolve(composePath, 'mongo.yml'))
     t.equal(
       volumeName,
-      mongoData.volumes['mongo-data'].external.name,
+      mongoData.volumes['mongo-data'].name,
       'Should correct volume name in mongo.yml'
     )
   })

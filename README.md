@@ -271,8 +271,7 @@ services:
       - thread_pool.bulk.queue_size=200
 volumes:
   elasticsearch-data:
-    external:
-      name: "foobar-dev-repo-elasticsearch-data"
+    name: "foobar-dev-repo-elasticsearch-data"
 ```
 
 This action has the following features & caveats:

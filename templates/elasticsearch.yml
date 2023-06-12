@@ -22,6 +22,5 @@ services:
 
 volumes:
   elasticsearch-data:
-    external:
-      name: {{volumesPrefix}}-elasticsearch-data
+    name: {{volumesPrefix}}-elasticsearch-data
 {{/named-volumes}}

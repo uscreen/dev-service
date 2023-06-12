@@ -20,6 +20,5 @@ services:
 
 volumes:
   rabbit-data:
-    external:
-      name: {{volumesPrefix}}-rabbit-data
+    name: {{volumesPrefix}}-rabbit-data
 {{/named-volumes}}
