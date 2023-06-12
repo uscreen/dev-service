@@ -330,6 +330,14 @@ And the folder structure would look like this:
 
 > Format according to https://keepachangelog.com
 
+### v0.12.6
+#### Fixed
+- work with current docker compose
+
+### v0.12.0
+#### Added
+- mariadb template
+
 ### v0.11.17
 #### Fixed
 - custom services with container ports lower than 60 now work as expected
