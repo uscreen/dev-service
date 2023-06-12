@@ -70,11 +70,12 @@ tap.test('$ cli logs [service]', async (t) => {
     const otherService = 'nats'
     const result = await cli(['logs', otherService], arenaPath, {}, 2000)
 
-    t.equal(0, result.code, 'Should return code 0')
-
-    const lines = result.stdout.split('\n').filter((s) => s)
-
-    t.equal(0, lines.length, 'Should show no logs')
+    t.not(0, result.code, 'Should return code != 0')
+    t.equal(
+      true,
+      result.stderr.includes('ERROR'),
+      'Should output error message'
+    )
   })
 
   t.test('With no running [service]', async (t) => {
