@@ -21,4 +21,5 @@ services:
 volumes:
   mariadb-data:
     name: {{volumesPrefix}}-mariadb-data
+    external: true
 {{/named-volumes}}
