@@ -47,7 +47,7 @@
   },
   "dependencies": {
     "c8": "^7.12.0",
-    "commander": "^10.0.0",
+    "commander": "^11.0.0",
     "fs-extra": "^11.1.0",
     "nanoid": "^4.0.0",
     "parse-json": "^7.0.0",
