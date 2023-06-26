@@ -428,9 +428,9 @@
   integrity sha512-S9q47ByT2pPvD65IvrWp7qppVMpk9WGMbVq9wbWZOHg6tnXSD4vyhao6nOSBwwfDdV2p3Kx9evA9vI+XWTfDvw==
 
 "@uscreen.de/eslint-config-prettystandard-node@^0.2.10":
-  version "0.2.11"
-  resolved "https://registry.yarnpkg.com/@uscreen.de/eslint-config-prettystandard-node/-/eslint-config-prettystandard-node-0.2.11.tgz#655845a2ea434021b6a248376c6fac1399b41c58"
-  integrity sha512-m363TAOVZfMxjN0WfgfQFZU/LECNbI3cnotUTqU/pg5/JJNu3w8pcc44V7sjcGKPsHY3smbg/WpjgC3z5sgMpw==
+  version "0.2.12"
+  resolved "https://registry.yarnpkg.com/@uscreen.de/eslint-config-prettystandard-node/-/eslint-config-prettystandard-node-0.2.12.tgz#83cdd337e1aa447087cd501cf81d4b3220059e78"
+  integrity sha512-j9hovsvezi85h0n3czD8vO+hRG0syum60w8bAdYC+BaeGp1w7deddzttvggtFka6lYwReGUhOfh4oFgLByQyhw==
   dependencies:
     eslint "^8.32.0"
     eslint-config-prettier "^8.5.0"
