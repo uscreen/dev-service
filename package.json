@@ -48,7 +48,7 @@
   },
   "dependencies": {
     "commander": "^11.0.0",
-    "fs-extra": "^11.1.0",
+    "fs-extra": "^11.2.0",
     "nanoid": "^5.0.2",
     "parse-json": "^8.0.1",
     "read-pkg": "^9.0.0",
