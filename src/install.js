@@ -151,7 +151,6 @@ const readCustomServiceData = (service) => {
   }
 
   const templateObject = {
-    version: '2.4',
     services: {
       [name]: service
     },
