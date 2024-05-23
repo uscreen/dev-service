@@ -330,6 +330,10 @@ And the folder structure would look like this:
 
 > Format according to https://keepachangelog.com
 
+### v0.12.11
+#### Fixed
+- fix "'version' is obsolete" bug
+
 ### v0.12.6
 #### Fixed
 - work with current docker compose
