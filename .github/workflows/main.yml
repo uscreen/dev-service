@@ -17,15 +17,15 @@ jobs:
         node-version: [18, 20]
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup docker-compose
         uses: KengoTODA/actions-setup-docker-compose@main
         with:
-          version: "2.18.1"
+          version: "2.27.0"
 
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
           cache: "npm"
@@ -37,7 +37,7 @@ jobs:
         run: CURRENT_UID=$(id -u):$(id -g) npm run test:ci
 
       - name: Coveralls
-        uses: coverallsapp/github-action@master
+        uses: coverallsapp/github-action@main
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
