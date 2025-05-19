@@ -48,7 +48,7 @@
   },
   "dependencies": {
     "chalk": "^5.4.1",
-    "commander": "^13.0.0",
+    "commander": "^14.0.0",
     "fs-extra": "^11.1.0",
     "nanoid": "^5.0.2",
     "parse-json": "^8.0.1",
