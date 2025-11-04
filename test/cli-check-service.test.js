@@ -1,4 +1,5 @@
-import tap from 'tap'
+import { test, describe, afterEach } from 'node:test'
+import assert from 'node:assert/strict'
 import fs from 'fs-extra'
 
 import {
@@ -20,138 +21,133 @@ const packageJson = {
 
 const service = 'mongo'
 
-tap.test('$ cli check', async (t) => {
-  t.afterEach(clearArena)
+describe('$ cli check', () => {
+  afterEach(async () => {
+    await clearArena()
+  })
 
-  t.test('Within a folder with no .compose subfolder', async (t) => {
+  test('Within a folder with no .compose subfolder', async (t) => {
     prepareArena(packageJson)
 
     const result = await cli(['check', service], arenaPath)
 
-    t.not(0, result.code, 'Should return code != 0')
-    t.equal(
-      true,
+    assert.notEqual(result.code, 0, 'Should return code != 0')
+    assert.equal(
       result.stderr.includes('ERROR'),
+      true,
       'Should output error message'
     )
   })
 
-  t.test('Within a folder with empty .compose subfolder', async (t) => {
+  test('Within a folder with empty .compose subfolder', async (t) => {
     prepareArena(packageJson)
     fs.ensureDirSync(composePath)
 
     const result = await cli(['check', service], arenaPath)
 
-    t.not(0, result.code, 'Should return code != 0')
-    t.equal(
-      true,
+    assert.notEqual(result.code, 0, 'Should return code != 0')
+    assert.equal(
       result.stderr.includes('ERROR'),
+      true,
       'Should output error message'
     )
   })
 
-  t.test("If service's ports are available", async (t) => {
+  test("If service's ports are available", async (t) => {
     prepareArena(packageJson)
     await cli(['install'], arenaPath)
 
     const result = await cli(['check', service], arenaPath)
 
-    t.equal(0, result.code, 'Should return code 0')
+    assert.equal(result.code, 0, 'Should return code 0')
   })
 
-  t.test("If service's port(s) are already in use", (t) => {
+  test("If service's port(s) are already in use", async (t) => {
     prepareArena(packageJson)
-    cli(['install'], arenaPath).then(() => {
-      const server = webserver.start(27017)
+    await cli(['install'], arenaPath)
 
-      cli(['check', service], arenaPath).then((result) => {
-        t.not(0, result.code, 'Should return code != 0')
-        t.equal(
-          true,
-          result.stderr.startsWith(
-            'ERROR: Required port(s) are already allocated'
-          ),
-          'Should output appropriate message to stderr'
-        )
+    const server = webserver.start(27017)
 
-        webserver.stop(server, () => t.end())
-      })
-    })
+    const result = await cli(['check', service], arenaPath)
+
+    assert.notEqual(result.code, 0, 'Should return code != 0')
+    assert.equal(
+      result.stderr.startsWith('ERROR: Required port(s) are already allocated'),
+      true,
+      'Should output appropriate message to stderr'
+    )
+
+    await new Promise((resolve) => webserver.stop(server, resolve))
   })
 
-  t.test('If service is already running', async (t) => {
+  test('If service is already running', async (t) => {
     prepareArena(packageJson)
     await cli(['install'], arenaPath)
     await cli(['start', service], arenaPath)
 
     const result = await cli(['check', service], arenaPath)
 
-    t.equal(0, result.code, 'Should return code 0')
+    assert.equal(result.code, 0, 'Should return code 0')
   })
 
-  t.test('If all services are already running', async (t) => {
+  test('If all services are already running', async (t) => {
     prepareArena(packageJson)
     await cli(['install'], arenaPath)
     await cli(['start'], arenaPath)
 
     const result = await cli(['check', service], arenaPath)
 
-    t.equal(0, result.code, 'Should return code 0')
+    assert.equal(result.code, 0, 'Should return code 0')
   })
 
-  t.test(
-    'If services of another dev-service instance are running',
-    async (t) => {
-      const otherPackageJson = {
-        name: 'other-dev-service-test',
-        services: ['redis']
-      }
-
-      prepareOtherArena(otherPackageJson)
-      await cli(['install'], otherArenaPath)
-      await cli(['start'], otherArenaPath)
-
-      prepareArena(packageJson)
-      await cli(['install'], arenaPath)
-
-      const result = await cli(['check', service], arenaPath)
-      t.ok(
-        result.stderr.includes('WARNING: dev-service is already running'),
-        'Should show warning'
-      )
-      t.ok(
-        result.stderr.includes('_otherarena'),
-        'Should show reference to other dev-service instance'
-      )
-
-      t.equal(0, result.code, 'Should not crash and return code 0')
-
-      clearOtherArena()
+  test('If services of another dev-service instance are running', async (t) => {
+    const otherPackageJson = {
+      name: 'other-dev-service-test',
+      services: ['redis']
     }
-  )
 
-  t.test('With irregular name in package.json', (t) => {
+    prepareOtherArena(otherPackageJson)
+    await cli(['install'], otherArenaPath)
+    await cli(['start'], otherArenaPath)
+
+    prepareArena(packageJson)
+    await cli(['install'], arenaPath)
+
+    const result = await cli(['check', service], arenaPath)
+    assert.ok(
+      result.stderr.includes('WARNING: dev-service is already running'),
+      'Should show warning'
+    )
+    assert.ok(
+      result.stderr.includes('_otherarena'),
+      'Should show reference to other dev-service instance'
+    )
+
+    assert.equal(result.code, 0, 'Should not crash and return code 0')
+
+    await clearOtherArena()
+  })
+
+  test('With irregular name in package.json', async (t) => {
     const name = '@uscreen.de/dev-service-test'
     prepareArena({ ...packageJson, name })
-    cli(['install'], arenaPath).then(() => {
-      const server = webserver.start(27017)
+    await cli(['install'], arenaPath)
 
-      cli(['check', service], arenaPath).then((result) => {
-        t.not(0, result.code, 'Should return code != 0')
-        t.equal(
-          true,
-          result.stderr.startsWith(
-            'ERROR: Required port(s) are already allocated'
-          ),
-          'Should output appropriate message to stderr'
-        )
+    const server = webserver.start(27017)
 
-        webserver.stop(server, () => t.end())
-      })
-    })
+    const result = await cli(['check', service], arenaPath)
+
+    assert.notEqual(result.code, 0, 'Should return code != 0')
+    assert.equal(
+      result.stderr.startsWith('ERROR: Required port(s) are already allocated'),
+      true,
+      'Should output appropriate message to stderr'
+    )
+
+    await new Promise((resolve) => webserver.stop(server, resolve))
   })
 
-  t.test('If a minimal customized service is given', async (t) => {
+  test('If a minimal customized service is given', async (t) => {
     prepareArena({
       ...packageJson,
       services: [
@@ -163,10 +159,10 @@ tap.test('$ cli check', async (t) => {
 
     const result = await cli(['check', service], arenaPath)
 
-    t.equal(0, result.code, 'Should not crash and return code 0')
+    assert.equal(result.code, 0, 'Should not crash and return code 0')
   })
 
-  t.test('If the HOST part of a port mapping is in use', (t) => {
+  test('If the HOST part of a port mapping is in use', async (t) => {
     prepareArena({
       ...packageJson,
       services: [
@@ -178,25 +174,22 @@ tap.test('$ cli check', async (t) => {
       ]
     })
 
-    cli(['install'], arenaPath).then(() => {
-      const server = webserver.start(16379)
+    await cli(['install'], arenaPath)
+    const server = webserver.start(16379)
 
-      cli(['check', 'redis'], arenaPath).then((result) => {
-        t.not(0, result.code, 'Should return code != 0')
-        t.equal(
-          true,
-          result.stderr.startsWith(
-            'ERROR: Required port(s) are already allocated'
-          ),
-          'Should output appropriate message to stderr'
-        )
+    const result = await cli(['check', 'redis'], arenaPath)
 
-        webserver.stop(server, () => t.end())
-      })
-    })
+    assert.notEqual(result.code, 0, 'Should return code != 0')
+    assert.equal(
+      result.stderr.startsWith('ERROR: Required port(s) are already allocated'),
+      true,
+      'Should output appropriate message to stderr'
+    )
+
+    await new Promise((resolve) => webserver.stop(server, resolve))
   })
 
-  t.test('If the CONTAINER part of a port mapping is in use', (t) => {
+  test('If the CONTAINER part of a port mapping is in use', async (t) => {
     prepareArena({
       ...packageJson,
       services: [
@@ -208,14 +201,13 @@ tap.test('$ cli check', async (t) => {
       ]
     })
 
-    cli(['install'], arenaPath).then(() => {
-      const server = webserver.start(6379)
+    await cli(['install'], arenaPath)
+    const server = webserver.start(6379)
 
-      cli(['check', 'redis'], arenaPath).then((result) => {
-        t.equal(0, result.code, 'Should return code 0')
+    const result = await cli(['check', 'redis'], arenaPath)
 
-        webserver.stop(server, () => t.end())
-      })
-    })
+    assert.equal(result.code, 0, 'Should return code 0')
+
+    await new Promise((resolve) => webserver.stop(server, resolve))
   })
 })

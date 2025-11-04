@@ -1,4 +1,5 @@
-import tap from 'tap'
+import { test, describe, afterEach } from 'node:test'
+import assert from 'node:assert/strict'
 import fs from 'fs-extra'
 import path from 'path'
 
@@ -23,10 +24,12 @@ const readVolumeOptions = () => {
   return options.volumes
 }
 
-tap.test('$ cli install --enable-mapped-volumes', async (t) => {
-  t.afterEach(clearArena)
+describe('$ cli install --enable-mapped-volumes', () => {
+  afterEach(async () => {
+    await clearArena()
+  })
 
-  t.test('Without already installed services', async (t) => {
+  test('Without already installed services', async (t) => {
     prepareArena({
       name: 'dev-service-test',
       services: ['mongo:latest']
@@ -34,28 +37,28 @@ tap.test('$ cli install --enable-mapped-volumes', async (t) => {
 
     const result = await cli(['install', '--enable-mapped-volumes'], arenaPath)
 
-    t.equal(0, result.code, 'Should return code 0')
+    assert.equal(result.code, 0, 'Should return code 0')
 
-    t.ok(fs.existsSync(composePath), 'Should create services folder')
-    t.ok(fs.existsSync(volumesPath), 'Should create volumes folder')
+    assert.ok(fs.existsSync(composePath), 'Should create services folder')
+    assert.ok(fs.existsSync(volumesPath), 'Should create volumes folder')
 
-    t.ok(
+    assert.ok(
       fs.existsSync(path.resolve(composePath, 'mongo.yml')),
       'Should create mongo.yml within services folder'
     )
-    t.ok(
+    assert.ok(
       fs.existsSync(path.resolve(servicesPath, '.options')),
       'Should create .options within services folder'
     )
     const { mode: volumesMode } = readVolumeOptions()
-    t.equal(
-      'mapped-volumes',
+    assert.equal(
       volumesMode,
+      'mapped-volumes',
       '... containing the correct volumes mode'
     )
 
     const mongoData = loadYaml(path.resolve(composePath, 'mongo.yml'))
-    t.notOk(mongoData.volumes, 'Should not set named volumes')
+    assert.equal(mongoData.volumes, undefined, 'Should not set named volumes')
 
     const volumeName = 'dev-service-test-mongo-data'
 
@@ -63,16 +66,16 @@ tap.test('$ cli install --enable-mapped-volumes', async (t) => {
     await docker('volume', 'inspect', volumeName)
       .then((c) => (code = c))
       .catch((e) => (code = e.code))
-    t.equal(1, code, 'Should not create named volume')
+    assert.equal(code, 1, 'Should not create named volume')
 
     await cli(['start'], arenaPath)
-    t.ok(
+    assert.ok(
       fs.existsSync(path.resolve(volumesPath, 'mongo-data')),
       'Should create volumes folder after start'
     )
   })
 
-  t.test('With already installed services (with named volumes)', async (t) => {
+  test('With already installed services (with named volumes)', async (t) => {
     prepareArena({
       name: 'dev-service-test',
       services: ['mongo:latest']
@@ -82,21 +85,21 @@ tap.test('$ cli install --enable-mapped-volumes', async (t) => {
 
     const result = await cli(['install', '--enable-mapped-volumes'], arenaPath)
 
-    t.equal(0, result.code, 'Should return code 0')
+    assert.equal(result.code, 0, 'Should return code 0')
 
-    t.ok(
+    assert.ok(
       fs.existsSync(path.resolve(servicesPath, '.options')),
       'Should create .options within services folder'
     )
     const { mode: volumesMode } = readVolumeOptions()
-    t.equal(
-      'mapped-volumes',
+    assert.equal(
       volumesMode,
+      'mapped-volumes',
       '... containing the correct volumes mode'
     )
 
     const mongoData = loadYaml(path.resolve(composePath, 'mongo.yml'))
-    t.notOk(mongoData.volumes, 'Should not set named volumes')
+    assert.equal(mongoData.volumes, undefined, 'Should not set named volumes')
 
     const volumeName = 'dev-service-test-mongo-data'
 
@@ -104,16 +107,16 @@ tap.test('$ cli install --enable-mapped-volumes', async (t) => {
     await docker('volume', 'inspect', volumeName)
       .then((c) => (code = c))
       .catch((e) => (code = e.code))
-    t.equal(0, code, 'Should not remove existing named volume')
+    assert.equal(code, 0, 'Should not remove existing named volume')
 
     await cli(['start'], arenaPath)
-    t.ok(
+    assert.ok(
       fs.existsSync(path.resolve(volumesPath, 'mongo-data')),
       'Should create volumes folder after start'
     )
   })
 
-  t.test('With already installed services (with mapped volumes)', async (t) => {
+  test('With already installed services (with mapped volumes)', async (t) => {
     prepareArena({
       name: 'dev-service-test',
       services: ['mongo:latest']
@@ -123,15 +126,15 @@ tap.test('$ cli install --enable-mapped-volumes', async (t) => {
 
     const result = await cli(['install', '--enable-mapped-volumes'], arenaPath)
 
-    t.equal(0, result.code, 'Should return code 0')
+    assert.equal(result.code, 0, 'Should return code 0')
 
-    t.ok(
+    assert.ok(
       fs.existsSync(path.resolve(servicesPath, '.options')),
       'Should create .options within services folder'
     )
 
     const mongoData = loadYaml(path.resolve(composePath, 'mongo.yml'))
-    t.notOk(mongoData.volumes, 'Should not set named volumes')
+    assert.equal(mongoData.volumes, undefined, 'Should not set named volumes')
 
     const volumeName = 'dev-service-test-mongo-data'
 
@@ -139,20 +142,22 @@ tap.test('$ cli install --enable-mapped-volumes', async (t) => {
     await docker('volume', 'inspect', volumeName)
       .then((c) => (code = c))
       .catch((e) => (code = e.code))
-    t.equal(1, code, 'Should not create named volume')
+    assert.equal(code, 1, 'Should not create named volume')
 
     await cli(['start'], arenaPath)
-    t.ok(
+    assert.ok(
       fs.existsSync(path.resolve(volumesPath, 'mongo-data')),
       'Should create volumes folder after start'
     )
   })
 })
 
-tap.test('$ cli install', async (t) => {
-  t.afterEach(clearArena)
+describe('$ cli install', () => {
+  afterEach(async () => {
+    await clearArena()
+  })
 
-  t.test('With already installed services (with mapped volumes)', async (t) => {
+  test('With already installed services (with mapped volumes)', async (t) => {
     prepareArena({
       name: 'dev-service-test',
       services: ['mongo:latest']
@@ -162,15 +167,15 @@ tap.test('$ cli install', async (t) => {
 
     const result = await cli(['install'], arenaPath)
 
-    t.equal(0, result.code, 'Should return code 0')
+    assert.equal(result.code, 0, 'Should return code 0')
 
-    t.ok(
+    assert.ok(
       fs.existsSync(path.resolve(servicesPath, '.options')),
       'Should create .options within services folder'
     )
 
     const mongoData = loadYaml(path.resolve(composePath, 'mongo.yml'))
-    t.notOk(mongoData.volumes, 'Should not set named volumes')
+    assert.equal(mongoData.volumes, undefined, 'Should not set named volumes')
 
     const volumeName = 'dev-service-test-mongo-data'
 
@@ -178,20 +183,22 @@ tap.test('$ cli install', async (t) => {
     await docker('volume', 'inspect', volumeName)
       .then((c) => (code = c))
       .catch((e) => (code = e.code))
-    t.equal(1, code, 'Should not create named volume')
+    assert.equal(code, 1, 'Should not create named volume')
 
     await cli(['start'], arenaPath)
-    t.ok(
+    assert.ok(
       fs.existsSync(path.resolve(volumesPath, 'mongo-data')),
       'Should create volumes folder after start'
     )
   })
 })
 
-tap.test('$ cli install --enable-classic-volumes', async (t) => {
-  t.afterEach(clearArena)
+describe('$ cli install --enable-classic-volumes', () => {
+  afterEach(async () => {
+    await clearArena()
+  })
 
-  t.test('With already installed services (with mapped volumes)', async (t) => {
+  test('With already installed services (with mapped volumes)', async (t) => {
     prepareArena({
       name: 'dev-service-test',
       services: ['mongo:latest']
@@ -201,21 +208,21 @@ tap.test('$ cli install --enable-classic-volumes', async (t) => {
 
     const result = await cli(['install', '--enable-classic-volumes'], arenaPath)
 
-    t.equal(0, result.code, 'Should return code 0')
+    assert.equal(result.code, 0, 'Should return code 0')
 
-    t.ok(
+    assert.ok(
       fs.existsSync(path.resolve(servicesPath, '.options')),
       'Should not remove .options within services folder'
     )
     const volumes = readVolumeOptions()
-    t.notOk(volumes, 'Should remove volumes section in options')
+    assert.equal(volumes, undefined, 'Should remove volumes section in options')
 
     const volumeName = 'dev-service-test-mongo-data'
 
     const mongoData = loadYaml(path.resolve(composePath, 'mongo.yml'))
-    t.equal(
-      volumeName,
+    assert.equal(
       mongoData.volumes['mongo-data'].name,
+      volumeName,
       'Should correct volume name in mongo.yml'
     )
   })

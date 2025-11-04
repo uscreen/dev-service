@@ -1,4 +1,5 @@
-import tap from 'tap'
+import { test, describe, afterEach } from 'node:test'
+import assert from 'node:assert/strict'
 import fs from 'fs-extra'
 
 import {
@@ -14,37 +15,39 @@ const packageJson = {
   services: ['mongo:latest', 'nginx']
 }
 
-tap.test('$ cli pull', async (t) => {
-  t.afterEach(clearArena)
+describe('$ cli pull', () => {
+  afterEach(async () => {
+    await clearArena()
+  })
 
-  t.test('Within a folder with no .compose subfolder', async (t) => {
+  test('Within a folder with no .compose subfolder', async (t) => {
     prepareArena(packageJson)
 
     const result = await cli(['pull'], arenaPath)
 
-    t.not(0, result.code, 'Should return code != 0')
-    t.equal(
-      true,
+    assert.notEqual(result.code, 0, 'Should return code != 0')
+    assert.equal(
       result.stderr.includes('ERROR'),
+      true,
       'Should output error message'
     )
   })
 
-  t.test('Within a folder with empty .compose subfolder', async (t) => {
+  test('Within a folder with empty .compose subfolder', async (t) => {
     prepareArena(packageJson)
     fs.ensureDirSync(composePath)
 
     const result = await cli(['pull'], arenaPath)
 
-    t.not(0, result.code, 'Should return code != 0')
-    t.equal(
-      true,
+    assert.notEqual(result.code, 0, 'Should return code != 0')
+    assert.equal(
       result.stderr.includes('ERROR'),
+      true,
       'Should output error message'
     )
   })
 
-  t.test('If no docker host is available', async (t) => {
+  test('If no docker host is available', async (t) => {
     prepareArena(packageJson)
     await cli(['install'], arenaPath)
 
@@ -52,25 +55,25 @@ tap.test('$ cli pull', async (t) => {
       DOCKER_HOST: 'tcp://notexisting:2376'
     })
 
-    t.not(0, result.code, 'Should return code != 0')
-    t.equal(
-      true,
+    assert.notEqual(result.code, 0, 'Should return code != 0')
+    assert.equal(
       result.stderr.includes('ERROR'),
+      true,
       'Should output error message'
     )
   })
 
-  t.test('If services are defined in .compose subfolder', async (t) => {
+  test('If services are defined in .compose subfolder', async (t) => {
     prepareArena(packageJson)
     await cli(['install'], arenaPath)
 
     const result = await cli(['pull'], arenaPath)
 
-    t.equal(0, result.code, 'Should return code 0')
+    assert.equal(result.code, 0, 'Should return code 0')
 
     const lines = result.stderr.split('\n').filter((s) => s)
     for (const s of ['nginx', 'mongo']) {
-      t.ok(
+      assert.ok(
         lines.some((l) => l.match(RegExp(`${s} pulled`, 'i'))),
         `Should pull ${s} image`
       )

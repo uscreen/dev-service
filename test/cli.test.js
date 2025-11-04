@@ -1,27 +1,26 @@
-import tap from 'tap'
+import { test } from 'node:test'
+import assert from 'node:assert/strict'
 import { cli } from './helpers.js'
 
-tap.test('$ cli', async (t) => {
+test('$ cli', async (t) => {
   const result = await cli([])
-  t.equal(1, result.code, 'Should fail')
+  assert.equal(result.code, 1, 'Should fail')
 
-  t.equal('', result.stdout, 'Should output nothing to stdout')
-  t.equal(
-    true,
+  assert.equal(result.stdout, '', 'Should output nothing to stdout')
+  assert.equal(
     result.stderr.startsWith('Usage: cli [options] [command]'),
+    true,
     'Should output usage information to stderr'
   )
-  t.end()
 })
 
-tap.test('$ cli noop', async (t) => {
+test('$ cli noop', async (t) => {
   const result = await cli(['noop'])
-  t.equal(1, result.code, 'Should fail')
-  t.equal('', result.stdout, 'Should output nothing to stdout')
-  t.equal(
-    true,
+  assert.equal(result.code, 1, 'Should fail')
+  assert.equal(result.stdout, '', 'Should output nothing to stdout')
+  assert.equal(
     result.stderr.startsWith("error: unknown command 'noop'"),
+    true,
     'Should output error to stderr'
   )
-  t.end()
 })

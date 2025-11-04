@@ -1,6 +1,6 @@
-import tap from 'tap'
+import { test } from 'node:test'
+import assert from 'node:assert/strict'
 
-tap.test('Test Setup', (t) => {
-  t.equal(true, true, 'Tests and assertions should work')
-  t.end()
+test('Test Setup', (t) => {
+  assert.equal(true, true, 'Tests and assertions should work')
 })
