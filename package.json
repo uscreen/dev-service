@@ -23,7 +23,7 @@
   "author": "Martin Herting <herting@uscreen.de>",
   "license": "MIT",
   "engines": {
-    "node": ">=16"
+    "node": ">=20"
   },
   "scripts": {
     "preinstall": "npx only-allow pnpm",

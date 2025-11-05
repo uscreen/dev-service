@@ -327,6 +327,13 @@ And the folder structure would look like this:
 
 > Format according to https://keepachangelog.com
 
+### v0.13.0
+#### Changed
+- adjust node requirements
+- upgrade multiple packages
+- replace tap with native node tests
+- migrate to pnpm
+
 ### v0.12.11
 #### Fixed
 - fix "'version' is obsolete" bug
