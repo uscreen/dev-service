@@ -5,9 +5,9 @@ name: Test CI
 
 on:
   push:
-    branches: ["master"]
+    branches: ["master", "feature/cleanup"]
   pull_request:
-    branches: ["master"]
+    branches: ["master", "feature/cleanup"]
 
 jobs:
   test:
