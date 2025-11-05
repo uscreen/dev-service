@@ -19,7 +19,7 @@
 Add the module within your dev repo:
 
 ```bash
-$ yarn add @uscreen.de/dev-service
+$ pnpm add @uscreen.de/dev-service
 ```
 
 ## Usage
@@ -45,20 +45,17 @@ Next, run `service install` and you will end up with a directory structure like:
 ├── node_modules
 │   └── ...
 ├── package.json
-│
-├── services
-│   ├── .compose
-│   │   ├── mongo.yml
-│   │   ├── nginx.yml
-│   │   └── redis.yml
-│   │
-│   └── nginx/default.conf
-│       ├── conf.d
-│       │   └── default.conf
-│       └── ssl
-│           └── README
-│
-└── yarn.lock
+└── services
+    ├── .compose
+    │   ├── mongo.yml
+    │   ├── nginx.yml
+    │   └── redis.yml
+    │
+    └── nginx/default.conf
+        ├── conf.d
+        │   └── default.conf
+        └── ssl
+            └── README
 ```
 
 ### Running

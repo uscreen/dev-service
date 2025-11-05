@@ -19,6 +19,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
       - name: Setup docker-compose
         uses: KengoTODA/actions-setup-docker-compose@main
         with:
@@ -28,13 +33,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          cache: "npm"
+          cache: "pnpm"
 
       - name: Install packages
-        run: npm install
+        run: pnpm install
 
       - name: Run tests
-        run: CURRENT_UID=$(id -u):$(id -g) npm run test:ci
+        run: CURRENT_UID=$(id -u):$(id -g) pnpm run test:ci
 
       - name: Coveralls
         uses: coverallsapp/github-action@main
