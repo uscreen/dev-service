@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 
+import process from 'node:process'
 import { program } from 'commander'
 
+import { checkOtherServices, checkUsedPorts } from '../src/check.js'
 import { version } from '../src/constants.js'
-import { checkUsedPorts, checkOtherServices } from '../src/check.js'
 import { compose, error } from '../src/utils.js'
 
 program
@@ -16,11 +17,13 @@ program
       if (service) {
         await checkUsedPorts(service)
         await compose('up', '-d', service)
-      } else {
+      }
+      else {
         await checkUsedPorts()
         await compose('up', '-d')
       }
-    } catch (e) {
+    }
+    catch (e) {
       error(e)
     }
   })

@@ -1,16 +1,16 @@
-import { test, describe, afterEach } from 'node:test'
 import assert from 'node:assert/strict'
+import { afterEach, describe, test } from 'node:test'
 import fs from 'fs-extra'
 
 import {
   arenaPath,
-  cli,
-  prepareArena,
   clearArena,
+  clearOtherArena,
+  cli,
   composePath,
   otherArenaPath,
+  prepareArena,
   prepareOtherArena,
-  clearOtherArena,
   webserver
 } from './helpers.js'
 
@@ -24,7 +24,7 @@ describe('$ cli check', () => {
     await clearArena()
   })
 
-  test('Within a folder with no .compose subfolder', async (t) => {
+  test('Within a folder with no .compose subfolder', async () => {
     prepareArena(packageJson)
 
     const result = await cli(['check'], arenaPath)
@@ -37,7 +37,7 @@ describe('$ cli check', () => {
     )
   })
 
-  test('Within a folder with empty .compose subfolder', async (t) => {
+  test('Within a folder with empty .compose subfolder', async () => {
     prepareArena(packageJson)
     fs.ensureDirSync(composePath)
 
@@ -51,7 +51,7 @@ describe('$ cli check', () => {
     )
   })
 
-  test("If all services' ports are available", async (t) => {
+  test('If all services\' ports are available', async () => {
     prepareArena(packageJson)
     await cli(['install'], arenaPath)
 
@@ -60,7 +60,7 @@ describe('$ cli check', () => {
     assert.equal(result.code, 0, 'Should return code 0')
   })
 
-  test("If one or more services' port(s) are already in use", async (t) => {
+  test('If one or more services\' port(s) are already in use', async () => {
     prepareArena(packageJson)
     await cli(['install'], arenaPath)
 
@@ -75,10 +75,10 @@ describe('$ cli check', () => {
       'Should output appropriate message to stderr'
     )
 
-    await new Promise((resolve) => webserver.stop(server, resolve))
+    await new Promise(resolve => webserver.stop(server, resolve))
   })
 
-  test('If services are already running', async (t) => {
+  test('If services are already running', async () => {
     prepareArena(packageJson)
     await cli(['install'], arenaPath)
     await cli(['start'], arenaPath)
@@ -88,7 +88,7 @@ describe('$ cli check', () => {
     assert.equal(result.code, 0, 'Should return code 0')
   })
 
-  test('If services of another dev-service instance are running', async (t) => {
+  test('If services of another dev-service instance are running', async () => {
     const otherPackageJson = {
       name: 'other-dev-service-test',
       services: ['redis']
@@ -116,7 +116,7 @@ describe('$ cli check', () => {
     await clearOtherArena()
   })
 
-  test('With irregular name in package.json', async (t) => {
+  test('With irregular name in package.json', async () => {
     const name = '@uscreen.de/dev-service-test'
     prepareArena({ ...packageJson, name })
     await cli(['install'], arenaPath)
@@ -132,10 +132,10 @@ describe('$ cli check', () => {
       'Should output appropriate message to stderr'
     )
 
-    await new Promise((resolve) => webserver.stop(server, resolve))
+    await new Promise(resolve => webserver.stop(server, resolve))
   })
 
-  test('If a minimal customized service is given', async (t) => {
+  test('If a minimal customized service is given', async () => {
     prepareArena({
       ...packageJson,
       services: [
@@ -150,7 +150,7 @@ describe('$ cli check', () => {
     assert.equal(result.code, 0, 'Should not crash and return code 0')
   })
 
-  test('If the HOST part of a port mapping is in use', async (t) => {
+  test('If the HOST part of a port mapping is in use', async () => {
     prepareArena({
       ...packageJson,
       services: [
@@ -174,10 +174,10 @@ describe('$ cli check', () => {
       'Should output appropriate message to stderr'
     )
 
-    await new Promise((resolve) => webserver.stop(server, resolve))
+    await new Promise(resolve => webserver.stop(server, resolve))
   })
 
-  test('If the CONTAINER part of a port mapping is in use', async (t) => {
+  test('If the CONTAINER part of a port mapping is in use', async () => {
     prepareArena({
       ...packageJson,
       services: [
@@ -196,6 +196,6 @@ describe('$ cli check', () => {
 
     assert.equal(result.code, 0, 'Should return code 0')
 
-    await new Promise((resolve) => webserver.stop(server, resolve))
+    await new Promise(resolve => webserver.stop(server, resolve))
   })
 })

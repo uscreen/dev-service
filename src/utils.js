@@ -1,13 +1,14 @@
 'use strict'
 
-import fs from 'fs-extra'
-import path from 'path'
-import { fileURLToPath } from 'url'
-import { readPackageSync } from 'read-pkg'
+import { exec, spawn } from 'node:child_process'
+import path from 'node:path'
+import process from 'node:process'
+import { fileURLToPath } from 'node:url'
 import chalk from 'chalk'
-import { exec, spawn } from 'child_process'
+import fs from 'fs-extra'
+import { readPackageSync } from 'read-pkg'
 
-import { root, COMPOSE_DIR } from './constants.js'
+import { COMPOSE_DIR, root } from './constants.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -19,15 +20,18 @@ export const readPackageJson = () => {
   let packageJson = null
   try {
     packageJson = readPackageSync({ cwd: root })
-  } catch (e) {}
+  }
+  catch {}
 
-  if (!packageJson) throw Error('Missing or invalid package.json')
+  if (!packageJson) {
+    throw new Error('Missing or invalid package.json')
+  }
 
   const services = packageJson.services || []
   const name = packageJson.name || path.basename(root)
 
   if (services.length === 0) {
-    throw Error('No services defined')
+    throw new Error('No services defined')
   }
 
   return { packageJson, services, name }
@@ -36,8 +40,8 @@ export const readPackageJson = () => {
 /**
  * Escape string for use in docker
  */
-export const escape = (name) =>
-  name.replace(/^[^a-zA-Z0-9]*/, '').replace(/[^a-zA-Z0-9-]/g, '-')
+export const escape = name =>
+  name.replace(/^[^a-z0-9]*/i, '').replace(/[^a-z0-9-]/gi, '-')
 
 /**
  * Checks if compose directory exists and contains files
@@ -50,26 +54,30 @@ export const checkComposeDir = () => {
  * Get all compose files from compose directory
  */
 export const getComposeFiles = () =>
-  fs.readdirSync(COMPOSE_DIR).filter((f) => f !== '.gitignore')
+  fs.readdirSync(COMPOSE_DIR).filter(f => f !== '.gitignore')
 
 /**
  * read path to compose file/folder via `docker inspect <containerId>`
  */
-const getComposePath = (containerId) =>
+const getComposePath = containerId =>
   new Promise((resolve, reject) => {
-    exec(`docker inspect ${containerId}`, function (err, stdout, stderr) {
-      if (err) reject(err)
+    exec(`docker inspect ${containerId}`, (err, stdout, stderr) => {
+      if (err) {
+        reject(err)
+      }
 
       const errMessage = stderr.toString().trim()
-      if (errMessage) reject(Error(errMessage))
+      if (errMessage) {
+        reject(new Error(errMessage))
+      }
 
       const [data] = JSON.parse(stdout)
 
-      const result =
-        data &&
-        data.Config &&
-        data.Config.Labels &&
-        data.Config.Labels['com.docker.compose.project.working_dir']
+      const result
+        = data
+          && data.Config
+          && data.Config.Labels
+          && data.Config.Labels['com.docker.compose.project.working_dir']
 
       resolve(result)
     })
@@ -80,17 +88,21 @@ const getComposePath = (containerId) =>
  */
 export const getComposePaths = () =>
   new Promise((resolve, reject) => {
-    exec('docker ps -q', function (err, stdout, stderr) {
-      if (err) reject(err)
+    exec('docker ps -q', (err, stdout, stderr) => {
+      if (err) {
+        reject(err)
+      }
 
       const errMessage = stderr.toString().trim()
-      if (errMessage) reject(Error(errMessage))
+      if (errMessage) {
+        reject(new Error(errMessage))
+      }
 
-      const containers = stdout.split(/\n/).filter((r) => r)
+      const containers = stdout.split(/\n/).filter(r => r)
 
       Promise.all(containers.map(getComposePath))
         .then((ps) => {
-          const paths = Array.from(new Set(ps)).filter((p) => p)
+          const paths = Array.from(new Set(ps)).filter(p => p)
 
           resolve(paths)
         })
@@ -132,8 +144,10 @@ export const run = (command, parameters = [], cwd = null, stdio = [0, 1, 2]) =>
       stdio
     })
     c.on('close', (code) => {
-      if (code === 0) return resolve(code)
-      const e = Error(`Running "${command}" returns exit code ${code}`)
+      if (code === 0) {
+        return resolve(code)
+      }
+      const e = new Error(`Running "${command}" returns exit code ${code}`)
       e.code = code
       reject(e)
     })
@@ -151,7 +165,7 @@ export const docker = async (...params) => {
  */
 export const compose = async (...params) => {
   if (!checkComposeDir()) {
-    throw Error('No services found. Try running `service install`')
+    throw new Error('No services found. Try running `service install`')
   }
 
   const { name } = await readPackageJson()

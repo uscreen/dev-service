@@ -1,19 +1,19 @@
-import { test, describe, afterEach } from 'node:test'
 import assert from 'node:assert/strict'
+import path from 'node:path'
+import { afterEach, describe, test } from 'node:test'
 import fs from 'fs-extra'
-import path from 'path'
+
+import { docker } from '../src/utils.js'
 
 import {
   arenaPath,
-  cli,
-  prepareArena,
   clearArena,
+  cli,
+  composePath,
   loadYaml,
-  servicesPath,
-  composePath
+  prepareArena,
+  servicesPath
 } from './helpers.js'
-
-import { docker } from '../src/utils.js'
 
 const readVolumeOptions = () => {
   const raw = fs.readFileSync(path.resolve(servicesPath, '.options'), {
@@ -28,7 +28,7 @@ describe('$ cli install --enable-volumes-id', () => {
     await clearArena()
   })
 
-  test('Without already installed services', async (t) => {
+  test('Without already installed services', async () => {
     prepareArena({
       name: 'dev-service-test',
       services: ['mongo:latest']
@@ -70,12 +70,12 @@ describe('$ cli install --enable-volumes-id', () => {
 
     let code = null
     await docker('volume', 'inspect', volumeName)
-      .then((c) => (code = c))
-      .catch((e) => (code = e.code))
+      .then(c => (code = c))
+      .catch(e => (code = e.code))
     assert.equal(code, 0, 'Should create correctly named volume')
   })
 
-  test('With already installed services (without volumes-id)', async (t) => {
+  test('With already installed services (without volumes-id)', async () => {
     prepareArena({
       name: 'dev-service-test',
       services: ['mongo:latest']
@@ -113,12 +113,12 @@ describe('$ cli install --enable-volumes-id', () => {
 
     let code = null
     await docker('volume', 'inspect', volumeName)
-      .then((c) => (code = c))
-      .catch((e) => (code = e.code))
+      .then(c => (code = c))
+      .catch(e => (code = e.code))
     assert.equal(code, 0, 'Should create correctly named volume')
   })
 
-  test('With already installed services (with volumes-id)', async (t) => {
+  test('With already installed services (with volumes-id)', async () => {
     prepareArena({
       name: 'dev-service-test',
       services: ['mongo:latest']
@@ -150,8 +150,8 @@ describe('$ cli install --enable-volumes-id', () => {
 
     let code = null
     await docker('volume', 'inspect', volumeName)
-      .then((c) => (code = c))
-      .catch((e) => (code = e.code))
+      .then(c => (code = c))
+      .catch(e => (code = e.code))
     assert.equal(code, 0, 'Should create correctly named volume')
   })
 })
@@ -161,7 +161,7 @@ describe('$ cli install', () => {
     await clearArena()
   })
 
-  test('With already installed services (with volumes-id)', async (t) => {
+  test('With already installed services (with volumes-id)', async () => {
     prepareArena({
       name: 'dev-service-test',
       services: ['mongo:latest']
@@ -198,7 +198,7 @@ describe('$ cli install --enable-classic-volumes', () => {
     await clearArena()
   })
 
-  test('With already installed services (with volumes-id)', async (t) => {
+  test('With already installed services (with volumes-id)', async () => {
     prepareArena({
       name: 'dev-service-test',
       services: ['mongo:latest']

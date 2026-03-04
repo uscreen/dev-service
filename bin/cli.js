@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 
+import { createRequire } from 'node:module'
+import process from 'node:process'
 import { Command } from 'commander'
-import { createRequire } from 'module'
 
 const require = createRequire(import.meta.url)
 const program = new Command()

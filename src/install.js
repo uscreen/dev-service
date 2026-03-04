@@ -1,25 +1,25 @@
 'use strict'
 
-import path from 'path'
-import os from 'os'
+import os from 'node:os'
+import path from 'node:path'
 import fs from 'fs-extra'
-import YAML from 'yaml'
-import parseJson from 'parse-json'
 import { customAlphabet } from 'nanoid'
+import parseJson from 'parse-json'
+import YAML from 'yaml'
 
 import {
-  TEMPLATES_DIR,
-  SERVICES_DIR,
-  COMPOSE_DIR,
-  VOLUMES_DIR
-} from './constants.js'
-
-import {
-  readPackageJson,
-  escape,
   docker,
+  escape,
+  readPackageJson,
   resetComposeDir
 } from '../src/utils.js'
+
+import {
+  COMPOSE_DIR,
+  SERVICES_DIR,
+  TEMPLATES_DIR,
+  VOLUMES_DIR
+} from './constants.js'
 
 const nanoid = customAlphabet(
   '1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ',
@@ -32,7 +32,7 @@ const OPTIONS_PATH = path.resolve(SERVICES_DIR, '.options')
  * Helper methods
  */
 const getName = (service) => {
-  const withoutTag = service.replace(/:[a-z0-9_][a-z0-9_.-]{0,127}$/i, '')
+  const withoutTag = service.replace(/:\w[\w.-]{0,127}$/, '')
   const [name] = withoutTag.split('/').slice(-1)
 
   return name
@@ -59,9 +59,9 @@ const fillTemplate = (template, data, removeSections, keepSections) => {
 }
 
 const getOptions = () => {
-  const raw =
-    fs.existsSync(OPTIONS_PATH) &&
-    fs.readFileSync(OPTIONS_PATH, { encoding: 'utf-8' })
+  const raw
+    = fs.existsSync(OPTIONS_PATH)
+      && fs.readFileSync(OPTIONS_PATH, { encoding: 'utf-8' })
 
   return raw ? parseJson(raw) : {}
 }
@@ -78,20 +78,26 @@ const ensureVolumesDir = async () => {
 
 const ensureNamedVolumes = async (content) => {
   const data = YAML.parse(content)
-  if (!data || !data.volumes) return
+  if (!data || !data.volumes) {
+    return
+  }
 
   const volumes = []
   for (const key in data.volumes) {
-    if (!data.volumes[key]) continue
+    if (!data.volumes[key]) {
+      continue
+    }
 
     const name = data.volumes[key].name
-    if (!name) continue
+    if (!name) {
+      continue
+    }
 
     volumes.push(name)
   }
 
   await Promise.all(
-    volumes.map((v) =>
+    volumes.map(v =>
       docker('volume', 'create', `--name=${v}`, '--label=keep')
     )
   )
@@ -112,14 +118,6 @@ const copyAdditionalFiles = (name) => {
   }
 }
 
-const readServiceData = (service) => {
-  if (typeof service === 'string') {
-    return readStandardServiceData(service)
-  } else if (typeof service === 'object') {
-    return readCustomServiceData(service)
-  }
-}
-
 const readCustomServiceData = (service) => {
   const image = service.image
   const name = getName(image)
@@ -133,14 +131,18 @@ const readCustomServiceData = (service) => {
       const volumeArray = volume.split(':')
 
       // volume is unnamed:
-      if (volumeArray.length === 1) continue
+      if (volumeArray.length === 1) {
+        continue
+      }
 
       // => volume is named or mapped to a host path:
       const [volumeName] = volumeArray
 
       // volume has invalid volume name / volume is mapped to a host path
       // (@see https://github.com/moby/moby/issues/21786):
-      if (!volumeName.match(/^[a-zA-Z0-9][a-zA-Z0-9_.-]+$/)) continue
+      if (!volumeName.match(/^[a-z0-9][\w.-]+$/i)) {
+        continue
+      }
 
       // volume is named => we add it to top level "volumes" directive:
       volumes[volumeName] = {
@@ -172,14 +174,25 @@ const readStandardServiceData = (service) => {
   const result = { image: service, name }
 
   const exists = fs.existsSync(src)
-  if (exists) result.template = fs.readFileSync(src, { encoding: 'utf8' })
+  if (exists) {
+    result.template = fs.readFileSync(src, { encoding: 'utf8' })
+  }
 
   return result
 }
 
+const readServiceData = (service) => {
+  if (typeof service === 'string') {
+    return readStandardServiceData(service)
+  }
+  else if (typeof service === 'object') {
+    return readCustomServiceData(service)
+  }
+}
+
 const serviceInstall = async (data, projectname, volumeType, volumesPrefix) => {
   const removeSections = ['mapped-volumes', 'named-volumes'].filter(
-    (e) => e !== volumeType
+    e => e !== volumeType
   )
   const keepSections = [volumeType]
 
@@ -213,14 +226,14 @@ export const install = async (opts) => {
   const projectname = escape(name)
 
   // cleanse services from falsy values:
-  const services = all.filter((s) => s)
+  const services = all.filter(s => s)
 
   // validate custom services:
-  const invalid = services.filter((s) => typeof s === 'object' && !s.image)
+  const invalid = services.filter(s => typeof s === 'object' && !s.image)
   if (invalid.length > 0) {
-    throw Error(
+    throw new Error(
       `Invalid custom services:\n${invalid
-        .map((i) => JSON.stringify(i, null, 2))
+        .map(i => JSON.stringify(i, null, 2))
         .join(',\n')}`
     )
   }
@@ -229,9 +242,9 @@ export const install = async (opts) => {
   const data = services.map(readServiceData)
 
   // exit if not all services' images are supported:
-  const unsupported = data.filter((d) => !d.template).map((d) => d.name)
+  const unsupported = data.filter(d => !d.template).map(d => d.name)
   if (unsupported.length > 0) {
-    throw Error(`Unsupported services: ${unsupported.join(', ')}`)
+    throw new Error(`Unsupported services: ${unsupported.join(', ')}`)
   }
 
   // install services:
@@ -267,18 +280,20 @@ export const install = async (opts) => {
   if (options.volumes && options.volumes.mode === 'volumes-id') {
     const volumesPrefix = options.volumes.id
     await Promise.all(
-      data.map((d) =>
+      data.map(d =>
         serviceInstall(d, projectname, 'named-volumes', volumesPrefix)
       )
     )
-  } else if (options.volumes && options.volumes.mode === 'mapped-volumes') {
+  }
+  else if (options.volumes && options.volumes.mode === 'mapped-volumes') {
     await Promise.all(
-      data.map((d) => serviceInstall(d, projectname, 'mapped-volumes'))
+      data.map(d => serviceInstall(d, projectname, 'mapped-volumes'))
     )
-  } else {
+  }
+  else {
     const volumesPrefix = projectname
     await Promise.all(
-      data.map((d) =>
+      data.map(d =>
         serviceInstall(d, projectname, 'named-volumes', volumesPrefix)
       )
     )

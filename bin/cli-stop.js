@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import process from 'node:process'
 import { program } from 'commander'
 
 import { version } from '../src/constants.js'
@@ -14,13 +15,15 @@ program
       // stop service(s):
       if (service) {
         await compose('stop', service)
-      } else {
+      }
+      else {
         await compose('stop')
       }
 
       // clean up:
       await compose('rm', '-fv')
-    } catch (e) {
+    }
+    catch (e) {
       error(e)
     }
   })

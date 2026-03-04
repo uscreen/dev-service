@@ -129,7 +129,7 @@ Install all services specified in package.json.
 
 ##### `--enable-volumes-id`
 
-> ***experimental feature***
+> **_experimental feature_**
 
 Creates a unique ID and uses it when naming the services' volumes, thus avoiding conflicts between volumes of different dev-service instances. Every subsequent call of `service install` will (re-)create volume names with the same ID.
 
@@ -137,7 +137,7 @@ Creates a unique ID and uses it when naming the services' volumes, thus avoiding
 
 ##### `--enable-mapped-volumes`
 
-> ***experimental feature***
+> **_experimental feature_**
 
 Maps services' volumes into local directories (`./services/.volumes/<volume-name>`) instead of storing them inside of the Docker Desktop virtual machine. Every subsequent call of `service install` will use this mappings.
 
@@ -186,7 +186,7 @@ This action updates already existing images - within the boundaries of the respe
 All provided services use their respective default ports:
 
 | service       | used ports  |
-|---------------|-------------|
+| ------------- | ----------- |
 | redis         | 6379        |
 | mongo         | 27017       |
 | nats          | 4222, 8222  |
@@ -252,11 +252,11 @@ Say you want to add a specific version of elasticsearch with some customizing en
 Running `service install` will automatically create a partial docker-compose file from this directives in your `services/.compose` folder:
 
 ```yaml
-version: "2.4"
+version: '2.4'
 services:
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:6.4.2
-    container_name: "your-dev-repo_elasticsearch"
+    container_name: your-dev-repo_elasticsearch
     ports:
       - 9200:9200
     volumes:
@@ -268,7 +268,7 @@ services:
       - thread_pool.bulk.queue_size=200
 volumes:
   elasticsearch-data:
-    name: "foobar-dev-repo-elasticsearch-data"
+    name: foobar-dev-repo-elasticsearch-data
 ```
 
 This action has the following features & caveats:
@@ -328,135 +328,195 @@ And the folder structure would look like this:
 > Format according to https://keepachangelog.com
 
 ### v0.13.0
+
 #### Changed
+
 - adjust node requirements
 - upgrade multiple packages
 - replace tap with native node tests
 - migrate to pnpm
 
 ### v0.12.11
+
 #### Fixed
+
 - fix "'version' is obsolete" bug
 
 ### v0.12.6
+
 #### Fixed
+
 - work with current docker compose
 
 ### v0.12.0
+
 #### Added
+
 - mariadb template
 
 ### v0.11.17
+
 #### Fixed
+
 - custom services with container ports lower than 60 now work as expected
 
 ### v0.11.0
+
 #### Added
+
 - new `service pull` command
 
 ### v0.10.0
-##### Added
+
+#### Added
+
 - `service install` options to customize volume naming/creation
 
 ### v0.9.4
-##### Fixed
+
+#### Fixed
+
 - `service check` no more checks for ports given as `CONTAINER` part of a port mapping (`HOST:CONTAINER`)
 
 ### v0.9.3
+
 #### Added
+
 - validation of custom service definitions
 
 #### Fixed
+
 - vulnerabilites due to used packages
 
 ### v0.9.2
+
 #### Fixed
+
 - bug with mismatching PIDs
 
 ### v0.9.1
+
 #### Fixed
+
 - adjust node requirements
 
 ### v0.9.0
+
 #### Added
+
 - display warning if other dev-service instances are running
 
 #### Changed
+
 - migrate to ESM (due to package requirements)
 
 #### Fixed
+
 - don’t observe own ports in port check.
 
 #### Removed
+
 - support for node 10 (due to migration to ESM)
 
 ### v0.8.1
+
 #### Fixed
+
 - avoiding errors when projectname contains certain special characters
 
 ### v0.8.0
+
 #### Added
+
 - tests for `service check`
 
 #### Changed
+
 - `service start` checks for used ports before starting any service(s)
 - updating list of provided services in readme
 
 ### v0.7.1
+
 #### Fixed
+
 - fixing further false positives `service check`
 - package upgrades
 
 ### v0.7.0
+
 #### Changed
+
 - refactoring `service check` to avoid false positives
 
 ### v0.6.2
+
 #### Fixed
+
 - avoiding side effects between different dev repos
 
 ### v0.6.1
+
 #### Fixed
+
 - making tests work again after change in docker client api
 
 ### v0.6.0
+
 #### Added
+
 - new service: `elasticsearch`
 - new service: `rabbitmq`
 
 ### v0.5.0
+
 #### Added
+
 - new `service check` to find processes blocking required ports
 
 ### v0.4.0
+
 #### Added
+
 - optional service customization
 
 ### v0.3.0
+
 #### Added
+
 - new `service restart` command
 
 #### Changed
+
 - expanding `service start`, `service stop` and `service logs` by optional `[service]` parameter
 
 ### v0.2.2
+
 #### Fixed
+
 - package upgrades
 
 ### v0.2.1
+
 #### Fixed
+
 - typo in readme
 
 ### v0.2.0
+
 #### Added
+
 - new `service logs` command
 
 ### v0.1.1
+
 #### changed
+
 - configure git ignore services/.compose folder
 
 ### v0.1.0
+
 #### Added
+
 - initial version with basic commands
 
 ---

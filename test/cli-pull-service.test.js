@@ -1,13 +1,13 @@
-import { test, describe, afterEach } from 'node:test'
 import assert from 'node:assert/strict'
+import { afterEach, describe, test } from 'node:test'
 import fs from 'fs-extra'
 
 import {
   arenaPath,
-  cli,
-  prepareArena,
   clearArena,
-  composePath
+  cli,
+  composePath,
+  prepareArena
 } from './helpers.js'
 
 const packageJson = {
@@ -22,7 +22,7 @@ describe('$ cli pull [service]', () => {
     await clearArena()
   })
 
-  test('Within a folder with no .compose subfolder', async (t) => {
+  test('Within a folder with no .compose subfolder', async () => {
     prepareArena(packageJson)
 
     const result = await cli(['pull', service], arenaPath)
@@ -35,7 +35,7 @@ describe('$ cli pull [service]', () => {
     )
   })
 
-  test('Within a folder with empty .compose subfolder', async (t) => {
+  test('Within a folder with empty .compose subfolder', async () => {
     prepareArena(packageJson)
     fs.ensureDirSync(composePath)
 
@@ -49,7 +49,7 @@ describe('$ cli pull [service]', () => {
     )
   })
 
-  test('If no docker host is available', async (t) => {
+  test('If no docker host is available', async () => {
     prepareArena(packageJson)
     await cli(['install'], arenaPath)
 
@@ -65,7 +65,7 @@ describe('$ cli pull [service]', () => {
     )
   })
 
-  test('If services are defined in .compose subfolder', async (t) => {
+  test('If services are defined in .compose subfolder', async () => {
     prepareArena(packageJson)
     await cli(['install'], arenaPath)
 
@@ -73,13 +73,13 @@ describe('$ cli pull [service]', () => {
 
     assert.equal(result.code, 0, 'Should return code 0')
 
-    const lines = result.stderr.split('\n').filter((s) => s)
+    const lines = result.stderr.split('\n').filter(s => s)
     assert.ok(
-      lines.some((l) => l.match(/mongo pulled/i)),
+      lines.some(l => l.match(/mongo pulled/i)),
       `Should pull mongo image`
     )
     assert.ok(
-      lines.every((l) => !l.match(/nginx pulled/i)),
+      lines.every(l => !l.match(/nginx pulled/i)),
       `Should not pull nginx image`
     )
   })

@@ -1,8 +1,9 @@
 'use strict'
 
-import path from 'path'
-import { createRequire } from 'module'
-import { fileURLToPath } from 'url'
+import { createRequire } from 'node:module'
+import path from 'node:path'
+import process from 'node:process'
+import { fileURLToPath } from 'node:url'
 
 const require = createRequire(import.meta.url)
 const __filename = fileURLToPath(import.meta.url)
@@ -14,6 +15,7 @@ const __dirname = path.dirname(__filename)
 
 // Dev-Service
 export const { version } = require('../package.json')
+
 export const TEMPLATES_DIR = path.resolve(__dirname, '../templates')
 
 // Project

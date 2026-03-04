@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import process from 'node:process'
 import { program } from 'commander'
 
 import { version } from '../src/constants.js'
@@ -13,10 +14,12 @@ program
     try {
       if (service) {
         await compose('restart', service)
-      } else {
+      }
+      else {
         await compose('restart')
       }
-    } catch (e) {
+    }
+    catch (e) {
       error(e)
     }
   })

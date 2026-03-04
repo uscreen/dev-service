@@ -1,20 +1,20 @@
-import { test, describe, afterEach } from 'node:test'
 import assert from 'node:assert/strict'
+import path from 'node:path'
+import { afterEach, describe, test } from 'node:test'
 import fs from 'fs-extra'
-import path from 'path'
+
+import { docker } from '../src/utils.js'
 
 import {
   arenaPath,
-  cli,
-  prepareArena,
   clearArena,
-  loadYaml,
-  servicesPath,
+  cli,
   composePath,
+  loadYaml,
+  prepareArena,
+  servicesPath,
   volumesPath
 } from './helpers.js'
-
-import { docker } from '../src/utils.js'
 
 const readVolumeOptions = () => {
   const raw = fs.readFileSync(path.resolve(servicesPath, '.options'), {
@@ -29,7 +29,7 @@ describe('$ cli install --enable-mapped-volumes', () => {
     await clearArena()
   })
 
-  test('Without already installed services', async (t) => {
+  test('Without already installed services', async () => {
     prepareArena({
       name: 'dev-service-test',
       services: ['mongo:latest']
@@ -64,8 +64,8 @@ describe('$ cli install --enable-mapped-volumes', () => {
 
     let code = null
     await docker('volume', 'inspect', volumeName)
-      .then((c) => (code = c))
-      .catch((e) => (code = e.code))
+      .then(c => (code = c))
+      .catch(e => (code = e.code))
     assert.equal(code, 1, 'Should not create named volume')
 
     await cli(['start'], arenaPath)
@@ -75,7 +75,7 @@ describe('$ cli install --enable-mapped-volumes', () => {
     )
   })
 
-  test('With already installed services (with named volumes)', async (t) => {
+  test('With already installed services (with named volumes)', async () => {
     prepareArena({
       name: 'dev-service-test',
       services: ['mongo:latest']
@@ -105,8 +105,8 @@ describe('$ cli install --enable-mapped-volumes', () => {
 
     let code = null
     await docker('volume', 'inspect', volumeName)
-      .then((c) => (code = c))
-      .catch((e) => (code = e.code))
+      .then(c => (code = c))
+      .catch(e => (code = e.code))
     assert.equal(code, 0, 'Should not remove existing named volume')
 
     await cli(['start'], arenaPath)
@@ -116,7 +116,7 @@ describe('$ cli install --enable-mapped-volumes', () => {
     )
   })
 
-  test('With already installed services (with mapped volumes)', async (t) => {
+  test('With already installed services (with mapped volumes)', async () => {
     prepareArena({
       name: 'dev-service-test',
       services: ['mongo:latest']
@@ -140,8 +140,8 @@ describe('$ cli install --enable-mapped-volumes', () => {
 
     let code = null
     await docker('volume', 'inspect', volumeName)
-      .then((c) => (code = c))
-      .catch((e) => (code = e.code))
+      .then(c => (code = c))
+      .catch(e => (code = e.code))
     assert.equal(code, 1, 'Should not create named volume')
 
     await cli(['start'], arenaPath)
@@ -157,7 +157,7 @@ describe('$ cli install', () => {
     await clearArena()
   })
 
-  test('With already installed services (with mapped volumes)', async (t) => {
+  test('With already installed services (with mapped volumes)', async () => {
     prepareArena({
       name: 'dev-service-test',
       services: ['mongo:latest']
@@ -181,8 +181,8 @@ describe('$ cli install', () => {
 
     let code = null
     await docker('volume', 'inspect', volumeName)
-      .then((c) => (code = c))
-      .catch((e) => (code = e.code))
+      .then(c => (code = c))
+      .catch(e => (code = e.code))
     assert.equal(code, 1, 'Should not create named volume')
 
     await cli(['start'], arenaPath)
@@ -198,7 +198,7 @@ describe('$ cli install --enable-classic-volumes', () => {
     await clearArena()
   })
 
-  test('With already installed services (with mapped volumes)', async (t) => {
+  test('With already installed services (with mapped volumes)', async () => {
     prepareArena({
       name: 'dev-service-test',
       services: ['mongo:latest']

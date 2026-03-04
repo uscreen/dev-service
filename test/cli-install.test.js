@@ -1,27 +1,27 @@
-import { test, describe, afterEach } from 'node:test'
 import assert from 'node:assert/strict'
+import path from 'node:path'
+import { afterEach, describe, test } from 'node:test'
 import fs from 'fs-extra'
-import path from 'path'
+
+import { docker } from '../src/utils.js'
 
 import {
   arenaPath,
-  cli,
-  escape,
-  prepareArena,
   clearArena,
+  cli,
+  composePath,
+  escape,
   loadYaml,
-  servicesPath,
-  composePath
+  prepareArena,
+  servicesPath
 } from './helpers.js'
-
-import { docker } from '../src/utils.js'
 
 describe('$ cli install', () => {
   afterEach(async () => {
     await clearArena()
   })
 
-  test('Within a folder with no package.json', async (t) => {
+  test('Within a folder with no package.json', async () => {
     prepareArena()
 
     const result = await cli(['install'], arenaPath)
@@ -40,7 +40,7 @@ describe('$ cli install', () => {
     )
   })
 
-  test('Within a folder with a package.json containing no services property', async (t) => {
+  test('Within a folder with a package.json containing no services property', async () => {
     prepareArena({})
 
     const result = await cli(['install'], arenaPath)
@@ -59,7 +59,7 @@ describe('$ cli install', () => {
     )
   })
 
-  test('Within a folder with a package.json containing an empty services array', async (t) => {
+  test('Within a folder with a package.json containing an empty services array', async () => {
     prepareArena({ services: [] })
 
     const result = await cli(['install'], arenaPath)
@@ -78,7 +78,7 @@ describe('$ cli install', () => {
     )
   })
 
-  test('Within a folder with a package.json containing an unsupported service', async (t) => {
+  test('Within a folder with a package.json containing an unsupported service', async () => {
     prepareArena({ services: ['unsupported-service-name'] })
 
     const result = await cli(['install'], arenaPath)
@@ -97,7 +97,7 @@ describe('$ cli install', () => {
     )
   })
 
-  test('Within a folder with a package.json containing an invalid custom service', async (t) => {
+  test('Within a folder with a package.json containing an invalid custom service', async () => {
     prepareArena({ services: [{}] })
 
     const result = await cli(['install'], arenaPath)
@@ -116,7 +116,7 @@ describe('$ cli install', () => {
     )
   })
 
-  test('Within a folder with a package.json containing standard & custom services', async (t) => {
+  test('Within a folder with a package.json containing standard & custom services', async () => {
     prepareArena({
       name: 'dev-service-test',
       services: [
@@ -166,8 +166,8 @@ describe('$ cli install', () => {
     )
     let code = null
     await docker('volume', 'inspect', 'dev-service-test-mongo-data')
-      .then((c) => (code = c))
-      .catch((e) => (code = e.code))
+      .then(c => (code = c))
+      .catch(e => (code = e.code))
     assert.equal(code, 0, 'Should create docker volume defined in mongo.yml')
 
     // nginx
@@ -212,8 +212,8 @@ describe('$ cli install', () => {
     )
     code = null
     await docker('volume', 'inspect', 'dev-service-test-elasticsearch-data')
-      .then((c) => (code = c))
-      .catch((e) => (code = e.code))
+      .then(c => (code = c))
+      .catch(e => (code = e.code))
     assert.equal(
       code,
       0,
@@ -257,13 +257,13 @@ describe('$ cli install', () => {
     )
 
     assert.equal(
-      fs.readdirSync(composePath).filter((f) => f !== '.gitignore').length,
+      fs.readdirSync(composePath).filter(f => f !== '.gitignore').length,
       5,
       'Should not create any other yml files'
     )
   })
 
-  test('With irregular name in package.json', async (t) => {
+  test('With irregular name in package.json', async () => {
     const name = '@uscreen.de/dev-service-test'
     prepareArena({
       name,
@@ -291,8 +291,8 @@ describe('$ cli install', () => {
     )
     let code = null
     await docker('volume', 'inspect', `${escape(name)}-mongo-data`)
-      .then((c) => (code = c))
-      .catch((e) => (code = e.code))
+      .then(c => (code = c))
+      .catch(e => (code = e.code))
     assert.equal(code, 0, 'Should create docker volume defined in mongo.yml')
   })
 })

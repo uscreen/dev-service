@@ -1,14 +1,14 @@
-import { test, describe, afterEach } from 'node:test'
 import assert from 'node:assert/strict'
+import { afterEach, describe, test } from 'node:test'
 import fs from 'fs-extra'
 
 import {
   arenaPath,
-  cli,
-  escape,
-  prepareArena,
   clearArena,
-  composePath
+  cli,
+  composePath,
+  escape,
+  prepareArena
 } from './helpers.js'
 
 const packageJson = {
@@ -21,7 +21,7 @@ describe('$ cli list', () => {
     await clearArena()
   })
 
-  test('Within a folder with no .compose subfolder', async (t) => {
+  test('Within a folder with no .compose subfolder', async () => {
     prepareArena(packageJson)
 
     const result = await cli(['list'], arenaPath)
@@ -34,7 +34,7 @@ describe('$ cli list', () => {
     )
   })
 
-  test('Within a folder with empty .compose subfolder', async (t) => {
+  test('Within a folder with empty .compose subfolder', async () => {
     prepareArena(packageJson)
     fs.ensureDirSync(composePath)
 
@@ -49,7 +49,7 @@ describe('$ cli list', () => {
   })
 
   describe('Within a folder with two defined services in .compose subfolder', () => {
-    test('If no docker host is available', async (t) => {
+    test('If no docker host is available', async () => {
       prepareArena(packageJson)
       await cli(['install'], arenaPath)
 
@@ -65,7 +65,7 @@ describe('$ cli list', () => {
       )
     })
 
-    test('With no running services', async (t) => {
+    test('With no running services', async () => {
       prepareArena(packageJson)
       await cli(['install'], arenaPath)
 
@@ -73,15 +73,15 @@ describe('$ cli list', () => {
 
       assert.equal(result.code, 0, 'Should return code 0')
 
-      const lines = result.stdout.split('\n').filter((s) => s)
+      const lines = result.stdout.split('\n').filter(s => s)
       assert.equal(
-        lines.filter((l) => l.match(/^dev-service-test_.*Up.*second/)).length,
+        lines.filter(l => l.match(/^dev-service-test_.*Up.*second/)).length,
         0,
         'Should output no services with Status "Up"'
       )
     })
 
-    test('With running services', async (t) => {
+    test('With running services', async () => {
       prepareArena(packageJson)
       await cli(['install'], arenaPath)
       await cli(['start'], arenaPath)
@@ -90,9 +90,9 @@ describe('$ cli list', () => {
 
       assert.equal(result.code, 0, 'Should return code 0')
 
-      const lines = result.stdout.split('\n').filter((s) => s)
+      const lines = result.stdout.split('\n').filter(s => s)
       assert.equal(
-        lines.filter((l) =>
+        lines.filter(l =>
           l.match(/^dev-service-test_(mongo|nginx).*Up.*second/)
         ).length,
         2,
@@ -100,7 +100,7 @@ describe('$ cli list', () => {
       )
     })
 
-    test('With irregular name in package.json', async (t) => {
+    test('With irregular name in package.json', async () => {
       const name = '@uscreen.de/dev-service-test'
       prepareArena({ ...packageJson, name })
       await cli(['install'], arenaPath)
@@ -110,9 +110,9 @@ describe('$ cli list', () => {
 
       assert.equal(result.code, 0, 'Should return code 0')
 
-      const lines = result.stdout.split('\n').filter((s) => s)
+      const lines = result.stdout.split('\n').filter(s => s)
       assert.equal(
-        lines.filter((l) =>
+        lines.filter(l =>
           l.match(new RegExp(`^${escape(name)}_(mongo|nginx).*Up.*second`))
         ).length,
         2,

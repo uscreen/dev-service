@@ -1,13 +1,13 @@
-import { test, describe, afterEach } from 'node:test'
 import assert from 'node:assert/strict'
+import { afterEach, describe, test } from 'node:test'
 import fs from 'fs-extra'
 
 import {
   arenaPath,
-  cli,
-  prepareArena,
   clearArena,
-  composePath
+  cli,
+  composePath,
+  prepareArena
 } from './helpers.js'
 
 const packageJson = {
@@ -20,7 +20,7 @@ describe('$ cli logs', () => {
     await clearArena()
   })
 
-  test('Within a folder with no .compose subfolder', async (t) => {
+  test('Within a folder with no .compose subfolder', async () => {
     prepareArena(packageJson)
 
     const result = await cli(['logs'], arenaPath)
@@ -33,7 +33,7 @@ describe('$ cli logs', () => {
     )
   })
 
-  test('Within a folder with empty .compose subfolder', async (t) => {
+  test('Within a folder with empty .compose subfolder', async () => {
     prepareArena(packageJson)
     fs.ensureDirSync(composePath)
 
@@ -47,7 +47,7 @@ describe('$ cli logs', () => {
     )
   })
 
-  test('If no docker host is available', async (t) => {
+  test('If no docker host is available', async () => {
     prepareArena(packageJson)
     await cli(['install'], arenaPath)
 
@@ -63,7 +63,7 @@ describe('$ cli logs', () => {
     )
   })
 
-  test('With no running services', async (t) => {
+  test('With no running services', async () => {
     prepareArena(packageJson)
     await cli(['install'], arenaPath)
 
@@ -71,7 +71,7 @@ describe('$ cli logs', () => {
 
     assert.equal(result.code, 0, 'Should return code 0')
 
-    const lines = result.stdout.split('\n').filter((s) => s)
+    const lines = result.stdout.split('\n').filter(s => s)
 
     assert.equal(lines.length, 0, 'Should show no logs')
   })
@@ -80,7 +80,7 @@ describe('$ cli logs', () => {
    * dev-repo_mongo  | {"t":{"$date":"2022-07-01T07:47:12.343+00:00"},"s":"I",  "c":"NETWORK",  "id":23016,   "ctx":"listener","msg":"Waiting for connections","attr":{"port":27017,"ssl":"off"}}
    */
 
-  test('With running services', async (t) => {
+  test('With running services', async () => {
     prepareArena(packageJson)
     await cli(['install'], arenaPath)
     await cli(['start'], arenaPath)
@@ -90,19 +90,19 @@ describe('$ cli logs', () => {
 
     // don't check for exit code as test timeout could have an effect on it
 
-    const lines = result.stdout.split('\n').filter((s) => s)
+    const lines = result.stdout.split('\n').filter(s => s)
 
     assert.equal(lines.length > 0, true, 'Should show logs')
 
     assert.equal(
-      lines.filter((l) => l.match(/mongo.*waiting for connections/i)).length >
-        0,
+      lines.filter(l => l.match(/mongo.*waiting for connections/i)).length
+      > 0,
       true,
       'Should show mongo waiting for connections in logs'
     )
   })
 
-  test('With irregular name in package.json', async (t) => {
+  test('With irregular name in package.json', async () => {
     const name = '@uscreen.de/dev-service-test'
     prepareArena({ ...packageJson, name })
     await cli(['install'], arenaPath)
@@ -113,13 +113,13 @@ describe('$ cli logs', () => {
 
     // don't check for exit code as test timeout could have an effect on it
 
-    const lines = result.stdout.split('\n').filter((s) => s)
+    const lines = result.stdout.split('\n').filter(s => s)
 
     assert.equal(lines.length > 0, true, 'Should show logs')
 
     assert.equal(
-      lines.filter((l) => l.match(/mongo.*waiting for connections/i)).length >
-        0,
+      lines.filter(l => l.match(/mongo.*waiting for connections/i)).length
+      > 0,
       true,
       'Should show mongo waiting for connections in logs'
     )

@@ -1,14 +1,14 @@
-import { test, describe, afterEach } from 'node:test'
 import assert from 'node:assert/strict'
+import { afterEach, describe, test } from 'node:test'
 import fs from 'fs-extra'
 
 import {
   arenaPath,
+  clearArena,
   cli,
   compose,
-  prepareArena,
-  clearArena,
-  composePath
+  composePath,
+  prepareArena
 } from './helpers.js'
 
 const packageJson = {
@@ -24,7 +24,7 @@ describe('$ cli restart [service]', () => {
     await clearArena()
   })
 
-  test('Within a folder with no .compose subfolder', async (t) => {
+  test('Within a folder with no .compose subfolder', async () => {
     prepareArena(packageJson)
 
     const result = await cli(['restart', service], arenaPath)
@@ -37,7 +37,7 @@ describe('$ cli restart [service]', () => {
     )
   })
 
-  test('Within a folder with empty .compose subfolder', async (t) => {
+  test('Within a folder with empty .compose subfolder', async () => {
     prepareArena(packageJson)
     fs.ensureDirSync(composePath)
 
@@ -51,7 +51,7 @@ describe('$ cli restart [service]', () => {
     )
   })
 
-  test('If no docker host is available', async (t) => {
+  test('If no docker host is available', async () => {
     prepareArena(packageJson)
     await cli(['install'], arenaPath)
 
@@ -67,7 +67,7 @@ describe('$ cli restart [service]', () => {
     )
   })
 
-  test('With no running services', async (t) => {
+  test('With no running services', async () => {
     prepareArena(packageJson)
     await cli(['install'], arenaPath)
 
@@ -76,7 +76,7 @@ describe('$ cli restart [service]', () => {
     assert.equal(result.stderr, '', 'Should not output error message')
   })
 
-  test('If only other services are running', async (t) => {
+  test('If only other services are running', async () => {
     prepareArena(packageJson)
     await cli(['install'], arenaPath)
     await cli(['start', otherService], arenaPath)
@@ -87,7 +87,7 @@ describe('$ cli restart [service]', () => {
     assert.equal(result.stderr, '', 'Should not output error message')
   })
 
-  test('If service is already running', async (t) => {
+  test('If service is already running', async () => {
     prepareArena(packageJson)
     await cli(['install'], arenaPath)
     await cli(['start', service], arenaPath)
@@ -98,7 +98,7 @@ describe('$ cli restart [service]', () => {
 
     const ls = result.stderr
       .split('\n')
-      .filter((s) => s && s.match(/(restarting|started)/i))
+      .filter(s => s && s.match(/(restarting|started)/i))
     assert.equal(
       ls.length,
       2,
@@ -110,17 +110,17 @@ describe('$ cli restart [service]', () => {
     assert.equal(cresult.code, 0, 'Should return code 0')
 
     // Checking number of running containers (identified by 64-digit ids):
-    const lines = cresult.stdout.split('\n').filter((s) => s)
+    const lines = cresult.stdout.split('\n').filter(s => s)
 
     assert.equal(lines.length, 1, 'Should return one line')
     assert.equal(
-      lines.every((s) => s.length === 64),
+      lines.every(s => s.length === 64),
       true,
       'Line contains container id'
     )
   })
 
-  test('If all services are already running', async (t) => {
+  test('If all services are already running', async () => {
     prepareArena(packageJson)
     await cli(['install'], arenaPath)
     await cli(['start'], arenaPath)
@@ -130,7 +130,7 @@ describe('$ cli restart [service]', () => {
     assert.equal(result.code, 0, 'Should return code 0')
     const ls = result.stderr
       .split('\n')
-      .filter((s) => s && s.match(/(restarting|started)/i))
+      .filter(s => s && s.match(/(restarting|started)/i))
     assert.equal(
       ls.length,
       2,
@@ -142,17 +142,17 @@ describe('$ cli restart [service]', () => {
     assert.equal(cresult.code, 0, 'Should return code 0')
 
     // Checking number of running containers (identified by 64-digit ids):
-    const lines = cresult.stdout.split('\n').filter((s) => s)
+    const lines = cresult.stdout.split('\n').filter(s => s)
 
     assert.equal(lines.length, 2, 'Should return two lines')
     assert.equal(
-      lines.every((s) => s.length === 64),
+      lines.every(s => s.length === 64),
       true,
       'Both lines contain container ids'
     )
   })
 
-  test('With irregular name in package.json', async (t) => {
+  test('With irregular name in package.json', async () => {
     const name = '@uscreen.de/dev-service-test'
     prepareArena({ ...packageJson, name })
     await cli(['install'], arenaPath)
@@ -167,11 +167,11 @@ describe('$ cli restart [service]', () => {
     assert.equal(cresult.code, 0, 'Should return code 0')
 
     // Checking number of running containers (identified by 64-digit ids):
-    const lines = cresult.stdout.split('\n').filter((s) => s)
+    const lines = cresult.stdout.split('\n').filter(s => s)
 
     assert.equal(lines.length, 2, 'Should return two lines')
     assert.equal(
-      lines.every((s) => s.length === 64),
+      lines.every(s => s.length === 64),
       true,
       'Both lines contain container ids'
     )

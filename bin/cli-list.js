@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import process from 'node:process'
 import { program } from 'commander'
 
 import { version } from '../src/constants.js'
@@ -9,7 +10,8 @@ import { compose, error } from '../src/utils.js'
 program.version(version).action(async () => {
   try {
     await compose('ps')
-  } catch (e) {
+  }
+  catch (e) {
     error(e)
   }
 })

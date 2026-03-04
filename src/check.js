@@ -1,9 +1,11 @@
 'use strict'
 
+import { exec } from 'node:child_process'
+import path from 'node:path'
 import fs from 'fs-extra'
-import path from 'path'
-import { exec } from 'child_process'
 import YAML from 'yaml'
+import { COMPOSE_DIR } from './constants.js'
+
 import {
   checkComposeDir,
   escape,
@@ -13,60 +15,6 @@ import {
   warning
 } from './utils.js'
 
-import { COMPOSE_DIR } from './constants.js'
-
-/**
- * Get paths to other running dev-service instances
- */
-export const checkOtherServices = async () => {
-  const paths = (await getComposePaths())
-    .filter((p) => p !== COMPOSE_DIR)
-    .filter((p) => p.endsWith('/services/.compose'))
-    .map((p) => p.replace(/\/services\/.compose$/, ''))
-
-  if (paths.length > 0) {
-    warning(
-      [
-        'dev-service is already running, started in following folder(s):',
-        ...paths.map((p) => `  ${p}`)
-      ].join('\n')
-    )
-  }
-}
-
-/**
- * check for processes using needed ports
- */
-export const checkUsedPorts = async (service) => {
-  if (!checkComposeDir()) {
-    throw Error('No services found. Try running `service install`')
-  }
-
-  const requiredPorts = getRequiredPorts(service)
-  const ownPorts = await getOwnPorts()
-  const ports = requiredPorts.filter((p) => !ownPorts.includes(p))
-
-  const portsToPids = await getPIDs(ports)
-
-  if (Object.keys(portsToPids).length === 0) return // everything ok
-
-  const pids = [...new Set(Object.values(portsToPids))]
-  const pidsToProcesses = await getProcesses(pids)
-
-  throw Error(
-    [
-      'Required port(s) are already allocated:',
-      ...Object.entries(portsToPids).map(
-        ([port, pid]) =>
-          `- port ${port} is used by process with pid ${pid}` +
-          (pidsToProcesses[pid] && pidsToProcesses[pid].cmd
-            ? ` (${pidsToProcesses[pid].cmd})`
-            : '')
-      )
-    ].join('\n')
-  )
-}
-
 /**
  * Get all ports required (by given service)
  */
@@ -74,23 +22,50 @@ const getRequiredPorts = (service) => {
   const files = getComposeFiles()
   const ports = []
   for (const f of files) {
-    if (service && `${service}.yml` !== f) continue
+    if (service && `${service}.yml` !== f) {
+      continue
+    }
 
     const yaml = YAML.parse(
       fs.readFileSync(path.resolve(COMPOSE_DIR, f), 'utf8')
     )
     ports.push(
       ...Object.values(yaml.services)
-        .map((v) => v.ports)
-        .filter((p) => p)
+        .map(v => v.ports)
+        .filter(p => p)
         .flat()
     )
   }
 
-  const uniquePorts = [...new Set(ports.map((p) => p.split(':')[0]))]
+  const uniquePorts = [...new Set(ports.map(p => p.split(':')[0]))]
 
   return uniquePorts
 }
+
+/**
+ * Get own ports
+ */
+const getContainerPorts = containerId =>
+  new Promise((resolve, reject) => {
+    exec(`docker port ${containerId}`, (err, stdout, stderr) => {
+      if (err) {
+        return reject(err)
+      }
+
+      const errMessage = stderr.toString().trim()
+      if (errMessage) {
+        return reject(new Error(errMessage))
+      }
+
+      const lines = stdout.split('\n').filter(l => l)
+      const ports = lines
+        .map(l => l.match(/.*:(\d+)/))
+        .map(m => (m.length >= 1 ? m[1] : null))
+        .filter(p => p)
+
+      resolve(ports)
+    })
+  })
 
 /**
  * get ports currently used by this services instance
@@ -109,13 +84,17 @@ const getOwnPorts = () =>
 
     ps.push('ps', '-q')
 
-    exec(`docker-compose ${ps.join(' ')}`, function (err, stdout, stderr) {
-      if (err) return reject(err)
+    exec(`docker-compose ${ps.join(' ')}`, (err, stdout, stderr) => {
+      if (err) {
+        return reject(err)
+      }
 
       const errMessage = stderr.toString().trim()
-      if (errMessage) return reject(Error(errMessage))
+      if (errMessage) {
+        return reject(new Error(errMessage))
+      }
 
-      const ids = stdout.split('\n').filter((id) => id)
+      const ids = stdout.split('\n').filter(id => id)
 
       Promise.all(ids.map(getContainerPorts)).then((ps) => {
         const ports = [].concat(...ps)
@@ -125,23 +104,27 @@ const getOwnPorts = () =>
   })
 
 /**
- * Get own ports
+ * Find process listening to given port
  */
-const getContainerPorts = (containerId) =>
-  new Promise((resolve, reject) => {
-    exec(`docker port ${containerId}`, function (err, stdout, stderr) {
-      if (err) return reject(err)
+const getPID = port =>
+  new Promise((resolve) => {
+    exec(`lsof -nP -i:${port}`, (_, stdout) => {
+      // `lsof` already returns a non-zero exit code if it did not find any running
+      // process for the given port. Therefore we refrain from rejecting this Promise
+      // if an error was handed over.
 
-      const errMessage = stderr.toString().trim()
-      if (errMessage) return reject(Error(errMessage))
+      const process = stdout
+        .toString()
+        .split(/\n/)
+        .filter(r => r)
+        .map(r => r.split(/\s+/))
+        .find(r => (r[9] || '').match(/(LISTEN)/))
 
-      const lines = stdout.split('\n').filter((l) => l)
-      const ports = lines
-        .map((l) => l.match(/.*:(\d+)/))
-        .map((m) => (m.length >= 1 ? m[1] : null))
-        .filter((p) => p)
+      if (!process) {
+        return resolve(null)
+      }
 
-      resolve(ports)
+      resolve(process[1])
     })
   })
 
@@ -162,26 +145,39 @@ const getPIDs = async (ports) => {
 }
 
 /**
- * Find process listening to given port
+ * Get process details for given pid
  */
-const getPID = (port) =>
+const getProcess = async pid =>
   new Promise((resolve, reject) => {
-    exec(`lsof -nP -i:${port}`, function (_, stdout, stderr) {
-      // `lsof` already returns a non-zero exit code if it did not find any running
-      // process for the given port. Therefore we refrain from rejecting this Promise
-      // if an error was handed over.
+    exec(
+      `ps -p ${pid} -ww -o pid,ppid,uid,gid,args`,
+      (err, stdout, stderr) => {
+        if (err) {
+          return reject(err)
+        }
 
-      const process = stdout
-        .toString()
-        .split(/\n/)
-        .filter((r) => r)
-        .map((r) => r.split(/\s+/))
-        .find((r) => (r[9] || '').match(/(LISTEN)/))
+        const errMessage = stderr.toString().trim()
+        if (errMessage) {
+          return reject(new Error(errMessage))
+        }
 
-      if (!process) return resolve(null)
+        const processes = stdout
+          .toString()
+          .split(/\n/)
+          .slice(1) // skip headers
+          .filter(r => r)
+          .map(r => r.split(/\s+/))
+          .map(([pid, ppid, uid, gid, ...args]) => ({
+            pid,
+            ppid,
+            uid,
+            gid,
+            cmd: args.join(' ')
+          }))
 
-      resolve(process[1])
-    })
+        resolve(processes[0])
+      }
+    )
   })
 
 /**
@@ -201,33 +197,56 @@ const getProcesses = async (pids) => {
 }
 
 /**
- * Get process details for given pid
+ * Get paths to other running dev-service instances
  */
-const getProcess = async (pid) =>
-  new Promise((resolve, reject) => {
-    exec(
-      `ps -p ${pid} -ww -o pid,ppid,uid,gid,args`,
-      function (err, stdout, stderr) {
-        if (err) return reject(err)
+export const checkOtherServices = async () => {
+  const paths = (await getComposePaths())
+    .filter(p => p !== COMPOSE_DIR)
+    .filter(p => p.endsWith('/services/.compose'))
+    .map(p => p.replace(/\/services\/.compose$/, ''))
 
-        const errMessage = stderr.toString().trim()
-        if (errMessage) return reject(Error(errMessage))
-
-        const processes = stdout
-          .toString()
-          .split(/\n/)
-          .slice(1) // skip headers
-          .filter((r) => r)
-          .map((r) => r.split(/\s+/))
-          .map(([pid, ppid, uid, gid, ...args]) => ({
-            pid,
-            ppid,
-            uid,
-            gid,
-            cmd: args.join(' ')
-          }))
-
-        resolve(processes[0])
-      }
+  if (paths.length > 0) {
+    warning(
+      [
+        'dev-service is already running, started in following folder(s):',
+        ...paths.map(p => `  ${p}`)
+      ].join('\n')
     )
-  })
+  }
+}
+
+/**
+ * check for processes using needed ports
+ */
+export const checkUsedPorts = async (service) => {
+  if (!checkComposeDir()) {
+    throw new Error('No services found. Try running `service install`')
+  }
+
+  const requiredPorts = getRequiredPorts(service)
+  const ownPorts = await getOwnPorts()
+  const ports = requiredPorts.filter(p => !ownPorts.includes(p))
+
+  const portsToPids = await getPIDs(ports)
+
+  if (Object.keys(portsToPids).length === 0) {
+    // everything ok
+    return
+  }
+
+  const pids = [...new Set(Object.values(portsToPids))]
+  const pidsToProcesses = await getProcesses(pids)
+
+  throw new Error(
+    [
+      'Required port(s) are already allocated:',
+      ...Object.entries(portsToPids).map(
+        ([port, pid]) =>
+          `- port ${port} is used by process with pid ${pid}${
+            pidsToProcesses[pid] && pidsToProcesses[pid].cmd
+              ? ` (${pidsToProcesses[pid].cmd})`
+              : ''}`
+      )
+    ].join('\n')
+  )
+}
