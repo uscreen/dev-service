@@ -1,189 +1,161 @@
 # Agent Guidelines for @uscreen.de/dev-service
 
-This document provides guidelines for AI coding agents working on this repository.
+Guidelines for AI coding agents working on this repository.
 
 ## Project Overview
 
-A CLI tool for managing Docker services in local development environments. This is an ESM (ECMAScript modules) Node.js project that uses docker-compose to orchestrate development services.
+A CLI tool for managing Docker services in local development environments. ESM-only Node.js project using docker-compose to orchestrate services like Redis, Mongo, Nginx, etc.
 
 ## Build, Lint & Test Commands
 
-### Testing
 ```bash
-# Run all tests (sequential execution required)
+# Install dependencies (pnpm required, enforced by preinstall hook)
+pnpm install
+
+# Run all tests (must be sequential due to Docker conflicts)
 pnpm test
-
-# Run tests with coverage (HTML + text report)
-pnpm run test:cov
-
-# Run tests with coverage for CI (lcov + text report)
-pnpm run test:ci
 
 # Run a single test file
 node --test test/cli-install.test.js
 
-# Run specific test with pattern
+# Run specific test by name pattern
 node --test --test-name-pattern="pattern" test/cli.test.js
-```
 
-### Linting
-```bash
-# Lint check (uses @uscreen.de/eslint-config-prettystandard-node)
+# Tests with coverage
+pnpm run test:cov          # HTML + text report
+pnpm run test:ci           # lcov + text (CI)
+
+# Lint (uses @antfu/eslint-config with flat config)
 pnpm exec eslint .
-
-# Lint and auto-fix
 pnpm exec eslint . --fix
-```
 
-### Installation
-```bash
-# Install dependencies (pnpm is required)
-pnpm install
-```
-
-### Make commands
-```bash
-make test              # Run tests
-make test.coverage     # Run tests with coverage
+# Make shortcuts
+make test                  # Run tests
+make test.coverage         # Run tests with coverage
 ```
 
 ## Code Style Guidelines
 
 ### Module System
-- **ESM only**: Use `import`/`export`, not `require()`
-- Use `'use strict'` at the top of files for consistency
-- Use `import.meta.url` for current file path
-- To require JSON files, use `createRequire` from `module`
+- **ESM only**: Use `import`/`export`, never `require()`
+- Use `node:` prefix for built-in modules: `import path from 'node:path'`
+- Always include `.js` extension in relative imports: `import { x } from './utils.js'`
+- Use `import.meta.url` for file path derivation
+- For JSON imports, use `createRequire` from `node:module`
 
-### Import Style
+### Import Order
 ```javascript
-// Standard library imports first
-import path from 'path'
-import fs from 'fs-extra'
-import { fileURLToPath } from 'url'
-
-// Third-party imports
-import YAML from 'yaml'
+// 1. Node built-ins (with node: prefix)
+import { execSync } from 'node:child_process'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+// 2. Third-party packages
 import chalk from 'chalk'
-import { Command } from 'commander'
-
-// Local imports last
+import fs from 'fs-extra'
+import YAML from 'yaml'
+// 3. Local imports
+import { COMPOSE_DIR, TEMPLATES_DIR } from './constants.js'
 import { docker, escape } from '../src/utils.js'
-import { COMPOSE_DIR } from './constants.js'
 ```
 
-### File Extensions
-- Always include `.js` extension in relative imports: `import { x } from './utils.js'`
-- Never omit extensions in ESM imports
-
 ### Formatting
-- **Indentation**: 2 spaces (no tabs, except in Makefiles)
-- **Quotes**: Single quotes for strings
-- **Semicolons**: Not required but used inconsistently - follow existing pattern in file
-- **Line endings**: LF (Unix style)
+- **Indentation**: 2 spaces (tabs only in Makefiles)
+- **Quotes**: Single quotes
+- **Semicolons**: None (consistently omitted across the entire codebase)
+- **Trailing commas**: None (enforced by `style/comma-dangle: ['error', 'never']`)
+- **Line endings**: LF
 - **Final newline**: Required
 - **Trailing whitespace**: Not allowed
-- **Max line length**: No strict limit, but be reasonable
 
 ### Naming Conventions
-- **Files**: kebab-case (e.g., `cli-install.js`, `cli-start.test.js`)
-- **Functions**: camelCase (e.g., `readPackageJson`, `checkComposeDir`)
-- **Constants**: SCREAMING_SNAKE_CASE (e.g., `COMPOSE_DIR`, `TEMPLATES_DIR`)
-- **Variables**: camelCase (e.g., `projectname`, `composePath`)
-- **Exported functions**: Use `export const functionName =` or `export const functionName = async`
+- **Files**: kebab-case (`cli-install.js`, `cli-start.test.js`)
+- **Functions/variables**: camelCase (`readPackageJson`, `composePath`)
+- **Constants**: SCREAMING_SNAKE_CASE (`COMPOSE_DIR`, `TEMPLATES_DIR`)
+- **Exports**: `export const functionName =` pattern
 
 ### Function Patterns
+- **Arrow functions only** -- the codebase never uses the `function` keyword
+- Top-level arrow functions are allowed (`antfu/top-level-function: off`)
+
 ```javascript
-// Arrow functions for simple utilities
-export const escape = (name) =>
-  name.replace(/^[^a-zA-Z0-9]*/, '').replace(/[^a-zA-Z0-9-]/g, '-')
+export const escape = name =>
+  name.replace(/^[^a-z0-9]*/i, '').replace(/[^a-z0-9-]/gi, '-')
 
-// Named functions for complex logic
-const fillTemplate = (template, data, removeSections, keepSections) => {
-  // implementation
-}
-
-// Async arrow functions
 export const install = async (opts) => {
   // implementation
 }
 ```
 
-### Error Handling
+### Curly Braces
+Rule: `'curly': ['error', 'multi-line', 'consistent']` -- `else` goes on a new line after `}`:
+
 ```javascript
-// Throw errors with descriptive messages
-if (invalid.length > 0) {
-  throw Error('Invalid custom services:\n...')
+if (service) return result
+
+if (service) {
+  await compose('up', '-d', service)
 }
-
-// Catch and handle gracefully when appropriate
-try {
-  packageJson = readPackageSync({ cwd: root })
-} catch (e) {}
-
-// Use error utility for CLI output
-export const error = (e) => {
-  console.error(chalk.red(`ERROR: ${e.message}\n`))
-  process.exit(e.code || 1)
+else {
+  await compose('up', '-d')
 }
 ```
 
-### Console Output
-- Use `chalk` for colored output in CLI
-- Error messages: `chalk.red('ERROR: ...')`
-- Warning messages: `chalk.yellow('WARNING: ...')`
-- Info messages: plain `console.log()`
-- Always include newline after messages
+### Error Handling
+- CLI-facing errors use `error()` from `src/utils.js` which prints with `chalk.red()` and calls `process.exit()`
+- In `bin/` files: `try { await action(options) } catch (e) { error(e) }`
+- Empty catch for non-critical: `try { ... } catch {}`
+- Warnings: `chalk.yellow()`, Info: plain `console.log()`
+- Always append `\n` after error/warning messages
 
-### Async/Await
-- Prefer async/await over promise chains
-- Use `Promise.all()` for parallel operations
-- Handle rejections appropriately
+## Testing
 
-### Testing with Node Test Runner
+Uses the **native Node.js test runner** (`node:test`) with `node:assert/strict`. Tests must run sequentially (`--test-concurrency=1`) because they share Docker resources.
 ```javascript
-import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { cli } from './helpers.js'
+import { afterEach, describe, test } from 'node:test'
+import { clearArena, cli, prepareArena } from './helpers.js'
 
-test('$ cli', async (t) => {
-  const result = await cli([])
-  assert.equal(result.code, 1, 'Should fail')
-  assert.equal(result.stdout, '', 'Should output nothing to stdout')
+describe('$ cli install', () => {
+  afterEach(async () => {
+    await clearArena()
+  })
+
+  test('Within a folder with no package.json', async () => {
+    const result = await cli(['install'], '/tmp')
+    assert.equal(result.code, 1, 'Should fail')
+    assert.ok(result.stderr.includes('ERROR'), 'Should output error')
+  })
 })
 ```
 
-### Test Patterns
-- Use native Node.js test runner (node:test)
-- Tests must run sequentially (`--test-concurrency=1`)
-- Use strict assertions (`node:assert/strict`)
-- Test files: `*.test.js` in `test/` directory
-- Helper functions in `test/helpers.js`
-- Setup/teardown using `prepareArena()` and `clearArena()`
-- Disable color output in tests: `process.env.FORCE_COLOR = 0`
+- Test files: `test/*.test.js`
+- Helpers in `test/helpers.js` (`prepareArena`, `clearArena`, `cli`, `compose`, `loadYaml`)
+- Arena pattern: tests use `test/_arena/` as a temporary project directory
+- Color disabled in tests: `process.env.FORCE_COLOR = 0`
+- Every assertion includes a descriptive message string
+- Test names describe the scenario: `'If services are defined in .compose subfolder'`
 
 ## Project Structure
 
 ```
-.
 ├── bin/              # CLI entry points (cli.js, cli-install.js, etc.)
 ├── src/              # Source code
-│   ├── install.js    # Service installation logic
-│   ├── utils.js      # Shared utilities
 │   ├── check.js      # Port availability checks
-│   └── constants.js  # Constants
-├── templates/        # Service templates (YAML configs)
+│   ├── constants.js  # Path constants, version
+│   ├── install.js    # Service installation logic
+│   └── utils.js      # Shared utilities (docker, compose, escape, error)
+├── templates/        # Docker-compose service templates (YAML)
 ├── test/             # Tests
-│   ├── helpers.js    # Test utilities
-│   └── *.test.js     # Test files
-└── package.json      # Package manifest
+│   ├── helpers.js    # Test infrastructure (arena, cli runner, compose)
+│   └── *.test.js     # Test files (18 files)
+└── eslint.config.js  # ESLint flat config (@antfu/eslint-config)
 ```
 
 ## Important Notes
 
-- **Node version**: Requires Node.js >= 20
-- **Package manager**: pnpm only (enforced by preinstall hook)
-- **Docker dependencies**: Requires `docker` and `docker-compose` in PATH
-- **Tests**: Must run sequentially due to Docker resource conflicts
-- **No TypeScript**: Plain JavaScript with JSDoc if needed
-- **Shebang**: Use `#!/usr/bin/env node` for CLI executables
+- **Node.js**: >= 20 required (`.nvmrc` targets 24)
+- **Package manager**: pnpm only (enforced)
+- **Docker**: Requires `docker` and `docker-compose` in PATH
+- **No TypeScript**: Plain JavaScript only
+- **Shebang**: `#!/usr/bin/env node` for CLI executables in `bin/`
+- **CI**: Tests run on Node 20, 22, 24 via GitHub Actions
