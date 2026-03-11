@@ -1,6 +1,7 @@
 import antfu from '@antfu/eslint-config'
 
 export default antfu({
+  e18e: false,
   formatters: true,
   ignores: [
     'templates/',
