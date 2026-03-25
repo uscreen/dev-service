@@ -57,6 +57,22 @@ export const getComposeFiles = () =>
   fs.readdirSync(COMPOSE_DIR).filter(f => f !== '.gitignore')
 
 /**
+ * Detect compose command: prefer 'docker compose' plugin, fall back to 'docker-compose'
+ */
+let _composeCmd = null
+
+export const getComposeCommand = () => {
+  if (!_composeCmd) {
+    _composeCmd = new Promise((resolve) => {
+      exec('docker compose version', (err) => {
+        resolve(err ? 'docker-compose' : 'docker compose')
+      })
+    })
+  }
+  return _composeCmd
+}
+
+/**
  * read path to compose file/folder via `docker inspect <containerId>`
  */
 const getComposePath = containerId =>
@@ -180,5 +196,10 @@ export const compose = async (...params) => {
 
   ps.push(...params)
 
+  const cmd = await getComposeCommand()
+
+  if (cmd === 'docker compose') {
+    return run('docker', ['compose', ...ps], COMPOSE_DIR)
+  }
   return run('docker-compose', ps, COMPOSE_DIR)
 }

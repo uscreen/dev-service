@@ -181,6 +181,21 @@ Pulls current images for all or given installed service(s).
 
 This action updates already existing images - within the boundaries of the respective service's tag. For updating an image beyond these boundaries, adjust the respective service's tag in your service definition and rerun `service install`.
 
+### $ service status
+
+Show paths and versions of used docker and docker-compose (docker compose preferred over docker-compose if both are available). Example output:
+
+```bash
+Detected tools:
+
+  docker          /Users/<...>/.local/bin/docker
+                  Docker version 28.5.2, build ecc6942
+
+  docker compose  plugin  2.40.3 [active]
+  docker-compose  /Users/<...>/.local/bin/docker-compose
+                  Docker Compose version v2.40.3
+```
+
 ## Provided services
 
 All provided services use their respective default ports:
@@ -326,6 +341,11 @@ And the folder structure would look like this:
 ## Changelog
 
 > Format according to https://keepachangelog.com
+
+### v0.14.0
+
+#### Added
+- new `service status` command to show paths and versions of used docker and docker-compose (docker compose preferred over docker-compose if both are available)
 
 ### v0.13.0
 

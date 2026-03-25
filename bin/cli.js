@@ -28,6 +28,7 @@ program
     'pull [service]',
     'pulls current images for all or given installed services'
   )
+  .command('status', 'show detected docker tools and their versions')
 
 /**
  * read args

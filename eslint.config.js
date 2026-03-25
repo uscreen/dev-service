@@ -10,7 +10,8 @@ export default antfu({
     'pnpm-workspace.yaml',
     '**/*.md/*.js',
     '**/*.md/*.json',
-    'AGENTS.md'
+    'AGENTS.md',
+    '.serena/**'
   ]
 }, {
   rules: {
