@@ -9,6 +9,7 @@ import { COMPOSE_DIR } from './constants.js'
 import {
   checkComposeDir,
   escape,
+  getComposeCommand,
   getComposeFiles,
   getComposePaths,
   readPackageJson,
@@ -70,8 +71,9 @@ const getContainerPorts = containerId =>
 /**
  * get ports currently used by this services instance
  */
-const getOwnPorts = () =>
-  new Promise((resolve, reject) => {
+const getOwnPorts = async () => {
+  const cmd = await getComposeCommand()
+  return new Promise((resolve, reject) => {
     const { name } = readPackageJson()
     const projectname = escape(name)
     const files = getComposeFiles()
@@ -84,7 +86,7 @@ const getOwnPorts = () =>
 
     ps.push('ps', '-q')
 
-    exec(`docker-compose ${ps.join(' ')}`, (err, stdout, stderr) => {
+    exec(`${cmd} ${ps.join(' ')}`, (err, stdout, stderr) => {
       if (err) {
         return reject(err)
       }
@@ -102,6 +104,7 @@ const getOwnPorts = () =>
       })
     })
   })
+}
 
 /**
  * Find process listening to given port
