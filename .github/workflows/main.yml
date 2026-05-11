@@ -42,9 +42,23 @@ jobs:
         run: CURRENT_UID=$(id -u):$(id -g) pnpm run test:ci
 
       - name: Coveralls
-        uses: coverallsapp/github-action@main
+        uses: coverallsapp/github-action@v2
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          flag-name: run-${{ matrix.node-version }}
+          parallel: true
+
+  finish:
+    needs: test
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Coveralls Finished
+        uses: coverallsapp/github-action@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          parallel-finished: true
+          carryforward: 'run-20,run-22,run-24'
 
   automerge:
     if: >
