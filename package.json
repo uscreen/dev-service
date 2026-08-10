@@ -43,16 +43,16 @@
   "dependencies": {
     "chalk": "^6.0.0",
     "commander": "^15.0.0",
-    "fs-extra": "^11.3.4",
-    "nanoid": "^6.0.0",
+    "fs-extra": "^11.4.0",
+    "nanoid": "^6.0.1",
     "parse-json": "^8.3.0",
     "read-pkg": "^10.1.0",
-    "yaml": "^2.8.3"
+    "yaml": "^2.9.0"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^7.7.3",
     "c8": "^12.0.0",
-    "eslint": "^9.39.4",
+    "eslint": "^9.39.5",
     "eslint-plugin-format": "^2.0.1"
   }
 }
