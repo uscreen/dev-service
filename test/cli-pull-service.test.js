@@ -75,11 +75,11 @@ describe('$ cli pull [service]', () => {
 
     const lines = result.stderr.split('\n').filter(s => s)
     assert.ok(
-      lines.some(l => l.match(/mongo pulled/i)),
+      lines.some(l => l.match(/mongo\S* pulled/i)),
       `Should pull mongo image`
     )
     assert.ok(
-      lines.every(l => !l.match(/nginx pulled/i)),
+      lines.every(l => !l.match(/nginx\S* pulled/i)),
       `Should not pull nginx image`
     )
   })

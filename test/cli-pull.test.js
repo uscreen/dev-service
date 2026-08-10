@@ -74,7 +74,7 @@ describe('$ cli pull', () => {
     const lines = result.stderr.split('\n').filter(s => s)
     for (const s of ['nginx', 'mongo']) {
       assert.ok(
-        lines.some(l => l.match(new RegExp(`${s} pulled`, 'i'))),
+        lines.some(l => l.match(new RegExp(`${s}\\S* pulled`, 'i'))),
         `Should pull ${s} image`
       )
     }
