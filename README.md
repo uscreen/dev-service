@@ -345,6 +345,7 @@ And the folder structure would look like this:
 ### v0.14.0
 
 #### Added
+
 - new `service status` command to show paths and versions of used docker and docker-compose (docker compose preferred over docker-compose if both are available)
 
 ### v0.13.0
