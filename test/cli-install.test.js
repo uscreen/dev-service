@@ -187,6 +187,11 @@ describe('$ cli install', () => {
       'dev-service-test_nginx',
       'Should set the correct container name in nginx.yml'
     )
+    assert.deepEqual(
+      nginxData.services.nginx.extra_hosts,
+      ['host.docker.internal:host-gateway'],
+      'Should map host.docker.internal to the host gateway in nginx.yml'
+    )
     assert.equal(
       fs.existsSync(path.resolve(servicesPath, 'nginx')),
       true,
