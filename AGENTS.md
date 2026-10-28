@@ -158,4 +158,4 @@ describe('$ cli install', () => {
 - **Docker**: Requires `docker` and `docker-compose` in PATH
 - **No TypeScript**: Plain JavaScript only
 - **Shebang**: `#!/usr/bin/env node` for CLI executables in `bin/`
-- **CI**: Tests run on Node 20, 22, 24 via GitHub Actions
+- **CI**: Tests run on Node 22, 24, 26 via GitHub Actions
