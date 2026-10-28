@@ -1,6 +1,6 @@
 # dev-service
 
-[![Test CI](https://github.com/uscreen/dev-service/actions/workflows/main.yml/badge.svg)](https://github.com/uscreen/dev-service/actions/workflows/node.js.yml)
+[![Test CI](https://github.com/uscreen/dev-service/actions/workflows/main.yml/badge.svg)](https://github.com/uscreen/dev-service/actions/workflows/main.yml)
 [![Test Coverage](https://coveralls.io/repos/github/uscreen/dev-service/badge.svg?branch=master)](https://coveralls.io/github/uscreen/dev-service?branch=master)
 [![Known Vulnerabilities](https://snyk.io/test/github/uscreen/dev-service/badge.svg?targetFile=package.json)](https://snyk.io/test/github/uscreen/dev-service?targetFile=package.json)
 [![NPM Version](https://badge.fury.io/js/@uscreen.de%2Fdev-service.svg)](https://badge.fury.io/js/@uscreen.de%2Fdev-service)
@@ -12,7 +12,7 @@
 - a local or remote docker host
 - a docker client connected to that host
 - `docker` and `docker-compose` located in your `$PATH`
-- `node` v16 or higher
+- `node` v20 or higher
 
 ## Install
 
