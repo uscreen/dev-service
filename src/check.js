@@ -38,7 +38,9 @@ const getRequiredPorts = (service) => {
     )
   }
 
-  const uniquePorts = [...new Set(ports.map(p => p.split(':')[0]))]
+  const uniquePorts = [
+    ...new Set(ports.map(p => p.split(':')[0]))
+  ]
 
   return uniquePorts
 }
@@ -61,7 +63,9 @@ const getContainerPorts = containerId =>
       const lines = stdout.split('\n').filter(l => l)
       const ports = lines
         .map(l => l.match(/.*:(\d+)/))
-        .map(m => (m.length >= 1 ? m[1] : null))
+        .map(m => (m.length >= 1
+          ? m[1]
+          : null))
         .filter(p => p)
 
       resolve(ports)
@@ -237,7 +241,9 @@ export const checkUsedPorts = async (service) => {
     return
   }
 
-  const pids = [...new Set(Object.values(portsToPids))]
+  const pids = [
+    ...new Set(Object.values(portsToPids))
+  ]
   const pidsToProcesses = await getProcesses(pids)
 
   throw new Error(

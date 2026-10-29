@@ -79,7 +79,9 @@ describe('$ cli install', () => {
   })
 
   test('Within a folder with a package.json containing an unsupported service', async () => {
-    prepareArena({ services: ['unsupported-service-name'] })
+    prepareArena({
+      services: ['unsupported-service-name']
+    })
 
     const result = await cli(['install'], arenaPath)
 
@@ -98,7 +100,9 @@ describe('$ cli install', () => {
   })
 
   test('Within a folder with a package.json containing an invalid custom service', async () => {
-    prepareArena({ services: [{}] })
+    prepareArena({
+      services: [{}]
+    })
 
     const result = await cli(['install'], arenaPath)
 

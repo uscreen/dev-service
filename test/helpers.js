@@ -28,7 +28,10 @@ export { escape }
 process.env.FORCE_COLOR = 0
 
 export const cli = (args, cwd, env, timeout) => {
-  env = { ...process.env, ...env }
+  env = {
+    ...process.env,
+    ...env
+  }
 
   return new Promise((resolve) => {
     exec(
@@ -36,7 +39,9 @@ export const cli = (args, cwd, env, timeout) => {
       { cwd, env, timeout },
       (error, stdout, stderr) => {
         resolve({
-          code: error && error.code ? error.code : 0,
+          code: error && error.code
+            ? error.code
+            : 0,
           error,
           stdout,
           stderr
@@ -71,7 +76,9 @@ const _compose
           { cwd: cp },
           (error, stdout, stderr) => {
             resolve({
-              code: error && error.code ? error.code : 0,
+              code: error && error.code
+                ? error.code
+                : 0,
               error,
               stdout,
               stderr

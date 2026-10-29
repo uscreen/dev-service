@@ -63,7 +63,9 @@ const getOptions = () => {
     = fs.existsSync(OPTIONS_PATH)
       && fs.readFileSync(OPTIONS_PATH, { encoding: 'utf-8' })
 
-  return raw ? parseJson(raw) : {}
+  return raw
+    ? parseJson(raw)
+    : {}
 }
 
 const setOptions = (options) => {

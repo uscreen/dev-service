@@ -7,7 +7,9 @@ import { getComposeCommand } from './utils.js'
 const execOutput = cmd =>
   new Promise((resolve) => {
     exec(cmd, (err, stdout) => {
-      resolve(err ? null : stdout.trim())
+      resolve(err
+        ? null
+        : stdout.trim())
     })
   })
 
@@ -43,7 +45,9 @@ export const status = async () => {
   const pluginActive = preferredCmd === 'docker compose'
 
   if (composePluginVersion) {
-    const label = pluginActive ? chalk.green(' [active]') : ''
+    const label = pluginActive
+      ? chalk.green(' [active]')
+      : ''
     console.log(`  docker compose  plugin  ${composePluginVersion}${label}`)
   }
   else {
@@ -51,7 +55,9 @@ export const status = async () => {
   }
 
   if (dockerComposePath) {
-    const label = !pluginActive ? chalk.green(' [active]') : ''
+    const label = !pluginActive
+      ? chalk.green(' [active]')
+      : ''
     console.log(`  docker-compose  ${chalk.dim(dockerComposePath)}`)
     console.log(`                  ${dockerComposeVersion || chalk.yellow('version unknown')}${label}`)
   }
