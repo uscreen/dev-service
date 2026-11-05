@@ -28,6 +28,10 @@ const nanoid = customAlphabet(
 
 const OPTIONS_PATH = path.resolve(SERVICES_DIR, '.options')
 
+// character rules compose accepts for service names
+// (@see https://github.com/compose-spec/compose-spec/blob/main/schema/compose-spec.json)
+const SERVICE_NAME_PATTERN = /^[\w.-]+$/
+
 /**
  * Helper methods
  */
@@ -37,6 +41,9 @@ const getName = (service) => {
 
   return name
 }
+
+const isValidServiceName = name =>
+  typeof name === 'string' && SERVICE_NAME_PATTERN.test(name)
 
 const fillTemplate = (template, data, removeSections, keepSections) => {
   for (const key in data) {
@@ -120,9 +127,11 @@ const copyAdditionalFiles = (name) => {
   }
 }
 
-const readCustomServiceData = (service) => {
+const readCustomServiceData = ({ name: explicitName, ...service }) => {
   const image = service.image
-  const name = getName(image)
+  const name = explicitName === undefined
+    ? getName(image)
+    : explicitName
 
   service.container_name = '{{container_name}}'
 
@@ -240,6 +249,19 @@ export const install = async (opts) => {
     )
   }
 
+  // validate explicit names of custom services:
+  const invalidNames = services
+    .filter(s => typeof s === 'object' && s.name !== undefined)
+    .map(s => s.name)
+    .filter(n => !isValidServiceName(n))
+  if (invalidNames.length > 0) {
+    throw new Error(
+      `Invalid service names: ${invalidNames
+        .map(n => JSON.stringify(n))
+        .join(', ')} (a name must be a non-empty string containing only letters, digits, ".", "_" and "-")`
+    )
+  }
+
   // create services data:
   const data = services.map(readServiceData)
 
@@ -247,6 +269,15 @@ export const install = async (opts) => {
   const unsupported = data.filter(d => !d.template).map(d => d.name)
   if (unsupported.length > 0) {
     throw new Error(`Unsupported services: ${unsupported.join(', ')}`)
+  }
+
+  // exit if multiple services resolve to the same name:
+  const names = data.map(d => d.name)
+  const duplicates = new Set(names.filter((n, i) => names.indexOf(n) !== i))
+  if (duplicates.size > 0) {
+    throw new Error(
+      `Duplicate service names: ${[...duplicates].join(', ')} (set an explicit "name" on custom services sharing an image)`
+    )
   }
 
   // install services:

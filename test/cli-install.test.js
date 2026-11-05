@@ -304,4 +304,137 @@ describe('$ cli install', () => {
       .catch(e => (code = e.code))
     assert.equal(code, 0, 'Should create docker volume defined in mongo.yml')
   })
+
+  test('With custom services sharing one image and explicit names', async () => {
+    const name = 'dev-service-test'
+    const image = 'ghcr.io/huggingface/text-embeddings-inference:cpu-1.8'
+    prepareArena({
+      name,
+      services: [
+        {
+          name: 'tei-embed',
+          image,
+          ports: ['8080:80']
+        },
+        {
+          name: 'tei-rerank',
+          image,
+          ports: ['8081:80']
+        }
+      ]
+    })
+
+    const result = await cli(['install'], arenaPath)
+    assert.equal(result.code, 0, 'Should return code 0')
+
+    for (const serviceName of ['tei-embed', 'tei-rerank']) {
+      const file = path.resolve(composePath, `${serviceName}.yml`)
+      assert.equal(
+        fs.existsSync(file),
+        true,
+        `Should create ${serviceName}.yml within services folder`
+      )
+
+      const data = loadYaml(file)
+      assert.deepEqual(
+        Object.keys(data.services),
+        [serviceName],
+        `Should use the explicit name as service key in ${serviceName}.yml`
+      )
+
+      const service = data.services[serviceName]
+      assert.equal(
+        service.image,
+        image,
+        `Should use the shared image in ${serviceName}.yml`
+      )
+      assert.equal(
+        service.container_name,
+        `${escape(name)}_${serviceName}`,
+        `Should set the correct container name in ${serviceName}.yml`
+      )
+      assert.equal(
+        Object.hasOwn(service, 'name'),
+        false,
+        `Should not keep the name property inside the service in ${serviceName}.yml`
+      )
+    }
+
+    assert.equal(
+      fs.readdirSync(composePath).filter(f => f !== '.gitignore').length,
+      2,
+      'Should not create any other yml files'
+    )
+  })
+
+  test('With multiple services resolving to the same name', async () => {
+    const image = 'ghcr.io/huggingface/text-embeddings-inference'
+    prepareArena({
+      name: 'dev-service-test',
+      services: [
+        'mongo',
+        { image },
+        { image },
+        { name: 'mongo', image: 'some.registry.uscreen.de:1234/some/path/to/foo' }
+      ]
+    })
+
+    const result = await cli(['install'], arenaPath)
+
+    assert.notEqual(result.code, 0, 'Should return code != 0')
+    assert.equal(
+      result.stderr.includes('ERROR'),
+      true,
+      'Should output error message'
+    )
+    assert.equal(
+      result.stderr.includes('text-embeddings-inference'),
+      true,
+      'Should name the duplicate derived service name'
+    )
+    assert.equal(
+      result.stderr.includes('mongo'),
+      true,
+      'Should name the duplicate explicit service name'
+    )
+
+    assert.equal(
+      fs.existsSync(servicesPath),
+      false,
+      'Should not create services folder'
+    )
+  })
+
+  test('With invalid explicit names of custom services', async () => {
+    prepareArena({
+      name: 'dev-service-test',
+      services: [
+        { name: '', image: 'some.registry.uscreen.de:1234/some/path/to/foo' },
+        { name: 'tei embed', image: 'some.registry.uscreen.de:1234/some/path/to/bar' },
+        { name: 42, image: 'some.registry.uscreen.de:1234/some/path/to/baz' }
+      ]
+    })
+
+    const result = await cli(['install'], arenaPath)
+
+    assert.notEqual(result.code, 0, 'Should return code != 0')
+    assert.equal(
+      result.stderr.includes('ERROR'),
+      true,
+      'Should output error message'
+    )
+    for (const invalid of ['""', '"tei embed"', '42']) {
+      assert.equal(
+        result.stderr.includes(invalid),
+        true,
+        `Should name the invalid service name ${invalid}`
+      )
+    }
+
+    assert.equal(
+      fs.existsSync(servicesPath),
+      false,
+      'Should not create services folder'
+    )
+  })
 })

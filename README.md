@@ -288,11 +288,35 @@ volumes:
 
 This action has the following features & caveats:
 
-- The service's name is automatically derived from the service's image name. Installing a service without specifying an image will fail.
+- The service's name is derived from the service's image name unless an explicit `name` is given (see below). Installing a service without specifying an image will fail.
+- Service names must be unique. Installing two services resolving to the same name will fail.
 - An adequate `container_name` is automatically added and will overwrite any existing container name
 - Volumes can only be given in "short syntax"
 - All specified named volumes are automatically created if not already existing
 - When referring to a file, keep in mind to specify the path relative to `services/.compose`
+
+### Explicit service names
+
+By default, the service's name is the last path segment of its image without the tag, e.g. `ghcr.io/huggingface/text-embeddings-inference:cpu-1.8` becomes `text-embeddings-inference`. This name is used for the generated compose file, the compose service key and the container name, so two services sharing one image would collide. Set an explicit `name` to tell them apart:
+
+```json
+"services": [
+  {
+    "name": "tei-embed",
+    "image": "ghcr.io/huggingface/text-embeddings-inference:cpu-1.8",
+    "ports": ["8080:80"],
+    "command": ["--model-id", "BAAI/bge-m3"]
+  },
+  {
+    "name": "tei-rerank",
+    "image": "ghcr.io/huggingface/text-embeddings-inference:cpu-1.8",
+    "ports": ["8081:80"],
+    "command": ["--model-id", "BAAI/bge-reranker-v2-m3"]
+  }
+]
+```
+
+Running `service install` creates `services/.compose/tei-embed.yml` and `services/.compose/tei-rerank.yml` with the containers `your-dev-repo_tei-embed` and `your-dev-repo_tei-rerank`. The `name` property itself is not written into the generated service definition. A name must be a non-empty string containing only letters, digits, `.`, `_` and `-`, like any compose service name.
 
 ### Mapping host paths
 
@@ -341,6 +365,22 @@ And the folder structure would look like this:
 ## Changelog
 
 > Format according to https://keepachangelog.com
+
+### v0.16.0
+
+#### Added
+
+- optional `name` property for custom services to set the compose service name explicitly, e.g. for multiple services sharing one image; invalid names fail `service install`
+
+#### Fixed
+
+- `service install` fails on duplicate service names instead of silently overwriting the generated compose file
+
+### v0.15.0
+
+#### Changed
+
+- nginx template maps `host.docker.internal` to the host gateway, so it also resolves inside the container on Linux
 
 ### v0.14.0
 
