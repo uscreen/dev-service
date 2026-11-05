@@ -120,15 +120,22 @@ const _clearArena
         await _compose(other)('rm', '-fv').catch(() => {})
       }
 
+      // volume names derive from the (escaped) project name, so read it
+      // before removing the arena - otherwise volumes of irregular names leak:
+      let name = path.basename(ap)
+      try {
+        name = readPackageSync({ cwd: ap }).name || name
+      }
+      catch {}
+      const projectname = escape(name)
+
       fs.removeSync(ap)
 
       // Catch error if volume not exists:
-      if (!other) {
-        await Promise.all([
-          docker('volume', 'rm', 'dev-service-test-mongo-data'),
-          docker('volume', 'rm', 'dev-service-test-elasticsearch-data')
-        ]).catch(() => {})
-      }
+      await Promise.all([
+        docker('volume', 'rm', `${projectname}-mongo-data`),
+        docker('volume', 'rm', `${projectname}-elasticsearch-data`)
+      ]).catch(() => {})
     }
 
 export const compose = _compose(false)
